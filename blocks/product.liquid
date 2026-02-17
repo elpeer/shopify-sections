@@ -843,7 +843,7 @@
                           {%- if video_obj != blank -%}
                             <div class="video-slider__item">
                               <div class="video-slider__video-wrap">
-                                {{ video_obj | video_tag: image_size: '720x', autoplay: false, loop: true, muted: true, controls: false, playsinline: true, preload: 'metadata' }}
+                                {{ video_obj | video_tag: image_size: '720x', autoplay: false, loop: true, muted: false, controls: false, playsinline: true, preload: 'metadata' }}
                                 <button class="video-slider__play-btn" type="button" aria-label="Play video">
                                   <svg class="video-slider__icon-play" width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M3 1.5V12.5L12 7L3 1.5Z" fill="#333"/>
