@@ -986,13 +986,21 @@
                           animation: promo-text-glow-{{ block.id }} 2.5s ease-in-out infinite;
                         }
 
-                        /* ── Arrow ── */
-                        #PromoBlock-{{ block.id }} .promo-label__arrow {
+                        /* ── Icon ── */
+                        #PromoBlock-{{ block.id }} .promo-label__icon {
                           flex-shrink: 0;
                           transition: transform 0.2s;
+                          width: var(--promo-icon-size);
+                          height: var(--promo-icon-size);
                         }
-                        #PromoBlock-{{ block.id }} .promo-label:hover .promo-label__arrow {
+                        #PromoBlock-{{ block.id }} .promo-label--icon-left {
+                          flex-direction: row-reverse;
+                        }
+                        #PromoBlock-{{ block.id }} .promo-label:hover .promo-label__icon--arrow {
                           transform: translateX(3px);
+                        }
+                        #PromoBlock-{{ block.id }} .promo-label--icon-left:hover .promo-label__icon--arrow {
+                          transform: translateX(-3px);
                         }
 
                         /* ── Popup ── */
@@ -1114,18 +1122,35 @@
                       -%}
 
                       <div id="PromoBlock-{{ block.id }}"
-                        style="--promo-fs:{{ block.settings.label_font_size }}px;--promo-pad-v:{{ block.settings.label_padding_v }}px;--promo-pad-h:{{ block.settings.label_padding_h }}px;--promo-radius:{{ block.settings.label_border_radius }}px;--promo-bg:{{ block.settings.label_bg_color }};--promo-color:{{ block.settings.label_text_color }};--promo-border:{{ block.settings.label_border_color }};--promo-glow:{{ block.settings.shimmer_color }};"
+                        style="--promo-fs:{{ block.settings.label_font_size }}px;--promo-pad-v:{{ block.settings.label_padding_v }}px;--promo-pad-h:{{ block.settings.label_padding_h }}px;--promo-radius:{{ block.settings.label_border_radius }}px;--promo-bg:{{ block.settings.label_bg_color }};--promo-color:{{ block.settings.label_text_color }};--promo-border:{{ block.settings.label_border_color }};--promo-glow:{{ block.settings.shimmer_color }};--promo-icon-size:{{ block.settings.icon_size }}px;"
                       >
                         <button
-                          class="promo-label {{ shimmer_class }}"
+                          class="promo-label {{ shimmer_class }}{% if block.settings.icon_position == 'left' %} promo-label--icon-left{% endif %}"
                           id="PromoLabel-{{ block.id }}"
                           type="button"
                         >
                           <span class="promo-label__text">{{ block.settings.label_text }}</span>
-                          {%- if block.settings.show_arrow -%}
-                            <svg class="promo-label__arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                              <path d="M3 8H13M13 8L8.5 3.5M13 8L8.5 12.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
+                          {%- if block.settings.icon_type != 'none' -%}
+                            {%- case block.settings.icon_type -%}
+                              {%- when 'arrow' -%}
+                                <svg class="promo-label__icon promo-label__icon--arrow" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                  {%- if block.settings.icon_position == 'left' -%}
+                                    <path d="M13 8H3M3 8L7.5 3.5M3 8L7.5 12.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                  {%- else -%}
+                                    <path d="M3 8H13M13 8L8.5 3.5M13 8L8.5 12.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                  {%- endif -%}
+                                </svg>
+                              {%- when 'plus' -%}
+                                <svg class="promo-label__icon promo-label__icon--plus" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                  <path d="M8 3V13M3 8H13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                </svg>
+                              {%- when 'info' -%}
+                                <svg class="promo-label__icon promo-label__icon--info" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                  <circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.5"/>
+                                  <path d="M8 7V11.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                  <circle cx="8" cy="5" r="1" fill="currentColor"/>
+                                </svg>
+                            {%- endcase -%}
                           {%- endif -%}
                         </button>
                       </div>
@@ -3109,10 +3134,40 @@
           "default": "#2563eb"
         },
         {
-          "type": "checkbox",
-          "id": "show_arrow",
-          "label": "Show arrow",
-          "default": true
+          "type": "header",
+          "content": "Icon"
+        },
+        {
+          "type": "select",
+          "id": "icon_type",
+          "label": "Icon",
+          "default": "arrow",
+          "options": [
+            {"value": "none", "label": "None"},
+            {"value": "arrow", "label": "Arrow"},
+            {"value": "plus", "label": "Plus"},
+            {"value": "info", "label": "Info"}
+          ]
+        },
+        {
+          "type": "select",
+          "id": "icon_position",
+          "label": "Icon position",
+          "default": "right",
+          "options": [
+            {"value": "left", "label": "Left"},
+            {"value": "right", "label": "Right"}
+          ]
+        },
+        {
+          "type": "range",
+          "id": "icon_size",
+          "label": "Icon size",
+          "min": 10,
+          "max": 28,
+          "step": 1,
+          "unit": "px",
+          "default": 16
         },
         {
           "type": "header",
