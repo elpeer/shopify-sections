@@ -173,10 +173,6 @@
     fill: var(--rc-star-color);
   }
 
-  #reviews-carousel-{{ section_id }} .rc-star-half {
-    fill: var(--rc-star-color);
-  }
-
   #reviews-carousel-{{ section_id }} .rc-star-empty {
     fill: #ddd;
   }
@@ -406,18 +402,10 @@
 
     <div class="rc-carousel-wrap">
       {%- if section.settings.show_arrows -%}
-        <button
-          class="rc-arrow rc-arrow--prev"
-          aria-label="Previous slide"
-          data-dir="prev"
-        >
+        <button class="rc-arrow rc-arrow--prev" aria-label="Previous slide" data-dir="prev">
           <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
         </button>
-        <button
-          class="rc-arrow rc-arrow--next"
-          aria-label="Next slide"
-          data-dir="next"
-        >
+        <button class="rc-arrow rc-arrow--next" aria-label="Next slide" data-dir="next">
           <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
         </button>
       {%- endif -%}
@@ -428,7 +416,200 @@
         aria-label="{{ section.settings.heading | default: 'Customer reviews carousel' }}"
         tabindex="0"
       >
-        {% content_for_blocks %}
+        {%- for i in (1..8) -%}
+          {%- assign name_key = 'review_' | append: i | append: '_name' -%}
+          {%- assign reviewer_name = section.settings[name_key] -%}
+          {%- if reviewer_name != blank -%}
+            {%- assign img_key = 'review_' | append: i | append: '_image' -%}
+            {%- assign alt_key = 'review_' | append: i | append: '_image_alt' -%}
+            {%- assign media_key = 'review_' | append: i | append: '_media_type' -%}
+            {%- assign video_key = 'review_' | append: i | append: '_video' -%}
+            {%- assign ext_key = 'review_' | append: i | append: '_external_video_url' -%}
+            {%- assign rating_key = 'review_' | append: i | append: '_rating' -%}
+            {%- assign age_key = 'review_' | append: i | append: '_age' -%}
+            {%- assign verified_key = 'review_' | append: i | append: '_verified' -%}
+            {%- assign text_key = 'review_' | append: i | append: '_text' -%}
+            {%- assign truncate_key = 'review_' | append: i | append: '_truncate_lines' -%}
+            {%- assign readmore_key = 'review_' | append: i | append: '_show_read_more' -%}
+            {%- assign product_key = 'review_' | append: i | append: '_product' -%}
+            {%- assign note_key = 'review_' | append: i | append: '_purchase_note' -%}
+            {%- assign compare_key = 'review_' | append: i | append: '_show_compare_price' -%}
+            {%- assign autoplay_key = 'review_' | append: i | append: '_video_autoplay' -%}
+            {%- assign loop_key = 'review_' | append: i | append: '_video_loop' -%}
+            {%- assign muted_key = 'review_' | append: i | append: '_video_muted' -%}
+            {%- assign play_icon_key = 'review_' | append: i | append: '_show_play_icon' -%}
+
+            {%- assign r_image = section.settings[img_key] -%}
+            {%- assign r_alt = section.settings[alt_key] -%}
+            {%- assign r_media = section.settings[media_key] -%}
+            {%- assign r_video = section.settings[video_key] -%}
+            {%- assign r_ext = section.settings[ext_key] -%}
+            {%- assign r_rating = section.settings[rating_key] -%}
+            {%- assign r_age = section.settings[age_key] -%}
+            {%- assign r_verified = section.settings[verified_key] -%}
+            {%- assign r_text = section.settings[text_key] -%}
+            {%- assign r_truncate = section.settings[truncate_key] -%}
+            {%- assign r_readmore = section.settings[readmore_key] -%}
+            {%- assign r_product = section.settings[product_key] -%}
+            {%- assign r_note = section.settings[note_key] -%}
+            {%- assign r_compare = section.settings[compare_key] -%}
+            {%- assign r_autoplay = section.settings[autoplay_key] -%}
+            {%- assign r_loop = section.settings[loop_key] -%}
+            {%- assign r_muted = section.settings[muted_key] -%}
+            {%- assign r_play_icon = section.settings[play_icon_key] -%}
+
+            <div class="rc-card{% if section.settings.card_shadow %} rc-card--shadow{% endif %}">
+              {%- comment -%}--- MEDIA ---{%- endcomment -%}
+              <div class="rc-media-wrap">
+                {%- case r_media -%}
+                  {%- when 'image' -%}
+                    {%- if r_image != blank -%}
+                      <img
+                        src="{{ r_image | image_url: width: 800 }}"
+                        alt="{{ r_alt | escape }}"
+                        loading="lazy"
+                        width="800"
+                        height="{{ 800 | divided_by: r_image.aspect_ratio | round }}"
+                      >
+                    {%- else -%}
+                      {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+                    {%- endif -%}
+
+                  {%- when 'video_upload' -%}
+                    {%- if r_video != blank -%}
+                      <video
+                        playsinline
+                        {% if r_autoplay %}autoplay{% endif %}
+                        {% if r_loop %}loop{% endif %}
+                        {% if r_muted %}muted{% endif %}
+                        {% if r_image != blank %}poster="{{ r_image | image_url: width: 800 }}"{% endif %}
+                        data-fallback-img="{% if r_image != blank %}{{ r_image | image_url: width: 800 }}{% endif %}"
+                      >
+                        {%- for source in r_video.sources -%}
+                          <source src="{{ source.url }}" type="{{ source.mime_type }}">
+                        {%- endfor -%}
+                      </video>
+                    {%- endif -%}
+                    {%- if r_play_icon -%}
+                      <div class="rc-play-overlay" aria-label="Play video" role="button" tabindex="0">
+                        <svg viewBox="0 0 64 64"><path d="M24 16 L48 32 L24 48 Z"/></svg>
+                      </div>
+                    {%- endif -%}
+
+                  {%- when 'external_video' -%}
+                    {%- if r_ext != blank -%}
+                      {%- if r_ext contains 'youtube.com' or r_ext contains 'youtu.be' -%}
+                        {%- if r_ext contains 'youtu.be' -%}
+                          {%- assign yt_id = r_ext | split: 'youtu.be/' | last | split: '?' | first -%}
+                        {%- else -%}
+                          {%- assign yt_id = r_ext | split: 'v=' | last | split: '&' | first -%}
+                        {%- endif -%}
+                        <iframe
+                          src="https://www.youtube.com/embed/{{ yt_id }}?{% if r_autoplay %}autoplay=1&{% endif %}{% if r_muted %}mute=1&{% endif %}{% if r_loop %}loop=1&playlist={{ yt_id }}&{% endif %}playsinline=1&rel=0"
+                          allow="autoplay; encrypted-media; picture-in-picture"
+                          allowfullscreen
+                          loading="lazy"
+                          title="{{ reviewer_name | default: 'Review' }} video"
+                        ></iframe>
+                      {%- elsif r_ext contains 'vimeo.com' -%}
+                        {%- assign vimeo_id = r_ext | split: 'vimeo.com/' | last | split: '?' | first | split: '/' | first -%}
+                        <iframe
+                          src="https://player.vimeo.com/video/{{ vimeo_id }}?{% if r_autoplay %}autoplay=1&{% endif %}{% if r_muted %}muted=1&{% endif %}{% if r_loop %}loop=1&{% endif %}playsinline=1"
+                          allow="autoplay; fullscreen; picture-in-picture"
+                          allowfullscreen
+                          loading="lazy"
+                          title="{{ reviewer_name | default: 'Review' }} video"
+                        ></iframe>
+                      {%- endif -%}
+                    {%- endif -%}
+                    {%- if r_play_icon -%}
+                      <div class="rc-play-overlay" aria-label="Play video" role="button" tabindex="0">
+                        <svg viewBox="0 0 64 64"><path d="M24 16 L48 32 L24 48 Z"/></svg>
+                      </div>
+                    {%- endif -%}
+                {%- endcase -%}
+              </div>
+
+              {%- comment -%}--- CARD BODY ---{%- endcomment -%}
+              <div class="rc-body">
+                {%- comment -%}Stars{%- endcomment -%}
+                <div class="rc-stars" role="img" aria-label="{{ r_rating }} out of 5 stars">
+                  {%- for s in (1..5) -%}
+                    {%- assign half_threshold = s | minus: 0.5 -%}
+                    {%- if r_rating >= s -%}
+                      <svg viewBox="0 0 24 24"><path class="rc-star-full" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    {%- elsif r_rating >= half_threshold -%}
+                      <svg viewBox="0 0 24 24">
+                        <defs><linearGradient id="half-{{ section_id }}-{{ i }}-{{ s }}"><stop offset="50%" stop-color="var(--rc-star-color)"/><stop offset="50%" stop-color="#ddd"/></linearGradient></defs>
+                        <path fill="url(#half-{{ section_id }}-{{ i }}-{{ s }})" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                      </svg>
+                    {%- else -%}
+                      <svg viewBox="0 0 24 24"><path class="rc-star-empty" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    {%- endif -%}
+                  {%- endfor -%}
+                </div>
+
+                {%- comment -%}Reviewer{%- endcomment -%}
+                <div class="rc-reviewer">
+                  <span class="rc-reviewer-name">{{ reviewer_name }}</span>
+                  {%- if r_age != blank -%}
+                    <span class="rc-reviewer-age">{{ r_age }}</span>
+                  {%- endif -%}
+                  {%- if r_verified -%}
+                    <span class="rc-verified">
+                      <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
+                      Verified Buyer
+                    </span>
+                  {%- endif -%}
+                </div>
+
+                {%- comment -%}Review text{%- endcomment -%}
+                {%- if r_text != blank -%}
+                  <div
+                    class="rc-text rc-text-clamped"
+                    style="-webkit-line-clamp: {{ r_truncate }};"
+                    data-truncate="{{ r_truncate }}"
+                  >
+                    {{ r_text }}
+                  </div>
+                  {%- if r_readmore -%}
+                    <button class="rc-read-more" data-expanded="false">Read more</button>
+                  {%- endif -%}
+                {%- endif -%}
+
+                {%- comment -%}Purchased product{%- endcomment -%}
+                {%- if r_product != blank -%}
+                  <div class="rc-product">
+                    {%- if r_product.featured_image != blank -%}
+                      <img
+                        class="rc-product-img"
+                        src="{{ r_product.featured_image | image_url: width: 120 }}"
+                        alt="{{ r_product.featured_image.alt | escape }}"
+                        loading="lazy"
+                        width="56"
+                        height="56"
+                      >
+                    {%- endif -%}
+                    <div class="rc-product-info">
+                      <p class="rc-product-title">
+                        <a href="{{ r_product.url }}">{{ r_product.title }}</a>
+                      </p>
+                      <div class="rc-product-pricing">
+                        <span class="rc-product-price">{{ r_product.price | money }}</span>
+                        {%- if r_compare and r_product.compare_at_price > r_product.price -%}
+                          <span class="rc-product-compare">{{ r_product.compare_at_price | money }}</span>
+                        {%- endif -%}
+                      </div>
+                      {%- if r_note != blank -%}
+                        <div class="rc-purchase-note">{{ r_note }}</div>
+                      {%- endif -%}
+                    </div>
+                  </div>
+                {%- endif -%}
+              </div>
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
       </div>
     </div>
   </div>
@@ -448,9 +629,8 @@
         btn.addEventListener('click', function () {
           var card = track.querySelector('.rc-card');
           if (!card) return;
-          var scrollAmount = card.offsetWidth + 20; /* card width + gap */
+          var scrollAmount = card.offsetWidth + 20;
           var dir = btn.getAttribute('data-dir');
-          /* RTL: scroll directions are inverted */
           if (dir === 'next') {
             track.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
           } else {
@@ -524,6 +704,10 @@
   "name": "Reviews Media Carousel",
   "settings": [
     {
+      "type": "header",
+      "content": "Section header"
+    },
+    {
       "type": "text",
       "id": "heading",
       "label": "Heading",
@@ -533,13 +717,17 @@
       "type": "text",
       "id": "heading_accent_words",
       "label": "Heading accent words",
-      "info": "Comma-separated words to highlight in the heading, e.g. \"clients\""
+      "info": "Comma-separated words to highlight, e.g. \"clients\""
     },
     {
       "type": "richtext",
       "id": "subheading",
       "label": "Subheading",
       "default": "<p>Real reviews from real customers</p>"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
     },
     {
       "type": "color",
@@ -572,6 +760,10 @@
       "default": "#e8e4df"
     },
     {
+      "type": "header",
+      "content": "Card style"
+    },
+    {
       "type": "range",
       "id": "card_radius",
       "label": "Card corner radius",
@@ -586,6 +778,10 @@
       "id": "card_shadow",
       "label": "Card shadow",
       "default": true
+    },
+    {
+      "type": "header",
+      "content": "Carousel layout"
     },
     {
       "type": "select",
@@ -629,45 +825,985 @@
         { "value": "16/9", "label": "16:9 (Landscape)" }
       ],
       "default": "4/5"
-    }
-  ],
-  "blocks": [
+    },
+
     {
-      "type": "@theme"
+      "type": "header",
+      "content": "--- Review 1 ---"
+    },
+    {
+      "type": "text",
+      "id": "review_1_name",
+      "label": "Reviewer name",
+      "default": "Sarah M."
+    },
+    {
+      "type": "select",
+      "id": "review_1_media_type",
+      "label": "Media type",
+      "options": [
+        { "value": "image", "label": "Image" },
+        { "value": "video_upload", "label": "Uploaded video" },
+        { "value": "external_video", "label": "External video" }
+      ],
+      "default": "image"
+    },
+    {
+      "type": "image_picker",
+      "id": "review_1_image",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "review_1_image_alt",
+      "label": "Image alt text"
+    },
+    {
+      "type": "video",
+      "id": "review_1_video",
+      "label": "Video file (Shopify hosted)"
+    },
+    {
+      "type": "url",
+      "id": "review_1_external_video_url",
+      "label": "External video URL"
+    },
+    {
+      "type": "checkbox",
+      "id": "review_1_video_autoplay",
+      "label": "Autoplay video",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "review_1_video_loop",
+      "label": "Loop video",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "review_1_video_muted",
+      "label": "Mute video",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "review_1_show_play_icon",
+      "label": "Show play icon overlay",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "review_1_rating",
+      "label": "Rating",
+      "min": 1,
+      "max": 5,
+      "step": 0.5,
+      "default": 5
+    },
+    {
+      "type": "text",
+      "id": "review_1_age",
+      "label": "Reviewer age (optional)"
+    },
+    {
+      "type": "checkbox",
+      "id": "review_1_verified",
+      "label": "Verified buyer",
+      "default": true
+    },
+    {
+      "type": "textarea",
+      "id": "review_1_text",
+      "label": "Review text",
+      "default": "Absolutely love this product! The quality exceeded my expectations and it arrived so quickly."
+    },
+    {
+      "type": "range",
+      "id": "review_1_truncate_lines",
+      "label": "Truncate text lines",
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "checkbox",
+      "id": "review_1_show_read_more",
+      "label": "Show read more",
+      "default": true
+    },
+    {
+      "type": "product",
+      "id": "review_1_product",
+      "label": "Purchased product"
+    },
+    {
+      "type": "text",
+      "id": "review_1_purchase_note",
+      "label": "Purchase note"
+    },
+    {
+      "type": "checkbox",
+      "id": "review_1_show_compare_price",
+      "label": "Show compare-at price",
+      "default": true
+    },
+
+    {
+      "type": "header",
+      "content": "--- Review 2 ---"
+    },
+    {
+      "type": "text",
+      "id": "review_2_name",
+      "label": "Reviewer name",
+      "default": "Emily R."
+    },
+    {
+      "type": "select",
+      "id": "review_2_media_type",
+      "label": "Media type",
+      "options": [
+        { "value": "image", "label": "Image" },
+        { "value": "video_upload", "label": "Uploaded video" },
+        { "value": "external_video", "label": "External video" }
+      ],
+      "default": "image"
+    },
+    {
+      "type": "image_picker",
+      "id": "review_2_image",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "review_2_image_alt",
+      "label": "Image alt text"
+    },
+    {
+      "type": "video",
+      "id": "review_2_video",
+      "label": "Video file (Shopify hosted)"
+    },
+    {
+      "type": "url",
+      "id": "review_2_external_video_url",
+      "label": "External video URL"
+    },
+    {
+      "type": "checkbox",
+      "id": "review_2_video_autoplay",
+      "label": "Autoplay video",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "review_2_video_loop",
+      "label": "Loop video",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "review_2_video_muted",
+      "label": "Mute video",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "review_2_show_play_icon",
+      "label": "Show play icon overlay",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "review_2_rating",
+      "label": "Rating",
+      "min": 1,
+      "max": 5,
+      "step": 0.5,
+      "default": 4.5
+    },
+    {
+      "type": "text",
+      "id": "review_2_age",
+      "label": "Reviewer age (optional)"
+    },
+    {
+      "type": "checkbox",
+      "id": "review_2_verified",
+      "label": "Verified buyer",
+      "default": true
+    },
+    {
+      "type": "textarea",
+      "id": "review_2_text",
+      "label": "Review text",
+      "default": "Great results after just two weeks of use. My skin feels so much smoother and healthier."
+    },
+    {
+      "type": "range",
+      "id": "review_2_truncate_lines",
+      "label": "Truncate text lines",
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "checkbox",
+      "id": "review_2_show_read_more",
+      "label": "Show read more",
+      "default": true
+    },
+    {
+      "type": "product",
+      "id": "review_2_product",
+      "label": "Purchased product"
+    },
+    {
+      "type": "text",
+      "id": "review_2_purchase_note",
+      "label": "Purchase note"
+    },
+    {
+      "type": "checkbox",
+      "id": "review_2_show_compare_price",
+      "label": "Show compare-at price",
+      "default": true
+    },
+
+    {
+      "type": "header",
+      "content": "--- Review 3 ---"
+    },
+    {
+      "type": "text",
+      "id": "review_3_name",
+      "label": "Reviewer name",
+      "default": "Jessica L."
+    },
+    {
+      "type": "select",
+      "id": "review_3_media_type",
+      "label": "Media type",
+      "options": [
+        { "value": "image", "label": "Image" },
+        { "value": "video_upload", "label": "Uploaded video" },
+        { "value": "external_video", "label": "External video" }
+      ],
+      "default": "image"
+    },
+    {
+      "type": "image_picker",
+      "id": "review_3_image",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "review_3_image_alt",
+      "label": "Image alt text"
+    },
+    {
+      "type": "video",
+      "id": "review_3_video",
+      "label": "Video file (Shopify hosted)"
+    },
+    {
+      "type": "url",
+      "id": "review_3_external_video_url",
+      "label": "External video URL"
+    },
+    {
+      "type": "checkbox",
+      "id": "review_3_video_autoplay",
+      "label": "Autoplay video",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "review_3_video_loop",
+      "label": "Loop video",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "review_3_video_muted",
+      "label": "Mute video",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "review_3_show_play_icon",
+      "label": "Show play icon overlay",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "review_3_rating",
+      "label": "Rating",
+      "min": 1,
+      "max": 5,
+      "step": 0.5,
+      "default": 5
+    },
+    {
+      "type": "text",
+      "id": "review_3_age",
+      "label": "Reviewer age (optional)"
+    },
+    {
+      "type": "checkbox",
+      "id": "review_3_verified",
+      "label": "Verified buyer",
+      "default": true
+    },
+    {
+      "type": "textarea",
+      "id": "review_3_text",
+      "label": "Review text",
+      "default": "This is hands down the best purchase I've made this year. Will definitely be ordering more!"
+    },
+    {
+      "type": "range",
+      "id": "review_3_truncate_lines",
+      "label": "Truncate text lines",
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "checkbox",
+      "id": "review_3_show_read_more",
+      "label": "Show read more",
+      "default": true
+    },
+    {
+      "type": "product",
+      "id": "review_3_product",
+      "label": "Purchased product"
+    },
+    {
+      "type": "text",
+      "id": "review_3_purchase_note",
+      "label": "Purchase note"
+    },
+    {
+      "type": "checkbox",
+      "id": "review_3_show_compare_price",
+      "label": "Show compare-at price",
+      "default": true
+    },
+
+    {
+      "type": "header",
+      "content": "--- Review 4 ---"
+    },
+    {
+      "type": "text",
+      "id": "review_4_name",
+      "label": "Reviewer name"
+    },
+    {
+      "type": "select",
+      "id": "review_4_media_type",
+      "label": "Media type",
+      "options": [
+        { "value": "image", "label": "Image" },
+        { "value": "video_upload", "label": "Uploaded video" },
+        { "value": "external_video", "label": "External video" }
+      ],
+      "default": "image"
+    },
+    {
+      "type": "image_picker",
+      "id": "review_4_image",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "review_4_image_alt",
+      "label": "Image alt text"
+    },
+    {
+      "type": "video",
+      "id": "review_4_video",
+      "label": "Video file (Shopify hosted)"
+    },
+    {
+      "type": "url",
+      "id": "review_4_external_video_url",
+      "label": "External video URL"
+    },
+    {
+      "type": "checkbox",
+      "id": "review_4_video_autoplay",
+      "label": "Autoplay video",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "review_4_video_loop",
+      "label": "Loop video",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "review_4_video_muted",
+      "label": "Mute video",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "review_4_show_play_icon",
+      "label": "Show play icon overlay",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "review_4_rating",
+      "label": "Rating",
+      "min": 1,
+      "max": 5,
+      "step": 0.5,
+      "default": 5
+    },
+    {
+      "type": "text",
+      "id": "review_4_age",
+      "label": "Reviewer age (optional)"
+    },
+    {
+      "type": "checkbox",
+      "id": "review_4_verified",
+      "label": "Verified buyer",
+      "default": true
+    },
+    {
+      "type": "textarea",
+      "id": "review_4_text",
+      "label": "Review text"
+    },
+    {
+      "type": "range",
+      "id": "review_4_truncate_lines",
+      "label": "Truncate text lines",
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "checkbox",
+      "id": "review_4_show_read_more",
+      "label": "Show read more",
+      "default": true
+    },
+    {
+      "type": "product",
+      "id": "review_4_product",
+      "label": "Purchased product"
+    },
+    {
+      "type": "text",
+      "id": "review_4_purchase_note",
+      "label": "Purchase note"
+    },
+    {
+      "type": "checkbox",
+      "id": "review_4_show_compare_price",
+      "label": "Show compare-at price",
+      "default": true
+    },
+
+    {
+      "type": "header",
+      "content": "--- Review 5 ---"
+    },
+    {
+      "type": "text",
+      "id": "review_5_name",
+      "label": "Reviewer name"
+    },
+    {
+      "type": "select",
+      "id": "review_5_media_type",
+      "label": "Media type",
+      "options": [
+        { "value": "image", "label": "Image" },
+        { "value": "video_upload", "label": "Uploaded video" },
+        { "value": "external_video", "label": "External video" }
+      ],
+      "default": "image"
+    },
+    {
+      "type": "image_picker",
+      "id": "review_5_image",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "review_5_image_alt",
+      "label": "Image alt text"
+    },
+    {
+      "type": "video",
+      "id": "review_5_video",
+      "label": "Video file (Shopify hosted)"
+    },
+    {
+      "type": "url",
+      "id": "review_5_external_video_url",
+      "label": "External video URL"
+    },
+    {
+      "type": "checkbox",
+      "id": "review_5_video_autoplay",
+      "label": "Autoplay video",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "review_5_video_loop",
+      "label": "Loop video",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "review_5_video_muted",
+      "label": "Mute video",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "review_5_show_play_icon",
+      "label": "Show play icon overlay",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "review_5_rating",
+      "label": "Rating",
+      "min": 1,
+      "max": 5,
+      "step": 0.5,
+      "default": 5
+    },
+    {
+      "type": "text",
+      "id": "review_5_age",
+      "label": "Reviewer age (optional)"
+    },
+    {
+      "type": "checkbox",
+      "id": "review_5_verified",
+      "label": "Verified buyer",
+      "default": true
+    },
+    {
+      "type": "textarea",
+      "id": "review_5_text",
+      "label": "Review text"
+    },
+    {
+      "type": "range",
+      "id": "review_5_truncate_lines",
+      "label": "Truncate text lines",
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "checkbox",
+      "id": "review_5_show_read_more",
+      "label": "Show read more",
+      "default": true
+    },
+    {
+      "type": "product",
+      "id": "review_5_product",
+      "label": "Purchased product"
+    },
+    {
+      "type": "text",
+      "id": "review_5_purchase_note",
+      "label": "Purchase note"
+    },
+    {
+      "type": "checkbox",
+      "id": "review_5_show_compare_price",
+      "label": "Show compare-at price",
+      "default": true
+    },
+
+    {
+      "type": "header",
+      "content": "--- Review 6 ---"
+    },
+    {
+      "type": "text",
+      "id": "review_6_name",
+      "label": "Reviewer name"
+    },
+    {
+      "type": "select",
+      "id": "review_6_media_type",
+      "label": "Media type",
+      "options": [
+        { "value": "image", "label": "Image" },
+        { "value": "video_upload", "label": "Uploaded video" },
+        { "value": "external_video", "label": "External video" }
+      ],
+      "default": "image"
+    },
+    {
+      "type": "image_picker",
+      "id": "review_6_image",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "review_6_image_alt",
+      "label": "Image alt text"
+    },
+    {
+      "type": "video",
+      "id": "review_6_video",
+      "label": "Video file (Shopify hosted)"
+    },
+    {
+      "type": "url",
+      "id": "review_6_external_video_url",
+      "label": "External video URL"
+    },
+    {
+      "type": "checkbox",
+      "id": "review_6_video_autoplay",
+      "label": "Autoplay video",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "review_6_video_loop",
+      "label": "Loop video",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "review_6_video_muted",
+      "label": "Mute video",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "review_6_show_play_icon",
+      "label": "Show play icon overlay",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "review_6_rating",
+      "label": "Rating",
+      "min": 1,
+      "max": 5,
+      "step": 0.5,
+      "default": 5
+    },
+    {
+      "type": "text",
+      "id": "review_6_age",
+      "label": "Reviewer age (optional)"
+    },
+    {
+      "type": "checkbox",
+      "id": "review_6_verified",
+      "label": "Verified buyer",
+      "default": true
+    },
+    {
+      "type": "textarea",
+      "id": "review_6_text",
+      "label": "Review text"
+    },
+    {
+      "type": "range",
+      "id": "review_6_truncate_lines",
+      "label": "Truncate text lines",
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "checkbox",
+      "id": "review_6_show_read_more",
+      "label": "Show read more",
+      "default": true
+    },
+    {
+      "type": "product",
+      "id": "review_6_product",
+      "label": "Purchased product"
+    },
+    {
+      "type": "text",
+      "id": "review_6_purchase_note",
+      "label": "Purchase note"
+    },
+    {
+      "type": "checkbox",
+      "id": "review_6_show_compare_price",
+      "label": "Show compare-at price",
+      "default": true
+    },
+
+    {
+      "type": "header",
+      "content": "--- Review 7 ---"
+    },
+    {
+      "type": "text",
+      "id": "review_7_name",
+      "label": "Reviewer name"
+    },
+    {
+      "type": "select",
+      "id": "review_7_media_type",
+      "label": "Media type",
+      "options": [
+        { "value": "image", "label": "Image" },
+        { "value": "video_upload", "label": "Uploaded video" },
+        { "value": "external_video", "label": "External video" }
+      ],
+      "default": "image"
+    },
+    {
+      "type": "image_picker",
+      "id": "review_7_image",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "review_7_image_alt",
+      "label": "Image alt text"
+    },
+    {
+      "type": "video",
+      "id": "review_7_video",
+      "label": "Video file (Shopify hosted)"
+    },
+    {
+      "type": "url",
+      "id": "review_7_external_video_url",
+      "label": "External video URL"
+    },
+    {
+      "type": "checkbox",
+      "id": "review_7_video_autoplay",
+      "label": "Autoplay video",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "review_7_video_loop",
+      "label": "Loop video",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "review_7_video_muted",
+      "label": "Mute video",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "review_7_show_play_icon",
+      "label": "Show play icon overlay",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "review_7_rating",
+      "label": "Rating",
+      "min": 1,
+      "max": 5,
+      "step": 0.5,
+      "default": 5
+    },
+    {
+      "type": "text",
+      "id": "review_7_age",
+      "label": "Reviewer age (optional)"
+    },
+    {
+      "type": "checkbox",
+      "id": "review_7_verified",
+      "label": "Verified buyer",
+      "default": true
+    },
+    {
+      "type": "textarea",
+      "id": "review_7_text",
+      "label": "Review text"
+    },
+    {
+      "type": "range",
+      "id": "review_7_truncate_lines",
+      "label": "Truncate text lines",
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "checkbox",
+      "id": "review_7_show_read_more",
+      "label": "Show read more",
+      "default": true
+    },
+    {
+      "type": "product",
+      "id": "review_7_product",
+      "label": "Purchased product"
+    },
+    {
+      "type": "text",
+      "id": "review_7_purchase_note",
+      "label": "Purchase note"
+    },
+    {
+      "type": "checkbox",
+      "id": "review_7_show_compare_price",
+      "label": "Show compare-at price",
+      "default": true
+    },
+
+    {
+      "type": "header",
+      "content": "--- Review 8 ---"
+    },
+    {
+      "type": "text",
+      "id": "review_8_name",
+      "label": "Reviewer name"
+    },
+    {
+      "type": "select",
+      "id": "review_8_media_type",
+      "label": "Media type",
+      "options": [
+        { "value": "image", "label": "Image" },
+        { "value": "video_upload", "label": "Uploaded video" },
+        { "value": "external_video", "label": "External video" }
+      ],
+      "default": "image"
+    },
+    {
+      "type": "image_picker",
+      "id": "review_8_image",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "review_8_image_alt",
+      "label": "Image alt text"
+    },
+    {
+      "type": "video",
+      "id": "review_8_video",
+      "label": "Video file (Shopify hosted)"
+    },
+    {
+      "type": "url",
+      "id": "review_8_external_video_url",
+      "label": "External video URL"
+    },
+    {
+      "type": "checkbox",
+      "id": "review_8_video_autoplay",
+      "label": "Autoplay video",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "review_8_video_loop",
+      "label": "Loop video",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "review_8_video_muted",
+      "label": "Mute video",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "review_8_show_play_icon",
+      "label": "Show play icon overlay",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "review_8_rating",
+      "label": "Rating",
+      "min": 1,
+      "max": 5,
+      "step": 0.5,
+      "default": 5
+    },
+    {
+      "type": "text",
+      "id": "review_8_age",
+      "label": "Reviewer age (optional)"
+    },
+    {
+      "type": "checkbox",
+      "id": "review_8_verified",
+      "label": "Verified buyer",
+      "default": true
+    },
+    {
+      "type": "textarea",
+      "id": "review_8_text",
+      "label": "Review text"
+    },
+    {
+      "type": "range",
+      "id": "review_8_truncate_lines",
+      "label": "Truncate text lines",
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "checkbox",
+      "id": "review_8_show_read_more",
+      "label": "Show read more",
+      "default": true
+    },
+    {
+      "type": "product",
+      "id": "review_8_product",
+      "label": "Purchased product"
+    },
+    {
+      "type": "text",
+      "id": "review_8_purchase_note",
+      "label": "Purchase note"
+    },
+    {
+      "type": "checkbox",
+      "id": "review_8_show_compare_price",
+      "label": "Show compare-at price",
+      "default": true
     }
   ],
   "presets": [
     {
-      "name": "Reviews Media Carousel",
-      "blocks": [
-        {
-          "type": "review",
-          "settings": {
-            "reviewer_name": "Sarah M.",
-            "rating": 5,
-            "review_text": "Absolutely love this product! The quality exceeded my expectations and it arrived so quickly.",
-            "verified": true
-          }
-        },
-        {
-          "type": "review",
-          "settings": {
-            "reviewer_name": "Emily R.",
-            "rating": 4.5,
-            "review_text": "Great results after just two weeks of use. My skin feels so much smoother and healthier.",
-            "verified": true
-          }
-        },
-        {
-          "type": "review",
-          "settings": {
-            "reviewer_name": "Jessica L.",
-            "rating": 5,
-            "review_text": "This is hands down the best purchase I've made this year. Will definitely be ordering more!",
-            "verified": true
-          }
-        }
-      ]
+      "name": "Reviews Media Carousel"
     }
   ]
 }
