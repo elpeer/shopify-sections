@@ -281,13 +281,7 @@
     }
 
     .ai-testimonials-carousel__card-{{ ai_gen_id }} {
-      {% if block.settings.mobile_slides == '1' %}
-        flex: 0 0 calc(100% - 32px);
-      {% elsif block.settings.mobile_slides == '1.5' %}
-        flex: 0 0 calc((100% - 32px - {{ block.settings.card_gap }}px) / 1.5);
-      {% elsif block.settings.mobile_slides == '2' %}
-        flex: 0 0 calc((100% - 32px - {{ block.settings.card_gap }}px) / 2);
-      {% endif %}
+      flex: 0 0 {{ block.settings.mobile_card_width }}px;
     }
   }
 {% endstyle %}
@@ -689,24 +683,14 @@
       "content": "Mobile"
     },
     {
-      "type": "select",
-      "id": "mobile_slides",
-      "label": "Slides visible on mobile",
-      "options": [
-        {
-          "value": "1",
-          "label": "1"
-        },
-        {
-          "value": "1.5",
-          "label": "1.5"
-        },
-        {
-          "value": "2",
-          "label": "2"
-        }
-      ],
-      "default": "1.5"
+      "type": "range",
+      "id": "mobile_card_width",
+      "label": "Mobile card width",
+      "min": 200,
+      "max": 380,
+      "step": 10,
+      "default": 280,
+      "unit": "px"
     },
     {
       "type": "header",
