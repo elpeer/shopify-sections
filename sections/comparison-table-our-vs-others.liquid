@@ -1,0 +1,1050 @@
+{% doc %}
+  @prompt
+    Comparison Table – Our Product vs Others
+    Premium comparison section with dark/gradient background, glass card,
+    3-column layout (our advantages | indicators | competitors),
+    product image header, badge support, tooltips, and excellent mobile behavior.
+{% enddoc %}
+
+{%- liquid
+  assign sid = section.id
+  assign heading = section.settings.heading
+  assign subheading = section.settings.subheading
+  assign bg_image = section.settings.background_image
+  assign bg_gradient = section.settings.background_gradient
+  assign card_bg_opacity = section.settings.card_background_opacity
+  assign card_border = section.settings.card_border_color
+  assign card_radius = section.settings.card_radius
+  assign text_color = section.settings.text_color
+  assign muted_color = section.settings.muted_text_color
+  assign accent_color = section.settings.accent_color
+  assign max_w = section.settings.max_width
+  assign glass = section.settings.enable_glass_effect
+  assign dividers = section.settings.show_dividers
+  assign ind_style = section.settings.indicator_style
+  assign desk_layout = section.settings.desktop_layout
+  assign mob_layout = section.settings.mobile_layout
+  assign our_label = section.settings.our_label
+  assign our_image = section.settings.our_product_image
+  assign our_badge = section.settings.our_badge_text
+  assign badge_on = section.settings.our_badge_enabled
+  assign other_label = section.settings.other_label
+  assign other_sub = section.settings.other_sub_label
+-%}
+
+<style>
+  /* ── Section wrapper ── */
+  #shopify-section-{{ sid }} .cmp-section {
+    position: relative;
+    width: 100%;
+    padding: 60px 20px;
+    overflow: hidden;
+    {% if bg_gradient != blank %}
+      background: {{ bg_gradient }};
+    {% else %}
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    {% endif %}
+  }
+
+  #shopify-section-{{ sid }} .cmp-section__bg-image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+  }
+
+  #shopify-section-{{ sid }} .cmp-section__inner {
+    position: relative;
+    z-index: 1;
+    max-width: {{ max_w }}px;
+    margin: 0 auto;
+  }
+
+  /* ── Desktop layout ── */
+  #shopify-section-{{ sid }} .cmp-layout {
+    {% if desk_layout == 'headline-left-card-right' %}
+      display: grid;
+      grid-template-columns: minmax(200px, 320px) 1fr;
+      gap: 40px;
+      align-items: start;
+    {% else %}
+      display: block;
+    {% endif %}
+  }
+
+  /* ── Headline area ── */
+  #shopify-section-{{ sid }} .cmp-headline {
+    {% if desk_layout == 'headline-left-card-right' %}
+      position: sticky;
+      top: 100px;
+    {% else %}
+      margin-bottom: 32px;
+    {% endif %}
+  }
+
+  #shopify-section-{{ sid }} .cmp-headline__title {
+    color: {{ text_color }};
+    font-size: 36px;
+    font-weight: 700;
+    line-height: 1.2;
+    margin: 0 0 12px 0;
+  }
+
+  #shopify-section-{{ sid }} .cmp-headline__sub {
+    color: {{ muted_color }};
+    font-size: 16px;
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  /* ── Glass card ── */
+  #shopify-section-{{ sid }} .cmp-card {
+    background: rgba(255, 255, 255, {{ card_bg_opacity }});
+    border-radius: {{ card_radius }}px;
+    border: 1px solid {{ card_border }};
+    padding: 32px;
+    {% if glass %}
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    {% endif %}
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+  }
+
+  /* ── Table grid ── */
+  #shopify-section-{{ sid }} .cmp-table {
+    display: grid;
+    grid-template-columns: 1fr 48px 1fr;
+    width: 100%;
+  }
+
+  /* ── Header row ── */
+  #shopify-section-{{ sid }} .cmp-header {
+    display: contents;
+  }
+
+  #shopify-section-{{ sid }} .cmp-header__our,
+  #shopify-section-{{ sid }} .cmp-header__indicator,
+  #shopify-section-{{ sid }} .cmp-header__other {
+    padding: 16px 12px 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  #shopify-section-{{ sid }} .cmp-header__our {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 8px;
+  }
+
+  #shopify-section-{{ sid }} .cmp-header__our-img {
+    width: 56px;
+    height: 56px;
+    object-fit: contain;
+    border-radius: 12px;
+  }
+
+  #shopify-section-{{ sid }} .cmp-header__our-label {
+    color: {{ accent_color }};
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 0;
+  }
+
+  #shopify-section-{{ sid }} .cmp-header__badge {
+    display: inline-block;
+    background: {{ accent_color }};
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 3px 10px;
+    border-radius: 20px;
+    line-height: 1.4;
+  }
+
+  #shopify-section-{{ sid }} .cmp-header__other {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    text-align: center;
+    gap: 4px;
+  }
+
+  #shopify-section-{{ sid }} .cmp-header__other-label {
+    color: {{ muted_color }};
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 0;
+  }
+
+  #shopify-section-{{ sid }} .cmp-header__other-sub {
+    color: {{ muted_color }};
+    font-size: 11px;
+    font-weight: 400;
+    margin: 0;
+    opacity: 0.7;
+  }
+
+  /* ── Data rows ── */
+  #shopify-section-{{ sid }} .cmp-row {
+    display: contents;
+  }
+
+  #shopify-section-{{ sid }} .cmp-row__our,
+  #shopify-section-{{ sid }} .cmp-row__indicator,
+  #shopify-section-{{ sid }} .cmp-row__other {
+    padding: 14px 12px;
+    display: flex;
+    align-items: center;
+    min-height: 48px;
+    {% if dividers %}
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    {% endif %}
+  }
+
+  #shopify-section-{{ sid }} .cmp-row__our {
+    justify-content: flex-end;
+    text-align: right;
+    color: {{ text_color }};
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.4;
+    gap: 6px;
+  }
+
+  #shopify-section-{{ sid }} .cmp-row__our--emphasis {
+    font-weight: 700;
+    color: {{ accent_color }};
+  }
+
+  #shopify-section-{{ sid }} .cmp-row__indicator {
+    justify-content: center;
+  }
+
+  #shopify-section-{{ sid }} .cmp-row__other {
+    justify-content: flex-start;
+    text-align: left;
+    color: {{ muted_color }};
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 1.4;
+  }
+
+  #shopify-section-{{ sid }} .cmp-row__other--emphasis {
+    font-weight: 600;
+  }
+
+  /* ── Tooltip ── */
+  #shopify-section-{{ sid }} .cmp-tooltip {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    cursor: help;
+    flex-shrink: 0;
+  }
+
+  #shopify-section-{{ sid }} .cmp-tooltip__icon {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    color: {{ muted_color }};
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  #shopify-section-{{ sid }} .cmp-tooltip__text {
+    display: none;
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.9);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 400;
+    padding: 8px 12px;
+    border-radius: 8px;
+    white-space: nowrap;
+    max-width: 220px;
+    white-space: normal;
+    z-index: 10;
+    pointer-events: none;
+    line-height: 1.4;
+  }
+
+  #shopify-section-{{ sid }} .cmp-tooltip__text::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: rgba(0, 0, 0, 0.9);
+  }
+
+  #shopify-section-{{ sid }} .cmp-tooltip:hover .cmp-tooltip__text,
+  #shopify-section-{{ sid }} .cmp-tooltip.is-active .cmp-tooltip__text {
+    display: block;
+  }
+
+  /* ── Indicators ── */
+  #shopify-section-{{ sid }} .cmp-ind {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  #shopify-section-{{ sid }} .cmp-ind--yes {
+    background: {{ accent_color }};
+  }
+
+  #shopify-section-{{ sid }} .cmp-ind--partial {
+    background: transparent;
+    border: 2px solid {{ accent_color }};
+  }
+
+  #shopify-section-{{ sid }} .cmp-ind--no {
+    background: transparent;
+    border: 2px solid rgba(255, 255, 255, 0.15);
+  }
+
+  #shopify-section-{{ sid }} .cmp-ind__check {
+    width: 14px;
+    height: 14px;
+    stroke: #fff;
+    stroke-width: 2.5;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  #shopify-section-{{ sid }} .cmp-ind__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #fff;
+  }
+
+  #shopify-section-{{ sid }} .cmp-ind__half-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: {{ accent_color }};
+  }
+
+  #shopify-section-{{ sid }} .cmp-ind__x {
+    width: 12px;
+    height: 12px;
+    stroke: {{ muted_color }};
+    stroke-width: 2;
+    fill: none;
+    stroke-linecap: round;
+    opacity: 0.5;
+  }
+
+  /* ── Mobile: compact ── */
+  @media screen and (max-width: 749px) {
+    #shopify-section-{{ sid }} .cmp-section {
+      padding: 40px 16px;
+    }
+
+    #shopify-section-{{ sid }} .cmp-layout {
+      display: block !important;
+    }
+
+    #shopify-section-{{ sid }} .cmp-headline {
+      position: static !important;
+      margin-bottom: 24px !important;
+    }
+
+    #shopify-section-{{ sid }} .cmp-headline__title {
+      font-size: 26px;
+    }
+
+    #shopify-section-{{ sid }} .cmp-headline__sub {
+      font-size: 14px;
+    }
+
+    #shopify-section-{{ sid }} .cmp-card {
+      padding: 16px;
+      border-radius: {{ card_radius | times: 0.7 | round }}px;
+    }
+
+    /* Compact mode */
+    #shopify-section-{{ sid }} .cmp-mobile-compact .cmp-table {
+      grid-template-columns: 1fr 36px 1fr;
+    }
+
+    #shopify-section-{{ sid }} .cmp-mobile-compact .cmp-row__our,
+    #shopify-section-{{ sid }} .cmp-mobile-compact .cmp-row__other {
+      font-size: 13px;
+      padding: 10px 6px;
+    }
+
+    #shopify-section-{{ sid }} .cmp-mobile-compact .cmp-row__indicator {
+      padding: 10px 4px;
+    }
+
+    #shopify-section-{{ sid }} .cmp-mobile-compact .cmp-header__our,
+    #shopify-section-{{ sid }} .cmp-mobile-compact .cmp-header__indicator,
+    #shopify-section-{{ sid }} .cmp-mobile-compact .cmp-header__other {
+      padding: 12px 6px 16px;
+    }
+
+    #shopify-section-{{ sid }} .cmp-mobile-compact .cmp-header__our-img {
+      width: 40px;
+      height: 40px;
+    }
+
+    #shopify-section-{{ sid }} .cmp-mobile-compact .cmp-ind {
+      width: 20px;
+      height: 20px;
+    }
+
+    #shopify-section-{{ sid }} .cmp-mobile-compact .cmp-ind__check {
+      width: 11px;
+      height: 11px;
+    }
+
+    #shopify-section-{{ sid }} .cmp-mobile-compact .cmp-ind__dot,
+    #shopify-section-{{ sid }} .cmp-mobile-compact .cmp-ind__half-dot {
+      width: 6px;
+      height: 6px;
+    }
+
+    /* Stacked mode */
+    #shopify-section-{{ sid }} .cmp-mobile-stacked .cmp-table {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    #shopify-section-{{ sid }} .cmp-mobile-stacked .cmp-header {
+      display: grid;
+      grid-template-columns: 1fr 36px 1fr;
+    }
+
+    #shopify-section-{{ sid }} .cmp-mobile-stacked .cmp-header__our,
+    #shopify-section-{{ sid }} .cmp-mobile-stacked .cmp-header__indicator,
+    #shopify-section-{{ sid }} .cmp-mobile-stacked .cmp-header__other {
+      padding: 12px 6px 16px;
+    }
+
+    #shopify-section-{{ sid }} .cmp-mobile-stacked .cmp-header__our-img {
+      width: 40px;
+      height: 40px;
+    }
+
+    #shopify-section-{{ sid }} .cmp-mobile-stacked .cmp-row {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      {% if dividers %}
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      {% endif %}
+      padding: 12px 0;
+    }
+
+    #shopify-section-{{ sid }} .cmp-mobile-stacked .cmp-row__our,
+    #shopify-section-{{ sid }} .cmp-mobile-stacked .cmp-row__indicator,
+    #shopify-section-{{ sid }} .cmp-mobile-stacked .cmp-row__other {
+      border-bottom: none !important;
+      padding: 0;
+      min-height: auto;
+    }
+
+    #shopify-section-{{ sid }} .cmp-mobile-stacked .cmp-row__our {
+      justify-content: flex-start;
+      text-align: left;
+      font-size: 14px;
+      font-weight: 600;
+      color: {{ text_color }};
+      padding-bottom: 8px;
+    }
+
+    #shopify-section-{{ sid }} .cmp-mobile-stacked .cmp-stacked-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    #shopify-section-{{ sid }} .cmp-mobile-stacked .cmp-stacked-side {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+    }
+
+    #shopify-section-{{ sid }} .cmp-mobile-stacked .cmp-stacked-side--ours {
+      color: {{ accent_color }};
+      font-weight: 600;
+    }
+
+    #shopify-section-{{ sid }} .cmp-mobile-stacked .cmp-stacked-side--other {
+      color: {{ muted_color }};
+      text-align: right;
+    }
+
+    #shopify-section-{{ sid }} .cmp-mobile-stacked .cmp-stacked-side__label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      opacity: 0.7;
+    }
+  }
+</style>
+
+<div class="cmp-section">
+  {% if bg_image != blank %}
+    <img
+      class="cmp-section__bg-image"
+      src="{{ bg_image | image_url: width: 1920 }}"
+      alt=""
+      loading="lazy"
+      width="1920"
+      height="{{ 1920 | divided_by: bg_image.aspect_ratio | round }}"
+    >
+  {% endif %}
+
+  <div class="cmp-section__inner">
+    <div class="cmp-layout">
+      {%- if heading != blank or subheading != blank -%}
+        <div class="cmp-headline">
+          {% if heading != blank %}
+            <h2 class="cmp-headline__title">{{ heading }}</h2>
+          {% endif %}
+          {% if subheading != blank %}
+            <p class="cmp-headline__sub">{{ subheading }}</p>
+          {% endif %}
+        </div>
+      {%- endif -%}
+
+      <div class="cmp-card cmp-mobile-{{ mob_layout }}">
+        {%- if mob_layout == 'stacked' -%}
+          {%- comment -%} STACKED MOBILE LAYOUT {%- endcomment -%}
+          <div class="cmp-table">
+            {%- comment -%} Header row {%- endcomment -%}
+            <div class="cmp-header">
+              <div class="cmp-header__our">
+                {% if our_image != blank %}
+                  <img
+                    class="cmp-header__our-img"
+                    src="{{ our_image | image_url: width: 112 }}"
+                    alt="{{ our_label | escape }}"
+                    loading="lazy"
+                    width="56"
+                    height="56"
+                  >
+                {% endif %}
+                <p class="cmp-header__our-label">{{ our_label }}</p>
+                {% if badge_on and our_badge != blank %}
+                  <span class="cmp-header__badge">{{ our_badge }}</span>
+                {% endif %}
+              </div>
+              <div class="cmp-header__indicator"></div>
+              <div class="cmp-header__other">
+                <p class="cmp-header__other-label">{{ other_label }}</p>
+                {% if other_sub != blank %}
+                  <p class="cmp-header__other-sub">{{ other_sub }}</p>
+                {% endif %}
+              </div>
+            </div>
+
+            {%- comment -%} Data rows {%- endcomment -%}
+            {% for block in section.blocks %}
+              {% if block.type == 'comparison_row' %}
+                {%- liquid
+                  assign feat = block.settings.feature_text
+                  assign state = block.settings.our_state
+                  assign otxt = block.settings.other_text
+                  assign emph = block.settings.emphasis
+                  assign tip = block.settings.tooltip
+                -%}
+                <div class="cmp-row" {{ block.shopify_attributes }}>
+                  <div class="cmp-row__our{% if emph %} cmp-row__our--emphasis{% endif %}">
+                    {{ feat }}
+                    {% if tip != blank %}
+                      <span class="cmp-tooltip" data-cmp-tooltip>
+                        <span class="cmp-tooltip__icon">?</span>
+                        <span class="cmp-tooltip__text">{{ tip }}</span>
+                      </span>
+                    {% endif %}
+                  </div>
+                  <div class="cmp-stacked-bottom">
+                    <div class="cmp-stacked-side cmp-stacked-side--ours">
+                      {% if ind_style == 'dots' %}
+                        {% if state == 'yes' %}
+                          <span class="cmp-ind cmp-ind--yes"><span class="cmp-ind__dot"></span></span>
+                        {% elsif state == 'partial' %}
+                          <span class="cmp-ind cmp-ind--partial"><span class="cmp-ind__half-dot"></span></span>
+                        {% else %}
+                          <span class="cmp-ind cmp-ind--no"></span>
+                        {% endif %}
+                      {% elsif ind_style == 'check' %}
+                        {% if state == 'yes' %}
+                          <span class="cmp-ind cmp-ind--yes">
+                            <svg class="cmp-ind__check" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                          </span>
+                        {% elsif state == 'partial' %}
+                          <span class="cmp-ind cmp-ind--partial">
+                            <svg class="cmp-ind__check" viewBox="0 0 24 24" style="stroke: {{ accent_color }};"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                          </span>
+                        {% else %}
+                          <span class="cmp-ind cmp-ind--no">
+                            <svg class="cmp-ind__x" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                          </span>
+                        {% endif %}
+                      {% else %}
+                        {% if state == 'yes' %}
+                          <span class="cmp-ind cmp-ind--yes">
+                            <svg class="cmp-ind__check" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                          </span>
+                        {% elsif state == 'partial' %}
+                          <span class="cmp-ind cmp-ind--partial"><span class="cmp-ind__half-dot"></span></span>
+                        {% else %}
+                          <span class="cmp-ind cmp-ind--no">
+                            <svg class="cmp-ind__x" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                          </span>
+                        {% endif %}
+                      {% endif %}
+                      <span>{{ our_label }}</span>
+                    </div>
+                    <div class="cmp-stacked-side cmp-stacked-side--other">
+                      <span>{{ otxt }}</span>
+                    </div>
+                  </div>
+                </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+
+        {%- else -%}
+          {%- comment -%} COMPACT / DEFAULT LAYOUT {%- endcomment -%}
+          <div class="cmp-table">
+            {%- comment -%} Header row {%- endcomment -%}
+            <div class="cmp-header">
+              <div class="cmp-header__our">
+                {% if our_image != blank %}
+                  <img
+                    class="cmp-header__our-img"
+                    src="{{ our_image | image_url: width: 112 }}"
+                    alt="{{ our_label | escape }}"
+                    loading="lazy"
+                    width="56"
+                    height="56"
+                  >
+                {% endif %}
+                <p class="cmp-header__our-label">{{ our_label }}</p>
+                {% if badge_on and our_badge != blank %}
+                  <span class="cmp-header__badge">{{ our_badge }}</span>
+                {% endif %}
+              </div>
+              <div class="cmp-header__indicator"></div>
+              <div class="cmp-header__other">
+                <p class="cmp-header__other-label">{{ other_label }}</p>
+                {% if other_sub != blank %}
+                  <p class="cmp-header__other-sub">{{ other_sub }}</p>
+                {% endif %}
+              </div>
+            </div>
+
+            {%- comment -%} Data rows {%- endcomment -%}
+            {% for block in section.blocks %}
+              {% if block.type == 'comparison_row' %}
+                {%- liquid
+                  assign feat = block.settings.feature_text
+                  assign state = block.settings.our_state
+                  assign otxt = block.settings.other_text
+                  assign emph = block.settings.emphasis
+                  assign tip = block.settings.tooltip
+                -%}
+                <div class="cmp-row" {{ block.shopify_attributes }}>
+                  <div class="cmp-row__our{% if emph %} cmp-row__our--emphasis{% endif %}">
+                    {{ feat }}
+                    {% if tip != blank %}
+                      <span class="cmp-tooltip" data-cmp-tooltip>
+                        <span class="cmp-tooltip__icon">?</span>
+                        <span class="cmp-tooltip__text">{{ tip }}</span>
+                      </span>
+                    {% endif %}
+                  </div>
+                  <div class="cmp-row__indicator">
+                    {%- comment -%} Indicator for our product {%- endcomment -%}
+                    {% if ind_style == 'dots' %}
+                      {% if state == 'yes' %}
+                        <span class="cmp-ind cmp-ind--yes"><span class="cmp-ind__dot"></span></span>
+                      {% elsif state == 'partial' %}
+                        <span class="cmp-ind cmp-ind--partial"><span class="cmp-ind__half-dot"></span></span>
+                      {% else %}
+                        <span class="cmp-ind cmp-ind--no"></span>
+                      {% endif %}
+                    {% elsif ind_style == 'check' %}
+                      {% if state == 'yes' %}
+                        <span class="cmp-ind cmp-ind--yes">
+                          <svg class="cmp-ind__check" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        </span>
+                      {% elsif state == 'partial' %}
+                        <span class="cmp-ind cmp-ind--partial">
+                          <svg class="cmp-ind__check" viewBox="0 0 24 24" style="stroke: {{ accent_color }};"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        </span>
+                      {% else %}
+                        <span class="cmp-ind cmp-ind--no">
+                          <svg class="cmp-ind__x" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                        </span>
+                      {% endif %}
+                    {% else %}
+                      {%- comment -%} mixed: yes=check, partial=half-dot, no=x {%- endcomment -%}
+                      {% if state == 'yes' %}
+                        <span class="cmp-ind cmp-ind--yes">
+                          <svg class="cmp-ind__check" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        </span>
+                      {% elsif state == 'partial' %}
+                        <span class="cmp-ind cmp-ind--partial"><span class="cmp-ind__half-dot"></span></span>
+                      {% else %}
+                        <span class="cmp-ind cmp-ind--no">
+                          <svg class="cmp-ind__x" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                        </span>
+                      {% endif %}
+                    {% endif %}
+                  </div>
+                  <div class="cmp-row__other{% if emph %} cmp-row__other--emphasis{% endif %}">
+                    {{ otxt }}
+                  </div>
+                </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function() {
+    var section = document.getElementById('shopify-section-{{ sid }}');
+    if (!section) return;
+    section.querySelectorAll('[data-cmp-tooltip]').forEach(function(el) {
+      el.addEventListener('click', function(e) {
+        e.stopPropagation();
+        var wasActive = el.classList.contains('is-active');
+        section.querySelectorAll('.cmp-tooltip.is-active').forEach(function(t) {
+          t.classList.remove('is-active');
+        });
+        if (!wasActive) el.classList.add('is-active');
+      });
+    });
+    document.addEventListener('click', function() {
+      section.querySelectorAll('.cmp-tooltip.is-active').forEach(function(t) {
+        t.classList.remove('is-active');
+      });
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Comparison Table",
+  "tag": "section",
+  "class": "comparison-table-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Heading"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "How HERA Compares:"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading"
+    },
+    {
+      "type": "header",
+      "content": "Background"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "Background image"
+    },
+    {
+      "type": "color_background",
+      "id": "background_gradient",
+      "label": "Background gradient",
+      "default": "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)"
+    },
+    {
+      "type": "header",
+      "content": "Card"
+    },
+    {
+      "type": "range",
+      "id": "card_background_opacity",
+      "label": "Card background opacity",
+      "min": 0,
+      "max": 1,
+      "step": 0.05,
+      "default": 0.08
+    },
+    {
+      "type": "color",
+      "id": "card_border_color",
+      "label": "Card border color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "label": "Card border radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_glass_effect",
+      "label": "Enable glass blur effect",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "muted_text_color",
+      "label": "Muted text color",
+      "default": "#94a3b8"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent color",
+      "default": "#4ade80"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "max_width",
+      "label": "Max width",
+      "options": [
+        { "value": "1000", "label": "1000px" },
+        { "value": "1100", "label": "1100px" },
+        { "value": "1200", "label": "1200px" }
+      ],
+      "default": "1100"
+    },
+    {
+      "type": "select",
+      "id": "desktop_layout",
+      "label": "Desktop layout",
+      "options": [
+        { "value": "headline-left-card-right", "label": "Headline left, card right" },
+        { "value": "headline-top-card-bottom", "label": "Headline top, card below" }
+      ],
+      "default": "headline-left-card-right"
+    },
+    {
+      "type": "select",
+      "id": "mobile_layout",
+      "label": "Mobile layout",
+      "options": [
+        { "value": "compact", "label": "Compact (3 columns)" },
+        { "value": "stacked", "label": "Stacked (row per feature)" }
+      ],
+      "default": "compact"
+    },
+    {
+      "type": "header",
+      "content": "Table style"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_dividers",
+      "label": "Show row dividers",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "indicator_style",
+      "label": "Indicator style",
+      "options": [
+        { "value": "dots", "label": "Dots" },
+        { "value": "check", "label": "Checkmarks" },
+        { "value": "mixed", "label": "Mixed (check + dots)" }
+      ],
+      "default": "check"
+    },
+    {
+      "type": "header",
+      "content": "Our column"
+    },
+    {
+      "type": "text",
+      "id": "our_label",
+      "label": "Our product label",
+      "default": "HERA"
+    },
+    {
+      "type": "image_picker",
+      "id": "our_product_image",
+      "label": "Our product image"
+    },
+    {
+      "type": "text",
+      "id": "our_badge_text",
+      "label": "Badge text",
+      "default": "Best Choice"
+    },
+    {
+      "type": "checkbox",
+      "id": "our_badge_enabled",
+      "label": "Show badge",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Other column"
+    },
+    {
+      "type": "text",
+      "id": "other_label",
+      "label": "Other products label",
+      "default": "Other Products"
+    },
+    {
+      "type": "text",
+      "id": "other_sub_label",
+      "label": "Sub-label",
+      "default": "Generic / Competitors"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "comparison_row",
+      "name": "Comparison row",
+      "limit": 10,
+      "settings": [
+        {
+          "type": "text",
+          "id": "feature_text",
+          "label": "Feature text",
+          "default": "Feature name"
+        },
+        {
+          "type": "select",
+          "id": "our_state",
+          "label": "Our product state",
+          "options": [
+            { "value": "yes", "label": "Yes (filled)" },
+            { "value": "partial", "label": "Partial" },
+            { "value": "no", "label": "No" }
+          ],
+          "default": "yes"
+        },
+        {
+          "type": "text",
+          "id": "other_text",
+          "label": "Other products text",
+          "default": "Limited"
+        },
+        {
+          "type": "checkbox",
+          "id": "emphasis",
+          "label": "Emphasize this row",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "tooltip",
+          "label": "Tooltip text"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Comparison Table",
+      "blocks": [
+        {
+          "type": "comparison_row",
+          "settings": {
+            "feature_text": "15 Probiotic Strains",
+            "our_state": "yes",
+            "other_text": "5 or less strains"
+          }
+        },
+        {
+          "type": "comparison_row",
+          "settings": {
+            "feature_text": "Clinically Tested",
+            "our_state": "yes",
+            "other_text": "Rarely tested"
+          }
+        },
+        {
+          "type": "comparison_row",
+          "settings": {
+            "feature_text": "Delayed-Release Capsule",
+            "our_state": "yes",
+            "other_text": "Standard capsule",
+            "emphasis": true
+          }
+        },
+        {
+          "type": "comparison_row",
+          "settings": {
+            "feature_text": "No Artificial Fillers",
+            "our_state": "yes",
+            "other_text": "Contains fillers"
+          }
+        },
+        {
+          "type": "comparison_row",
+          "settings": {
+            "feature_text": "Shelf-Stable Formula",
+            "our_state": "yes",
+            "other_text": "Requires refrigeration"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
