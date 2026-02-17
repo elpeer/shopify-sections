@@ -350,6 +350,32 @@
                     -%}
 
                   {%- when 'variants' -%}
+                    {%- liquid
+                      assign hidden_options = ''
+                      for option in product.options
+                        assign option_index = forloop.index
+                        assign hide_key = 'hide_option_' | append: option_index
+                        if block.settings[hide_key]
+                          assign hidden_options = hidden_options | append: option | append: ','
+                        endif
+                      endfor
+                    -%}
+
+                    {%- if hidden_options != blank -%}
+                      <style>
+                        {%- for option in product.options -%}
+                          {%- assign option_index = forloop.index -%}
+                          {%- assign hide_key = 'hide_option_' | append: option_index -%}
+                          {%- if block.settings[hide_key] -%}
+                            #Product--{{ unique }} .product-form__option[data-option-index="{{ forloop.index0 }}"],
+                            #Product--{{ unique }} .selector-wrapper:nth-child({{ option_index }}) {
+                              display: none !important;
+                            }
+                          {%- endif -%}
+                        {%- endfor -%}
+                      </style>
+                    {%- endif -%}
+
                     {%- render 'product-variant-options',
                       product: product,
                       unique: unique,
@@ -1226,6 +1252,28 @@
       "name": "Variant picker",
       "limit": 1,
       "settings": [
+        {
+          "type": "header",
+          "content": "Hide options"
+        },
+        {
+          "type": "checkbox",
+          "id": "hide_option_1",
+          "label": "Hide Option 1 (e.g. Color)",
+          "default": false
+        },
+        {
+          "type": "checkbox",
+          "id": "hide_option_2",
+          "label": "Hide Option 2 (e.g. Size)",
+          "default": false
+        },
+        {
+          "type": "checkbox",
+          "id": "hide_option_3",
+          "label": "Hide Option 3",
+          "default": false
+        },
         {
           "type": "header",
           "content": "Size chart"
