@@ -1,4 +1,4 @@
-{%- assign section_id = section.id -%}
+{% assign section_id = section.id %}
 
 <style>
   #reviews-carousel-{{ section_id }} {
@@ -378,38 +378,26 @@
 
 <div id="reviews-carousel-{{ section_id }}">
   <div class="rc-container">
-    <p style="color:red !important;font-size:30px !important;display:block !important;visibility:visible !important;opacity:1 !important;position:relative !important;z-index:9999 !important;">DEBUG: section renders HTML</p>
-    {%- if section.settings.heading != blank or section.settings.subheading != blank -%}
+    {% if section.settings.heading != blank or section.settings.subheading != blank %}
       <div class="rc-header">
-        {%- if section.settings.heading != blank -%}
-          <h2 class="rc-heading">
-            {%- assign accent_words = section.settings.heading_accent_words | split: ',' -%}
-            {%- assign heading_text = section.settings.heading -%}
-            {%- for word in accent_words -%}
-              {%- assign trimmed = word | strip -%}
-              {%- if trimmed != blank -%}
-                {%- capture accent_span -%}<span class="rc-accent">{{ trimmed }}</span>{%- endcapture -%}
-                {%- assign heading_text = heading_text | replace: trimmed, accent_span -%}
-              {%- endif -%}
-            {%- endfor -%}
-            {{- heading_text -}}
-          </h2>
-        {%- endif -%}
-        {%- if section.settings.subheading != blank -%}
-          <p class="rc-subheading">{{ section.settings.subheading }}</p>
-        {%- endif -%}
+        {% if section.settings.heading != blank %}
+          <h2 class="rc-heading">{{ section.settings.heading }}</h2>
+        {% endif %}
+        {% if section.settings.subheading != blank %}
+          <div class="rc-subheading">{{ section.settings.subheading }}</div>
+        {% endif %}
       </div>
-    {%- endif -%}
+    {% endif %}
 
     <div class="rc-carousel-wrap">
-      {%- if section.settings.show_arrows -%}
+      {% if section.settings.show_arrows %}
         <button class="rc-arrow rc-arrow--prev" aria-label="Previous slide" data-dir="prev">
           <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
         </button>
         <button class="rc-arrow rc-arrow--next" aria-label="Next slide" data-dir="next">
           <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
         </button>
-      {%- endif -%}
+      {% endif %}
 
       <div
         class="rc-track{% unless section.settings.show_scrollbar %} rc-hide-scrollbar{% endunless %}"
@@ -417,324 +405,959 @@
         aria-label="{{ section.settings.heading | default: 'Customer reviews carousel' }}"
         tabindex="0"
       >
-        {%- for i in (1..8) -%}
-          {%- comment -%}Map each review number to explicit settings via dot notation{%- endcomment -%}
-          {%- case i -%}
-            {%- when 1 -%}
-              {%- assign reviewer_name = section.settings.review_1_name -%}
-              {%- assign r_image = section.settings.review_1_image -%}
-              {%- assign r_alt = section.settings.review_1_image_alt -%}
-              {%- assign r_media = section.settings.review_1_media_type -%}
-              {%- assign r_video = section.settings.review_1_video -%}
-              {%- assign r_ext = section.settings.review_1_external_video_url -%}
-              {%- assign r_rating = section.settings.review_1_rating -%}
-              {%- assign r_age = section.settings.review_1_age -%}
-              {%- assign r_verified = section.settings.review_1_verified -%}
-              {%- assign r_text = section.settings.review_1_text -%}
-              {%- assign r_truncate = section.settings.review_1_truncate_lines -%}
-              {%- assign r_readmore = section.settings.review_1_show_read_more -%}
-              {%- assign r_product = section.settings.review_1_product -%}
-              {%- assign r_note = section.settings.review_1_purchase_note -%}
-              {%- assign r_compare = section.settings.review_1_show_compare_price -%}
-              {%- assign r_autoplay = section.settings.review_1_video_autoplay -%}
-              {%- assign r_loop = section.settings.review_1_video_loop -%}
-              {%- assign r_muted = section.settings.review_1_video_muted -%}
-              {%- assign r_play_icon = section.settings.review_1_show_play_icon -%}
-            {%- when 2 -%}
-              {%- assign reviewer_name = section.settings.review_2_name -%}
-              {%- assign r_image = section.settings.review_2_image -%}
-              {%- assign r_alt = section.settings.review_2_image_alt -%}
-              {%- assign r_media = section.settings.review_2_media_type -%}
-              {%- assign r_video = section.settings.review_2_video -%}
-              {%- assign r_ext = section.settings.review_2_external_video_url -%}
-              {%- assign r_rating = section.settings.review_2_rating -%}
-              {%- assign r_age = section.settings.review_2_age -%}
-              {%- assign r_verified = section.settings.review_2_verified -%}
-              {%- assign r_text = section.settings.review_2_text -%}
-              {%- assign r_truncate = section.settings.review_2_truncate_lines -%}
-              {%- assign r_readmore = section.settings.review_2_show_read_more -%}
-              {%- assign r_product = section.settings.review_2_product -%}
-              {%- assign r_note = section.settings.review_2_purchase_note -%}
-              {%- assign r_compare = section.settings.review_2_show_compare_price -%}
-              {%- assign r_autoplay = section.settings.review_2_video_autoplay -%}
-              {%- assign r_loop = section.settings.review_2_video_loop -%}
-              {%- assign r_muted = section.settings.review_2_video_muted -%}
-              {%- assign r_play_icon = section.settings.review_2_show_play_icon -%}
-            {%- when 3 -%}
-              {%- assign reviewer_name = section.settings.review_3_name -%}
-              {%- assign r_image = section.settings.review_3_image -%}
-              {%- assign r_alt = section.settings.review_3_image_alt -%}
-              {%- assign r_media = section.settings.review_3_media_type -%}
-              {%- assign r_video = section.settings.review_3_video -%}
-              {%- assign r_ext = section.settings.review_3_external_video_url -%}
-              {%- assign r_rating = section.settings.review_3_rating -%}
-              {%- assign r_age = section.settings.review_3_age -%}
-              {%- assign r_verified = section.settings.review_3_verified -%}
-              {%- assign r_text = section.settings.review_3_text -%}
-              {%- assign r_truncate = section.settings.review_3_truncate_lines -%}
-              {%- assign r_readmore = section.settings.review_3_show_read_more -%}
-              {%- assign r_product = section.settings.review_3_product -%}
-              {%- assign r_note = section.settings.review_3_purchase_note -%}
-              {%- assign r_compare = section.settings.review_3_show_compare_price -%}
-              {%- assign r_autoplay = section.settings.review_3_video_autoplay -%}
-              {%- assign r_loop = section.settings.review_3_video_loop -%}
-              {%- assign r_muted = section.settings.review_3_video_muted -%}
-              {%- assign r_play_icon = section.settings.review_3_show_play_icon -%}
-            {%- when 4 -%}
-              {%- assign reviewer_name = section.settings.review_4_name -%}
-              {%- assign r_image = section.settings.review_4_image -%}
-              {%- assign r_alt = section.settings.review_4_image_alt -%}
-              {%- assign r_media = section.settings.review_4_media_type -%}
-              {%- assign r_video = section.settings.review_4_video -%}
-              {%- assign r_ext = section.settings.review_4_external_video_url -%}
-              {%- assign r_rating = section.settings.review_4_rating -%}
-              {%- assign r_age = section.settings.review_4_age -%}
-              {%- assign r_verified = section.settings.review_4_verified -%}
-              {%- assign r_text = section.settings.review_4_text -%}
-              {%- assign r_truncate = section.settings.review_4_truncate_lines -%}
-              {%- assign r_readmore = section.settings.review_4_show_read_more -%}
-              {%- assign r_product = section.settings.review_4_product -%}
-              {%- assign r_note = section.settings.review_4_purchase_note -%}
-              {%- assign r_compare = section.settings.review_4_show_compare_price -%}
-              {%- assign r_autoplay = section.settings.review_4_video_autoplay -%}
-              {%- assign r_loop = section.settings.review_4_video_loop -%}
-              {%- assign r_muted = section.settings.review_4_video_muted -%}
-              {%- assign r_play_icon = section.settings.review_4_show_play_icon -%}
-            {%- when 5 -%}
-              {%- assign reviewer_name = section.settings.review_5_name -%}
-              {%- assign r_image = section.settings.review_5_image -%}
-              {%- assign r_alt = section.settings.review_5_image_alt -%}
-              {%- assign r_media = section.settings.review_5_media_type -%}
-              {%- assign r_video = section.settings.review_5_video -%}
-              {%- assign r_ext = section.settings.review_5_external_video_url -%}
-              {%- assign r_rating = section.settings.review_5_rating -%}
-              {%- assign r_age = section.settings.review_5_age -%}
-              {%- assign r_verified = section.settings.review_5_verified -%}
-              {%- assign r_text = section.settings.review_5_text -%}
-              {%- assign r_truncate = section.settings.review_5_truncate_lines -%}
-              {%- assign r_readmore = section.settings.review_5_show_read_more -%}
-              {%- assign r_product = section.settings.review_5_product -%}
-              {%- assign r_note = section.settings.review_5_purchase_note -%}
-              {%- assign r_compare = section.settings.review_5_show_compare_price -%}
-              {%- assign r_autoplay = section.settings.review_5_video_autoplay -%}
-              {%- assign r_loop = section.settings.review_5_video_loop -%}
-              {%- assign r_muted = section.settings.review_5_video_muted -%}
-              {%- assign r_play_icon = section.settings.review_5_show_play_icon -%}
-            {%- when 6 -%}
-              {%- assign reviewer_name = section.settings.review_6_name -%}
-              {%- assign r_image = section.settings.review_6_image -%}
-              {%- assign r_alt = section.settings.review_6_image_alt -%}
-              {%- assign r_media = section.settings.review_6_media_type -%}
-              {%- assign r_video = section.settings.review_6_video -%}
-              {%- assign r_ext = section.settings.review_6_external_video_url -%}
-              {%- assign r_rating = section.settings.review_6_rating -%}
-              {%- assign r_age = section.settings.review_6_age -%}
-              {%- assign r_verified = section.settings.review_6_verified -%}
-              {%- assign r_text = section.settings.review_6_text -%}
-              {%- assign r_truncate = section.settings.review_6_truncate_lines -%}
-              {%- assign r_readmore = section.settings.review_6_show_read_more -%}
-              {%- assign r_product = section.settings.review_6_product -%}
-              {%- assign r_note = section.settings.review_6_purchase_note -%}
-              {%- assign r_compare = section.settings.review_6_show_compare_price -%}
-              {%- assign r_autoplay = section.settings.review_6_video_autoplay -%}
-              {%- assign r_loop = section.settings.review_6_video_loop -%}
-              {%- assign r_muted = section.settings.review_6_video_muted -%}
-              {%- assign r_play_icon = section.settings.review_6_show_play_icon -%}
-            {%- when 7 -%}
-              {%- assign reviewer_name = section.settings.review_7_name -%}
-              {%- assign r_image = section.settings.review_7_image -%}
-              {%- assign r_alt = section.settings.review_7_image_alt -%}
-              {%- assign r_media = section.settings.review_7_media_type -%}
-              {%- assign r_video = section.settings.review_7_video -%}
-              {%- assign r_ext = section.settings.review_7_external_video_url -%}
-              {%- assign r_rating = section.settings.review_7_rating -%}
-              {%- assign r_age = section.settings.review_7_age -%}
-              {%- assign r_verified = section.settings.review_7_verified -%}
-              {%- assign r_text = section.settings.review_7_text -%}
-              {%- assign r_truncate = section.settings.review_7_truncate_lines -%}
-              {%- assign r_readmore = section.settings.review_7_show_read_more -%}
-              {%- assign r_product = section.settings.review_7_product -%}
-              {%- assign r_note = section.settings.review_7_purchase_note -%}
-              {%- assign r_compare = section.settings.review_7_show_compare_price -%}
-              {%- assign r_autoplay = section.settings.review_7_video_autoplay -%}
-              {%- assign r_loop = section.settings.review_7_video_loop -%}
-              {%- assign r_muted = section.settings.review_7_video_muted -%}
-              {%- assign r_play_icon = section.settings.review_7_show_play_icon -%}
-            {%- when 8 -%}
-              {%- assign reviewer_name = section.settings.review_8_name -%}
-              {%- assign r_image = section.settings.review_8_image -%}
-              {%- assign r_alt = section.settings.review_8_image_alt -%}
-              {%- assign r_media = section.settings.review_8_media_type -%}
-              {%- assign r_video = section.settings.review_8_video -%}
-              {%- assign r_ext = section.settings.review_8_external_video_url -%}
-              {%- assign r_rating = section.settings.review_8_rating -%}
-              {%- assign r_age = section.settings.review_8_age -%}
-              {%- assign r_verified = section.settings.review_8_verified -%}
-              {%- assign r_text = section.settings.review_8_text -%}
-              {%- assign r_truncate = section.settings.review_8_truncate_lines -%}
-              {%- assign r_readmore = section.settings.review_8_show_read_more -%}
-              {%- assign r_product = section.settings.review_8_product -%}
-              {%- assign r_note = section.settings.review_8_purchase_note -%}
-              {%- assign r_compare = section.settings.review_8_show_compare_price -%}
-              {%- assign r_autoplay = section.settings.review_8_video_autoplay -%}
-              {%- assign r_loop = section.settings.review_8_video_loop -%}
-              {%- assign r_muted = section.settings.review_8_video_muted -%}
-              {%- assign r_play_icon = section.settings.review_8_show_play_icon -%}
-          {%- endcase -%}
 
-          {%- if reviewer_name != blank -%}
-            <div class="rc-card{% if section.settings.card_shadow %} rc-card--shadow{% endif %}">
-              {%- comment -%}--- MEDIA ---{%- endcomment -%}
-              <div class="rc-media-wrap">
-                {%- case r_media -%}
-                  {%- when 'image' -%}
-                    {%- if r_image != blank -%}
-                      <img
-                        src="{{ r_image | image_url: width: 800 }}"
-                        alt="{{ r_alt | escape }}"
-                        loading="lazy"
-                        width="800"
-                        height="{{ 800 | divided_by: r_image.aspect_ratio | round }}"
-                      >
-                    {%- else -%}
-                      {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
-                    {%- endif -%}
-
-                  {%- when 'video_upload' -%}
-                    {%- if r_video != blank -%}
-                      <video
-                        playsinline
-                        {% if r_autoplay %}autoplay{% endif %}
-                        {% if r_loop %}loop{% endif %}
-                        {% if r_muted %}muted{% endif %}
-                        {% if r_image != blank %}poster="{{ r_image | image_url: width: 800 }}"{% endif %}
-                        data-fallback-img="{% if r_image != blank %}{{ r_image | image_url: width: 800 }}{% endif %}"
-                      >
-                        {%- for source in r_video.sources -%}
-                          <source src="{{ source.url }}" type="{{ source.mime_type }}">
-                        {%- endfor -%}
-                      </video>
-                    {%- endif -%}
-                    {%- if r_play_icon -%}
-                      <div class="rc-play-overlay" aria-label="Play video" role="button" tabindex="0">
-                        <svg viewBox="0 0 64 64"><path d="M24 16 L48 32 L24 48 Z"/></svg>
-                      </div>
-                    {%- endif -%}
-
-                  {%- when 'external_video' -%}
-                    {%- if r_ext != blank -%}
-                      {%- if r_ext contains 'youtube.com' or r_ext contains 'youtu.be' -%}
-                        {%- if r_ext contains 'youtu.be' -%}
-                          {%- assign yt_id = r_ext | split: 'youtu.be/' | last | split: '?' | first -%}
-                        {%- else -%}
-                          {%- assign yt_id = r_ext | split: 'v=' | last | split: '&' | first -%}
-                        {%- endif -%}
-                        <iframe
-                          src="https://www.youtube.com/embed/{{ yt_id }}?{% if r_autoplay %}autoplay=1&{% endif %}{% if r_muted %}mute=1&{% endif %}{% if r_loop %}loop=1&playlist={{ yt_id }}&{% endif %}playsinline=1&rel=0"
-                          allow="autoplay; encrypted-media; picture-in-picture"
-                          allowfullscreen
-                          loading="lazy"
-                          title="{{ reviewer_name | default: 'Review' }} video"
-                        ></iframe>
-                      {%- elsif r_ext contains 'vimeo.com' -%}
-                        {%- assign vimeo_id = r_ext | split: 'vimeo.com/' | last | split: '?' | first | split: '/' | first -%}
-                        <iframe
-                          src="https://player.vimeo.com/video/{{ vimeo_id }}?{% if r_autoplay %}autoplay=1&{% endif %}{% if r_muted %}muted=1&{% endif %}{% if r_loop %}loop=1&{% endif %}playsinline=1"
-                          allow="autoplay; fullscreen; picture-in-picture"
-                          allowfullscreen
-                          loading="lazy"
-                          title="{{ reviewer_name | default: 'Review' }} video"
-                        ></iframe>
-                      {%- endif -%}
-                    {%- endif -%}
-                    {%- if r_play_icon -%}
-                      <div class="rc-play-overlay" aria-label="Play video" role="button" tabindex="0">
-                        <svg viewBox="0 0 64 64"><path d="M24 16 L48 32 L24 48 Z"/></svg>
-                      </div>
-                    {%- endif -%}
-                {%- endcase -%}
-              </div>
-
-              {%- comment -%}--- CARD BODY ---{%- endcomment -%}
-              <div class="rc-body">
-                {%- comment -%}Stars{%- endcomment -%}
-                <div class="rc-stars" role="img" aria-label="{{ r_rating }} out of 5 stars">
-                  {%- for s in (1..5) -%}
-                    {%- assign half_threshold = s | minus: 0.5 -%}
-                    {%- if r_rating >= s -%}
-                      <svg viewBox="0 0 24 24"><path class="rc-star-full" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                    {%- elsif r_rating >= half_threshold -%}
-                      <svg viewBox="0 0 24 24">
-                        <defs><linearGradient id="half-{{ section_id }}-{{ i }}-{{ s }}"><stop offset="50%" stop-color="var(--rc-star-color)"/><stop offset="50%" stop-color="#ddd"/></linearGradient></defs>
-                        <path fill="url(#half-{{ section_id }}-{{ i }}-{{ s }})" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                      </svg>
-                    {%- else -%}
-                      <svg viewBox="0 0 24 24"><path class="rc-star-empty" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                    {%- endif -%}
-                  {%- endfor -%}
-                </div>
-
-                {%- comment -%}Reviewer{%- endcomment -%}
-                <div class="rc-reviewer">
-                  <span class="rc-reviewer-name">{{ reviewer_name }}</span>
-                  {%- if r_age != blank -%}
-                    <span class="rc-reviewer-age">{{ r_age }}</span>
-                  {%- endif -%}
-                  {%- if r_verified -%}
-                    <span class="rc-verified">
-                      <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
-                      Verified Buyer
-                    </span>
-                  {%- endif -%}
-                </div>
-
-                {%- comment -%}Review text{%- endcomment -%}
-                {%- if r_text != blank -%}
-                  <div
-                    class="rc-text rc-text-clamped"
-                    style="-webkit-line-clamp: {{ r_truncate }};"
-                    data-truncate="{{ r_truncate }}"
+        <!-- Review Card 1 -->
+        {% if section.settings.review_1_name != blank %}
+          <div class="rc-card{% if section.settings.card_shadow %} rc-card--shadow{% endif %}">
+            <div class="rc-media-wrap">
+              {% if section.settings.review_1_media_type == 'image' %}
+                {% if section.settings.review_1_image != blank %}
+                  <img
+                    src="{{ section.settings.review_1_image | image_url: width: 800 }}"
+                    alt="{{ section.settings.review_1_image_alt | escape }}"
+                    loading="lazy"
+                    width="800"
+                    height="{{ 800 | divided_by: section.settings.review_1_image.aspect_ratio | round }}"
                   >
-                    {{ r_text }}
+                {% else %}
+                  {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+                {% endif %}
+              {% elsif section.settings.review_1_media_type == 'video_upload' %}
+                {% if section.settings.review_1_video != blank %}
+                  <video
+                    playsinline
+                    {% if section.settings.review_1_video_autoplay %}autoplay{% endif %}
+                    {% if section.settings.review_1_video_loop %}loop{% endif %}
+                    {% if section.settings.review_1_video_muted %}muted{% endif %}
+                    {% if section.settings.review_1_image != blank %}poster="{{ section.settings.review_1_image | image_url: width: 800 }}"{% endif %}
+                    data-fallback-img="{% if section.settings.review_1_image != blank %}{{ section.settings.review_1_image | image_url: width: 800 }}{% endif %}"
+                  >
+                    {% for source in section.settings.review_1_video.sources %}
+                      <source src="{{ source.url }}" type="{{ source.mime_type }}">
+                    {% endfor %}
+                  </video>
+                {% endif %}
+                {% if section.settings.review_1_show_play_icon %}
+                  <div class="rc-play-overlay" aria-label="Play video" role="button" tabindex="0">
+                    <svg viewBox="0 0 64 64"><path d="M24 16 L48 32 L24 48 Z"/></svg>
                   </div>
-                  {%- if r_readmore -%}
-                    <button class="rc-read-more" data-expanded="false">Read more</button>
-                  {%- endif -%}
-                {%- endif -%}
-
-                {%- comment -%}Purchased product{%- endcomment -%}
-                {%- if r_product != blank -%}
-                  <div class="rc-product">
-                    {%- if r_product.featured_image != blank -%}
-                      <img
-                        class="rc-product-img"
-                        src="{{ r_product.featured_image | image_url: width: 120 }}"
-                        alt="{{ r_product.featured_image.alt | escape }}"
-                        loading="lazy"
-                        width="56"
-                        height="56"
-                      >
-                    {%- endif -%}
-                    <div class="rc-product-info">
-                      <p class="rc-product-title">
-                        <a href="{{ r_product.url }}">{{ r_product.title }}</a>
-                      </p>
-                      <div class="rc-product-pricing">
-                        <span class="rc-product-price">{{ r_product.price | money }}</span>
-                        {%- if r_compare and r_product.compare_at_price > r_product.price -%}
-                          <span class="rc-product-compare">{{ r_product.compare_at_price | money }}</span>
-                        {%- endif -%}
-                      </div>
-                      {%- if r_note != blank -%}
-                        <div class="rc-purchase-note">{{ r_note }}</div>
-                      {%- endif -%}
-                    </div>
-                  </div>
-                {%- endif -%}
-              </div>
+                {% endif %}
+              {% elsif section.settings.review_1_media_type == 'external_video' %}
+                {% if section.settings.review_1_external_video_url != blank %}
+                  {% if section.settings.review_1_external_video_url contains 'youtube.com' or section.settings.review_1_external_video_url contains 'youtu.be' %}
+                    {% assign yt_id_1 = section.settings.review_1_external_video_url | split: 'v=' | last | split: '&' | first %}
+                    <iframe
+                      src="https://www.youtube.com/embed/{{ yt_id_1 }}?playsinline=1&rel=0"
+                      allow="autoplay; encrypted-media; picture-in-picture"
+                      allowfullscreen
+                      loading="lazy"
+                      title="{{ section.settings.review_1_name }} video"
+                    ></iframe>
+                  {% elsif section.settings.review_1_external_video_url contains 'vimeo.com' %}
+                    {% assign vimeo_id_1 = section.settings.review_1_external_video_url | split: 'vimeo.com/' | last | split: '?' | first | split: '/' | first %}
+                    <iframe
+                      src="https://player.vimeo.com/video/{{ vimeo_id_1 }}?playsinline=1"
+                      allow="autoplay; fullscreen; picture-in-picture"
+                      allowfullscreen
+                      loading="lazy"
+                      title="{{ section.settings.review_1_name }} video"
+                    ></iframe>
+                  {% endif %}
+                {% endif %}
+              {% endif %}
             </div>
-          {%- endif -%}
-        {%- endfor -%}
+            <div class="rc-body">
+              <div class="rc-stars" role="img" aria-label="{{ section.settings.review_1_rating }} out of 5 stars">
+                {% for s in (1..5) %}
+                  {% assign half_1 = s | minus: 0.5 %}
+                  {% if section.settings.review_1_rating >= s %}
+                    <svg viewBox="0 0 24 24"><path class="rc-star-full" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                  {% elsif section.settings.review_1_rating >= half_1 %}
+                    <svg viewBox="0 0 24 24">
+                      <defs><linearGradient id="half-{{ section_id }}-1-{{ s }}"><stop offset="50%" stop-color="var(--rc-star-color)"/><stop offset="50%" stop-color="#ddd"/></linearGradient></defs>
+                      <path fill="url(#half-{{ section_id }}-1-{{ s }})" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
+                  {% else %}
+                    <svg viewBox="0 0 24 24"><path class="rc-star-empty" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                  {% endif %}
+                {% endfor %}
+              </div>
+              <div class="rc-reviewer">
+                <span class="rc-reviewer-name">{{ section.settings.review_1_name }}</span>
+                {% if section.settings.review_1_age != blank %}
+                  <span class="rc-reviewer-age">{{ section.settings.review_1_age }}</span>
+                {% endif %}
+                {% if section.settings.review_1_verified %}
+                  <span class="rc-verified">
+                    <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
+                    Verified Buyer
+                  </span>
+                {% endif %}
+              </div>
+              {% if section.settings.review_1_text != blank %}
+                <div class="rc-text rc-text-clamped" style="-webkit-line-clamp: {{ section.settings.review_1_truncate_lines }};" data-truncate="{{ section.settings.review_1_truncate_lines }}">
+                  {{ section.settings.review_1_text }}
+                </div>
+                {% if section.settings.review_1_show_read_more %}
+                  <button class="rc-read-more" data-expanded="false">Read more</button>
+                {% endif %}
+              {% endif %}
+              {% if section.settings.review_1_product != blank %}
+                <div class="rc-product">
+                  {% if section.settings.review_1_product.featured_image != blank %}
+                    <img class="rc-product-img" src="{{ section.settings.review_1_product.featured_image | image_url: width: 120 }}" alt="{{ section.settings.review_1_product.featured_image.alt | escape }}" loading="lazy" width="56" height="56">
+                  {% endif %}
+                  <div class="rc-product-info">
+                    <p class="rc-product-title"><a href="{{ section.settings.review_1_product.url }}">{{ section.settings.review_1_product.title }}</a></p>
+                    <div class="rc-product-pricing">
+                      <span class="rc-product-price">{{ section.settings.review_1_product.price | money }}</span>
+                      {% if section.settings.review_1_show_compare_price and section.settings.review_1_product.compare_at_price > section.settings.review_1_product.price %}
+                        <span class="rc-product-compare">{{ section.settings.review_1_product.compare_at_price | money }}</span>
+                      {% endif %}
+                    </div>
+                    {% if section.settings.review_1_purchase_note != blank %}
+                      <div class="rc-purchase-note">{{ section.settings.review_1_purchase_note }}</div>
+                    {% endif %}
+                  </div>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        {% endif %}
+
+        <!-- Review Card 2 -->
+        {% if section.settings.review_2_name != blank %}
+          <div class="rc-card{% if section.settings.card_shadow %} rc-card--shadow{% endif %}">
+            <div class="rc-media-wrap">
+              {% if section.settings.review_2_media_type == 'image' %}
+                {% if section.settings.review_2_image != blank %}
+                  <img
+                    src="{{ section.settings.review_2_image | image_url: width: 800 }}"
+                    alt="{{ section.settings.review_2_image_alt | escape }}"
+                    loading="lazy"
+                    width="800"
+                    height="{{ 800 | divided_by: section.settings.review_2_image.aspect_ratio | round }}"
+                  >
+                {% else %}
+                  {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+                {% endif %}
+              {% elsif section.settings.review_2_media_type == 'video_upload' %}
+                {% if section.settings.review_2_video != blank %}
+                  <video
+                    playsinline
+                    {% if section.settings.review_2_video_autoplay %}autoplay{% endif %}
+                    {% if section.settings.review_2_video_loop %}loop{% endif %}
+                    {% if section.settings.review_2_video_muted %}muted{% endif %}
+                    {% if section.settings.review_2_image != blank %}poster="{{ section.settings.review_2_image | image_url: width: 800 }}"{% endif %}
+                    data-fallback-img="{% if section.settings.review_2_image != blank %}{{ section.settings.review_2_image | image_url: width: 800 }}{% endif %}"
+                  >
+                    {% for source in section.settings.review_2_video.sources %}
+                      <source src="{{ source.url }}" type="{{ source.mime_type }}">
+                    {% endfor %}
+                  </video>
+                {% endif %}
+                {% if section.settings.review_2_show_play_icon %}
+                  <div class="rc-play-overlay" aria-label="Play video" role="button" tabindex="0">
+                    <svg viewBox="0 0 64 64"><path d="M24 16 L48 32 L24 48 Z"/></svg>
+                  </div>
+                {% endif %}
+              {% elsif section.settings.review_2_media_type == 'external_video' %}
+                {% if section.settings.review_2_external_video_url != blank %}
+                  {% if section.settings.review_2_external_video_url contains 'youtube.com' or section.settings.review_2_external_video_url contains 'youtu.be' %}
+                    {% assign yt_id_2 = section.settings.review_2_external_video_url | split: 'v=' | last | split: '&' | first %}
+                    <iframe
+                      src="https://www.youtube.com/embed/{{ yt_id_2 }}?playsinline=1&rel=0"
+                      allow="autoplay; encrypted-media; picture-in-picture"
+                      allowfullscreen
+                      loading="lazy"
+                      title="{{ section.settings.review_2_name }} video"
+                    ></iframe>
+                  {% elsif section.settings.review_2_external_video_url contains 'vimeo.com' %}
+                    {% assign vimeo_id_2 = section.settings.review_2_external_video_url | split: 'vimeo.com/' | last | split: '?' | first | split: '/' | first %}
+                    <iframe
+                      src="https://player.vimeo.com/video/{{ vimeo_id_2 }}?playsinline=1"
+                      allow="autoplay; fullscreen; picture-in-picture"
+                      allowfullscreen
+                      loading="lazy"
+                      title="{{ section.settings.review_2_name }} video"
+                    ></iframe>
+                  {% endif %}
+                {% endif %}
+              {% endif %}
+            </div>
+            <div class="rc-body">
+              <div class="rc-stars" role="img" aria-label="{{ section.settings.review_2_rating }} out of 5 stars">
+                {% for s in (1..5) %}
+                  {% assign half_2 = s | minus: 0.5 %}
+                  {% if section.settings.review_2_rating >= s %}
+                    <svg viewBox="0 0 24 24"><path class="rc-star-full" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                  {% elsif section.settings.review_2_rating >= half_2 %}
+                    <svg viewBox="0 0 24 24">
+                      <defs><linearGradient id="half-{{ section_id }}-2-{{ s }}"><stop offset="50%" stop-color="var(--rc-star-color)"/><stop offset="50%" stop-color="#ddd"/></linearGradient></defs>
+                      <path fill="url(#half-{{ section_id }}-2-{{ s }})" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
+                  {% else %}
+                    <svg viewBox="0 0 24 24"><path class="rc-star-empty" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                  {% endif %}
+                {% endfor %}
+              </div>
+              <div class="rc-reviewer">
+                <span class="rc-reviewer-name">{{ section.settings.review_2_name }}</span>
+                {% if section.settings.review_2_age != blank %}
+                  <span class="rc-reviewer-age">{{ section.settings.review_2_age }}</span>
+                {% endif %}
+                {% if section.settings.review_2_verified %}
+                  <span class="rc-verified">
+                    <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
+                    Verified Buyer
+                  </span>
+                {% endif %}
+              </div>
+              {% if section.settings.review_2_text != blank %}
+                <div class="rc-text rc-text-clamped" style="-webkit-line-clamp: {{ section.settings.review_2_truncate_lines }};" data-truncate="{{ section.settings.review_2_truncate_lines }}">
+                  {{ section.settings.review_2_text }}
+                </div>
+                {% if section.settings.review_2_show_read_more %}
+                  <button class="rc-read-more" data-expanded="false">Read more</button>
+                {% endif %}
+              {% endif %}
+              {% if section.settings.review_2_product != blank %}
+                <div class="rc-product">
+                  {% if section.settings.review_2_product.featured_image != blank %}
+                    <img class="rc-product-img" src="{{ section.settings.review_2_product.featured_image | image_url: width: 120 }}" alt="{{ section.settings.review_2_product.featured_image.alt | escape }}" loading="lazy" width="56" height="56">
+                  {% endif %}
+                  <div class="rc-product-info">
+                    <p class="rc-product-title"><a href="{{ section.settings.review_2_product.url }}">{{ section.settings.review_2_product.title }}</a></p>
+                    <div class="rc-product-pricing">
+                      <span class="rc-product-price">{{ section.settings.review_2_product.price | money }}</span>
+                      {% if section.settings.review_2_show_compare_price and section.settings.review_2_product.compare_at_price > section.settings.review_2_product.price %}
+                        <span class="rc-product-compare">{{ section.settings.review_2_product.compare_at_price | money }}</span>
+                      {% endif %}
+                    </div>
+                    {% if section.settings.review_2_purchase_note != blank %}
+                      <div class="rc-purchase-note">{{ section.settings.review_2_purchase_note }}</div>
+                    {% endif %}
+                  </div>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        {% endif %}
+
+        <!-- Review Card 3 -->
+        {% if section.settings.review_3_name != blank %}
+          <div class="rc-card{% if section.settings.card_shadow %} rc-card--shadow{% endif %}">
+            <div class="rc-media-wrap">
+              {% if section.settings.review_3_media_type == 'image' %}
+                {% if section.settings.review_3_image != blank %}
+                  <img
+                    src="{{ section.settings.review_3_image | image_url: width: 800 }}"
+                    alt="{{ section.settings.review_3_image_alt | escape }}"
+                    loading="lazy"
+                    width="800"
+                    height="{{ 800 | divided_by: section.settings.review_3_image.aspect_ratio | round }}"
+                  >
+                {% else %}
+                  {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+                {% endif %}
+              {% elsif section.settings.review_3_media_type == 'video_upload' %}
+                {% if section.settings.review_3_video != blank %}
+                  <video
+                    playsinline
+                    {% if section.settings.review_3_video_autoplay %}autoplay{% endif %}
+                    {% if section.settings.review_3_video_loop %}loop{% endif %}
+                    {% if section.settings.review_3_video_muted %}muted{% endif %}
+                    {% if section.settings.review_3_image != blank %}poster="{{ section.settings.review_3_image | image_url: width: 800 }}"{% endif %}
+                    data-fallback-img="{% if section.settings.review_3_image != blank %}{{ section.settings.review_3_image | image_url: width: 800 }}{% endif %}"
+                  >
+                    {% for source in section.settings.review_3_video.sources %}
+                      <source src="{{ source.url }}" type="{{ source.mime_type }}">
+                    {% endfor %}
+                  </video>
+                {% endif %}
+                {% if section.settings.review_3_show_play_icon %}
+                  <div class="rc-play-overlay" aria-label="Play video" role="button" tabindex="0">
+                    <svg viewBox="0 0 64 64"><path d="M24 16 L48 32 L24 48 Z"/></svg>
+                  </div>
+                {% endif %}
+              {% elsif section.settings.review_3_media_type == 'external_video' %}
+                {% if section.settings.review_3_external_video_url != blank %}
+                  {% if section.settings.review_3_external_video_url contains 'youtube.com' or section.settings.review_3_external_video_url contains 'youtu.be' %}
+                    {% assign yt_id_3 = section.settings.review_3_external_video_url | split: 'v=' | last | split: '&' | first %}
+                    <iframe
+                      src="https://www.youtube.com/embed/{{ yt_id_3 }}?playsinline=1&rel=0"
+                      allow="autoplay; encrypted-media; picture-in-picture"
+                      allowfullscreen
+                      loading="lazy"
+                      title="{{ section.settings.review_3_name }} video"
+                    ></iframe>
+                  {% elsif section.settings.review_3_external_video_url contains 'vimeo.com' %}
+                    {% assign vimeo_id_3 = section.settings.review_3_external_video_url | split: 'vimeo.com/' | last | split: '?' | first | split: '/' | first %}
+                    <iframe
+                      src="https://player.vimeo.com/video/{{ vimeo_id_3 }}?playsinline=1"
+                      allow="autoplay; fullscreen; picture-in-picture"
+                      allowfullscreen
+                      loading="lazy"
+                      title="{{ section.settings.review_3_name }} video"
+                    ></iframe>
+                  {% endif %}
+                {% endif %}
+              {% endif %}
+            </div>
+            <div class="rc-body">
+              <div class="rc-stars" role="img" aria-label="{{ section.settings.review_3_rating }} out of 5 stars">
+                {% for s in (1..5) %}
+                  {% assign half_3 = s | minus: 0.5 %}
+                  {% if section.settings.review_3_rating >= s %}
+                    <svg viewBox="0 0 24 24"><path class="rc-star-full" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                  {% elsif section.settings.review_3_rating >= half_3 %}
+                    <svg viewBox="0 0 24 24">
+                      <defs><linearGradient id="half-{{ section_id }}-3-{{ s }}"><stop offset="50%" stop-color="var(--rc-star-color)"/><stop offset="50%" stop-color="#ddd"/></linearGradient></defs>
+                      <path fill="url(#half-{{ section_id }}-3-{{ s }})" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
+                  {% else %}
+                    <svg viewBox="0 0 24 24"><path class="rc-star-empty" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                  {% endif %}
+                {% endfor %}
+              </div>
+              <div class="rc-reviewer">
+                <span class="rc-reviewer-name">{{ section.settings.review_3_name }}</span>
+                {% if section.settings.review_3_age != blank %}
+                  <span class="rc-reviewer-age">{{ section.settings.review_3_age }}</span>
+                {% endif %}
+                {% if section.settings.review_3_verified %}
+                  <span class="rc-verified">
+                    <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
+                    Verified Buyer
+                  </span>
+                {% endif %}
+              </div>
+              {% if section.settings.review_3_text != blank %}
+                <div class="rc-text rc-text-clamped" style="-webkit-line-clamp: {{ section.settings.review_3_truncate_lines }};" data-truncate="{{ section.settings.review_3_truncate_lines }}">
+                  {{ section.settings.review_3_text }}
+                </div>
+                {% if section.settings.review_3_show_read_more %}
+                  <button class="rc-read-more" data-expanded="false">Read more</button>
+                {% endif %}
+              {% endif %}
+              {% if section.settings.review_3_product != blank %}
+                <div class="rc-product">
+                  {% if section.settings.review_3_product.featured_image != blank %}
+                    <img class="rc-product-img" src="{{ section.settings.review_3_product.featured_image | image_url: width: 120 }}" alt="{{ section.settings.review_3_product.featured_image.alt | escape }}" loading="lazy" width="56" height="56">
+                  {% endif %}
+                  <div class="rc-product-info">
+                    <p class="rc-product-title"><a href="{{ section.settings.review_3_product.url }}">{{ section.settings.review_3_product.title }}</a></p>
+                    <div class="rc-product-pricing">
+                      <span class="rc-product-price">{{ section.settings.review_3_product.price | money }}</span>
+                      {% if section.settings.review_3_show_compare_price and section.settings.review_3_product.compare_at_price > section.settings.review_3_product.price %}
+                        <span class="rc-product-compare">{{ section.settings.review_3_product.compare_at_price | money }}</span>
+                      {% endif %}
+                    </div>
+                    {% if section.settings.review_3_purchase_note != blank %}
+                      <div class="rc-purchase-note">{{ section.settings.review_3_purchase_note }}</div>
+                    {% endif %}
+                  </div>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        {% endif %}
+
+        <!-- Review Card 4 -->
+        {% if section.settings.review_4_name != blank %}
+          <div class="rc-card{% if section.settings.card_shadow %} rc-card--shadow{% endif %}">
+            <div class="rc-media-wrap">
+              {% if section.settings.review_4_media_type == 'image' %}
+                {% if section.settings.review_4_image != blank %}
+                  <img
+                    src="{{ section.settings.review_4_image | image_url: width: 800 }}"
+                    alt="{{ section.settings.review_4_image_alt | escape }}"
+                    loading="lazy"
+                    width="800"
+                    height="{{ 800 | divided_by: section.settings.review_4_image.aspect_ratio | round }}"
+                  >
+                {% else %}
+                  {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+                {% endif %}
+              {% elsif section.settings.review_4_media_type == 'video_upload' %}
+                {% if section.settings.review_4_video != blank %}
+                  <video
+                    playsinline
+                    {% if section.settings.review_4_video_autoplay %}autoplay{% endif %}
+                    {% if section.settings.review_4_video_loop %}loop{% endif %}
+                    {% if section.settings.review_4_video_muted %}muted{% endif %}
+                    {% if section.settings.review_4_image != blank %}poster="{{ section.settings.review_4_image | image_url: width: 800 }}"{% endif %}
+                    data-fallback-img="{% if section.settings.review_4_image != blank %}{{ section.settings.review_4_image | image_url: width: 800 }}{% endif %}"
+                  >
+                    {% for source in section.settings.review_4_video.sources %}
+                      <source src="{{ source.url }}" type="{{ source.mime_type }}">
+                    {% endfor %}
+                  </video>
+                {% endif %}
+                {% if section.settings.review_4_show_play_icon %}
+                  <div class="rc-play-overlay" aria-label="Play video" role="button" tabindex="0">
+                    <svg viewBox="0 0 64 64"><path d="M24 16 L48 32 L24 48 Z"/></svg>
+                  </div>
+                {% endif %}
+              {% elsif section.settings.review_4_media_type == 'external_video' %}
+                {% if section.settings.review_4_external_video_url != blank %}
+                  {% if section.settings.review_4_external_video_url contains 'youtube.com' or section.settings.review_4_external_video_url contains 'youtu.be' %}
+                    {% assign yt_id_4 = section.settings.review_4_external_video_url | split: 'v=' | last | split: '&' | first %}
+                    <iframe
+                      src="https://www.youtube.com/embed/{{ yt_id_4 }}?playsinline=1&rel=0"
+                      allow="autoplay; encrypted-media; picture-in-picture"
+                      allowfullscreen
+                      loading="lazy"
+                      title="{{ section.settings.review_4_name }} video"
+                    ></iframe>
+                  {% elsif section.settings.review_4_external_video_url contains 'vimeo.com' %}
+                    {% assign vimeo_id_4 = section.settings.review_4_external_video_url | split: 'vimeo.com/' | last | split: '?' | first | split: '/' | first %}
+                    <iframe
+                      src="https://player.vimeo.com/video/{{ vimeo_id_4 }}?playsinline=1"
+                      allow="autoplay; fullscreen; picture-in-picture"
+                      allowfullscreen
+                      loading="lazy"
+                      title="{{ section.settings.review_4_name }} video"
+                    ></iframe>
+                  {% endif %}
+                {% endif %}
+              {% endif %}
+            </div>
+            <div class="rc-body">
+              <div class="rc-stars" role="img" aria-label="{{ section.settings.review_4_rating }} out of 5 stars">
+                {% for s in (1..5) %}
+                  {% assign half_4 = s | minus: 0.5 %}
+                  {% if section.settings.review_4_rating >= s %}
+                    <svg viewBox="0 0 24 24"><path class="rc-star-full" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                  {% elsif section.settings.review_4_rating >= half_4 %}
+                    <svg viewBox="0 0 24 24">
+                      <defs><linearGradient id="half-{{ section_id }}-4-{{ s }}"><stop offset="50%" stop-color="var(--rc-star-color)"/><stop offset="50%" stop-color="#ddd"/></linearGradient></defs>
+                      <path fill="url(#half-{{ section_id }}-4-{{ s }})" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
+                  {% else %}
+                    <svg viewBox="0 0 24 24"><path class="rc-star-empty" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                  {% endif %}
+                {% endfor %}
+              </div>
+              <div class="rc-reviewer">
+                <span class="rc-reviewer-name">{{ section.settings.review_4_name }}</span>
+                {% if section.settings.review_4_age != blank %}
+                  <span class="rc-reviewer-age">{{ section.settings.review_4_age }}</span>
+                {% endif %}
+                {% if section.settings.review_4_verified %}
+                  <span class="rc-verified">
+                    <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
+                    Verified Buyer
+                  </span>
+                {% endif %}
+              </div>
+              {% if section.settings.review_4_text != blank %}
+                <div class="rc-text rc-text-clamped" style="-webkit-line-clamp: {{ section.settings.review_4_truncate_lines }};" data-truncate="{{ section.settings.review_4_truncate_lines }}">
+                  {{ section.settings.review_4_text }}
+                </div>
+                {% if section.settings.review_4_show_read_more %}
+                  <button class="rc-read-more" data-expanded="false">Read more</button>
+                {% endif %}
+              {% endif %}
+              {% if section.settings.review_4_product != blank %}
+                <div class="rc-product">
+                  {% if section.settings.review_4_product.featured_image != blank %}
+                    <img class="rc-product-img" src="{{ section.settings.review_4_product.featured_image | image_url: width: 120 }}" alt="{{ section.settings.review_4_product.featured_image.alt | escape }}" loading="lazy" width="56" height="56">
+                  {% endif %}
+                  <div class="rc-product-info">
+                    <p class="rc-product-title"><a href="{{ section.settings.review_4_product.url }}">{{ section.settings.review_4_product.title }}</a></p>
+                    <div class="rc-product-pricing">
+                      <span class="rc-product-price">{{ section.settings.review_4_product.price | money }}</span>
+                      {% if section.settings.review_4_show_compare_price and section.settings.review_4_product.compare_at_price > section.settings.review_4_product.price %}
+                        <span class="rc-product-compare">{{ section.settings.review_4_product.compare_at_price | money }}</span>
+                      {% endif %}
+                    </div>
+                    {% if section.settings.review_4_purchase_note != blank %}
+                      <div class="rc-purchase-note">{{ section.settings.review_4_purchase_note }}</div>
+                    {% endif %}
+                  </div>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        {% endif %}
+
+        <!-- Review Card 5 -->
+        {% if section.settings.review_5_name != blank %}
+          <div class="rc-card{% if section.settings.card_shadow %} rc-card--shadow{% endif %}">
+            <div class="rc-media-wrap">
+              {% if section.settings.review_5_media_type == 'image' %}
+                {% if section.settings.review_5_image != blank %}
+                  <img
+                    src="{{ section.settings.review_5_image | image_url: width: 800 }}"
+                    alt="{{ section.settings.review_5_image_alt | escape }}"
+                    loading="lazy"
+                    width="800"
+                    height="{{ 800 | divided_by: section.settings.review_5_image.aspect_ratio | round }}"
+                  >
+                {% else %}
+                  {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+                {% endif %}
+              {% elsif section.settings.review_5_media_type == 'video_upload' %}
+                {% if section.settings.review_5_video != blank %}
+                  <video
+                    playsinline
+                    {% if section.settings.review_5_video_autoplay %}autoplay{% endif %}
+                    {% if section.settings.review_5_video_loop %}loop{% endif %}
+                    {% if section.settings.review_5_video_muted %}muted{% endif %}
+                    {% if section.settings.review_5_image != blank %}poster="{{ section.settings.review_5_image | image_url: width: 800 }}"{% endif %}
+                    data-fallback-img="{% if section.settings.review_5_image != blank %}{{ section.settings.review_5_image | image_url: width: 800 }}{% endif %}"
+                  >
+                    {% for source in section.settings.review_5_video.sources %}
+                      <source src="{{ source.url }}" type="{{ source.mime_type }}">
+                    {% endfor %}
+                  </video>
+                {% endif %}
+                {% if section.settings.review_5_show_play_icon %}
+                  <div class="rc-play-overlay" aria-label="Play video" role="button" tabindex="0">
+                    <svg viewBox="0 0 64 64"><path d="M24 16 L48 32 L24 48 Z"/></svg>
+                  </div>
+                {% endif %}
+              {% elsif section.settings.review_5_media_type == 'external_video' %}
+                {% if section.settings.review_5_external_video_url != blank %}
+                  {% if section.settings.review_5_external_video_url contains 'youtube.com' or section.settings.review_5_external_video_url contains 'youtu.be' %}
+                    {% assign yt_id_5 = section.settings.review_5_external_video_url | split: 'v=' | last | split: '&' | first %}
+                    <iframe
+                      src="https://www.youtube.com/embed/{{ yt_id_5 }}?playsinline=1&rel=0"
+                      allow="autoplay; encrypted-media; picture-in-picture"
+                      allowfullscreen
+                      loading="lazy"
+                      title="{{ section.settings.review_5_name }} video"
+                    ></iframe>
+                  {% elsif section.settings.review_5_external_video_url contains 'vimeo.com' %}
+                    {% assign vimeo_id_5 = section.settings.review_5_external_video_url | split: 'vimeo.com/' | last | split: '?' | first | split: '/' | first %}
+                    <iframe
+                      src="https://player.vimeo.com/video/{{ vimeo_id_5 }}?playsinline=1"
+                      allow="autoplay; fullscreen; picture-in-picture"
+                      allowfullscreen
+                      loading="lazy"
+                      title="{{ section.settings.review_5_name }} video"
+                    ></iframe>
+                  {% endif %}
+                {% endif %}
+              {% endif %}
+            </div>
+            <div class="rc-body">
+              <div class="rc-stars" role="img" aria-label="{{ section.settings.review_5_rating }} out of 5 stars">
+                {% for s in (1..5) %}
+                  {% assign half_5 = s | minus: 0.5 %}
+                  {% if section.settings.review_5_rating >= s %}
+                    <svg viewBox="0 0 24 24"><path class="rc-star-full" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                  {% elsif section.settings.review_5_rating >= half_5 %}
+                    <svg viewBox="0 0 24 24">
+                      <defs><linearGradient id="half-{{ section_id }}-5-{{ s }}"><stop offset="50%" stop-color="var(--rc-star-color)"/><stop offset="50%" stop-color="#ddd"/></linearGradient></defs>
+                      <path fill="url(#half-{{ section_id }}-5-{{ s }})" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
+                  {% else %}
+                    <svg viewBox="0 0 24 24"><path class="rc-star-empty" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                  {% endif %}
+                {% endfor %}
+              </div>
+              <div class="rc-reviewer">
+                <span class="rc-reviewer-name">{{ section.settings.review_5_name }}</span>
+                {% if section.settings.review_5_age != blank %}
+                  <span class="rc-reviewer-age">{{ section.settings.review_5_age }}</span>
+                {% endif %}
+                {% if section.settings.review_5_verified %}
+                  <span class="rc-verified">
+                    <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
+                    Verified Buyer
+                  </span>
+                {% endif %}
+              </div>
+              {% if section.settings.review_5_text != blank %}
+                <div class="rc-text rc-text-clamped" style="-webkit-line-clamp: {{ section.settings.review_5_truncate_lines }};" data-truncate="{{ section.settings.review_5_truncate_lines }}">
+                  {{ section.settings.review_5_text }}
+                </div>
+                {% if section.settings.review_5_show_read_more %}
+                  <button class="rc-read-more" data-expanded="false">Read more</button>
+                {% endif %}
+              {% endif %}
+              {% if section.settings.review_5_product != blank %}
+                <div class="rc-product">
+                  {% if section.settings.review_5_product.featured_image != blank %}
+                    <img class="rc-product-img" src="{{ section.settings.review_5_product.featured_image | image_url: width: 120 }}" alt="{{ section.settings.review_5_product.featured_image.alt | escape }}" loading="lazy" width="56" height="56">
+                  {% endif %}
+                  <div class="rc-product-info">
+                    <p class="rc-product-title"><a href="{{ section.settings.review_5_product.url }}">{{ section.settings.review_5_product.title }}</a></p>
+                    <div class="rc-product-pricing">
+                      <span class="rc-product-price">{{ section.settings.review_5_product.price | money }}</span>
+                      {% if section.settings.review_5_show_compare_price and section.settings.review_5_product.compare_at_price > section.settings.review_5_product.price %}
+                        <span class="rc-product-compare">{{ section.settings.review_5_product.compare_at_price | money }}</span>
+                      {% endif %}
+                    </div>
+                    {% if section.settings.review_5_purchase_note != blank %}
+                      <div class="rc-purchase-note">{{ section.settings.review_5_purchase_note }}</div>
+                    {% endif %}
+                  </div>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        {% endif %}
+
+        <!-- Review Card 6 -->
+        {% if section.settings.review_6_name != blank %}
+          <div class="rc-card{% if section.settings.card_shadow %} rc-card--shadow{% endif %}">
+            <div class="rc-media-wrap">
+              {% if section.settings.review_6_media_type == 'image' %}
+                {% if section.settings.review_6_image != blank %}
+                  <img
+                    src="{{ section.settings.review_6_image | image_url: width: 800 }}"
+                    alt="{{ section.settings.review_6_image_alt | escape }}"
+                    loading="lazy"
+                    width="800"
+                    height="{{ 800 | divided_by: section.settings.review_6_image.aspect_ratio | round }}"
+                  >
+                {% else %}
+                  {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+                {% endif %}
+              {% elsif section.settings.review_6_media_type == 'video_upload' %}
+                {% if section.settings.review_6_video != blank %}
+                  <video
+                    playsinline
+                    {% if section.settings.review_6_video_autoplay %}autoplay{% endif %}
+                    {% if section.settings.review_6_video_loop %}loop{% endif %}
+                    {% if section.settings.review_6_video_muted %}muted{% endif %}
+                    {% if section.settings.review_6_image != blank %}poster="{{ section.settings.review_6_image | image_url: width: 800 }}"{% endif %}
+                    data-fallback-img="{% if section.settings.review_6_image != blank %}{{ section.settings.review_6_image | image_url: width: 800 }}{% endif %}"
+                  >
+                    {% for source in section.settings.review_6_video.sources %}
+                      <source src="{{ source.url }}" type="{{ source.mime_type }}">
+                    {% endfor %}
+                  </video>
+                {% endif %}
+                {% if section.settings.review_6_show_play_icon %}
+                  <div class="rc-play-overlay" aria-label="Play video" role="button" tabindex="0">
+                    <svg viewBox="0 0 64 64"><path d="M24 16 L48 32 L24 48 Z"/></svg>
+                  </div>
+                {% endif %}
+              {% elsif section.settings.review_6_media_type == 'external_video' %}
+                {% if section.settings.review_6_external_video_url != blank %}
+                  {% if section.settings.review_6_external_video_url contains 'youtube.com' or section.settings.review_6_external_video_url contains 'youtu.be' %}
+                    {% assign yt_id_6 = section.settings.review_6_external_video_url | split: 'v=' | last | split: '&' | first %}
+                    <iframe
+                      src="https://www.youtube.com/embed/{{ yt_id_6 }}?playsinline=1&rel=0"
+                      allow="autoplay; encrypted-media; picture-in-picture"
+                      allowfullscreen
+                      loading="lazy"
+                      title="{{ section.settings.review_6_name }} video"
+                    ></iframe>
+                  {% elsif section.settings.review_6_external_video_url contains 'vimeo.com' %}
+                    {% assign vimeo_id_6 = section.settings.review_6_external_video_url | split: 'vimeo.com/' | last | split: '?' | first | split: '/' | first %}
+                    <iframe
+                      src="https://player.vimeo.com/video/{{ vimeo_id_6 }}?playsinline=1"
+                      allow="autoplay; fullscreen; picture-in-picture"
+                      allowfullscreen
+                      loading="lazy"
+                      title="{{ section.settings.review_6_name }} video"
+                    ></iframe>
+                  {% endif %}
+                {% endif %}
+              {% endif %}
+            </div>
+            <div class="rc-body">
+              <div class="rc-stars" role="img" aria-label="{{ section.settings.review_6_rating }} out of 5 stars">
+                {% for s in (1..5) %}
+                  {% assign half_6 = s | minus: 0.5 %}
+                  {% if section.settings.review_6_rating >= s %}
+                    <svg viewBox="0 0 24 24"><path class="rc-star-full" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                  {% elsif section.settings.review_6_rating >= half_6 %}
+                    <svg viewBox="0 0 24 24">
+                      <defs><linearGradient id="half-{{ section_id }}-6-{{ s }}"><stop offset="50%" stop-color="var(--rc-star-color)"/><stop offset="50%" stop-color="#ddd"/></linearGradient></defs>
+                      <path fill="url(#half-{{ section_id }}-6-{{ s }})" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
+                  {% else %}
+                    <svg viewBox="0 0 24 24"><path class="rc-star-empty" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                  {% endif %}
+                {% endfor %}
+              </div>
+              <div class="rc-reviewer">
+                <span class="rc-reviewer-name">{{ section.settings.review_6_name }}</span>
+                {% if section.settings.review_6_age != blank %}
+                  <span class="rc-reviewer-age">{{ section.settings.review_6_age }}</span>
+                {% endif %}
+                {% if section.settings.review_6_verified %}
+                  <span class="rc-verified">
+                    <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
+                    Verified Buyer
+                  </span>
+                {% endif %}
+              </div>
+              {% if section.settings.review_6_text != blank %}
+                <div class="rc-text rc-text-clamped" style="-webkit-line-clamp: {{ section.settings.review_6_truncate_lines }};" data-truncate="{{ section.settings.review_6_truncate_lines }}">
+                  {{ section.settings.review_6_text }}
+                </div>
+                {% if section.settings.review_6_show_read_more %}
+                  <button class="rc-read-more" data-expanded="false">Read more</button>
+                {% endif %}
+              {% endif %}
+              {% if section.settings.review_6_product != blank %}
+                <div class="rc-product">
+                  {% if section.settings.review_6_product.featured_image != blank %}
+                    <img class="rc-product-img" src="{{ section.settings.review_6_product.featured_image | image_url: width: 120 }}" alt="{{ section.settings.review_6_product.featured_image.alt | escape }}" loading="lazy" width="56" height="56">
+                  {% endif %}
+                  <div class="rc-product-info">
+                    <p class="rc-product-title"><a href="{{ section.settings.review_6_product.url }}">{{ section.settings.review_6_product.title }}</a></p>
+                    <div class="rc-product-pricing">
+                      <span class="rc-product-price">{{ section.settings.review_6_product.price | money }}</span>
+                      {% if section.settings.review_6_show_compare_price and section.settings.review_6_product.compare_at_price > section.settings.review_6_product.price %}
+                        <span class="rc-product-compare">{{ section.settings.review_6_product.compare_at_price | money }}</span>
+                      {% endif %}
+                    </div>
+                    {% if section.settings.review_6_purchase_note != blank %}
+                      <div class="rc-purchase-note">{{ section.settings.review_6_purchase_note }}</div>
+                    {% endif %}
+                  </div>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        {% endif %}
+
+        <!-- Review Card 7 -->
+        {% if section.settings.review_7_name != blank %}
+          <div class="rc-card{% if section.settings.card_shadow %} rc-card--shadow{% endif %}">
+            <div class="rc-media-wrap">
+              {% if section.settings.review_7_media_type == 'image' %}
+                {% if section.settings.review_7_image != blank %}
+                  <img
+                    src="{{ section.settings.review_7_image | image_url: width: 800 }}"
+                    alt="{{ section.settings.review_7_image_alt | escape }}"
+                    loading="lazy"
+                    width="800"
+                    height="{{ 800 | divided_by: section.settings.review_7_image.aspect_ratio | round }}"
+                  >
+                {% else %}
+                  {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+                {% endif %}
+              {% elsif section.settings.review_7_media_type == 'video_upload' %}
+                {% if section.settings.review_7_video != blank %}
+                  <video
+                    playsinline
+                    {% if section.settings.review_7_video_autoplay %}autoplay{% endif %}
+                    {% if section.settings.review_7_video_loop %}loop{% endif %}
+                    {% if section.settings.review_7_video_muted %}muted{% endif %}
+                    {% if section.settings.review_7_image != blank %}poster="{{ section.settings.review_7_image | image_url: width: 800 }}"{% endif %}
+                    data-fallback-img="{% if section.settings.review_7_image != blank %}{{ section.settings.review_7_image | image_url: width: 800 }}{% endif %}"
+                  >
+                    {% for source in section.settings.review_7_video.sources %}
+                      <source src="{{ source.url }}" type="{{ source.mime_type }}">
+                    {% endfor %}
+                  </video>
+                {% endif %}
+                {% if section.settings.review_7_show_play_icon %}
+                  <div class="rc-play-overlay" aria-label="Play video" role="button" tabindex="0">
+                    <svg viewBox="0 0 64 64"><path d="M24 16 L48 32 L24 48 Z"/></svg>
+                  </div>
+                {% endif %}
+              {% elsif section.settings.review_7_media_type == 'external_video' %}
+                {% if section.settings.review_7_external_video_url != blank %}
+                  {% if section.settings.review_7_external_video_url contains 'youtube.com' or section.settings.review_7_external_video_url contains 'youtu.be' %}
+                    {% assign yt_id_7 = section.settings.review_7_external_video_url | split: 'v=' | last | split: '&' | first %}
+                    <iframe
+                      src="https://www.youtube.com/embed/{{ yt_id_7 }}?playsinline=1&rel=0"
+                      allow="autoplay; encrypted-media; picture-in-picture"
+                      allowfullscreen
+                      loading="lazy"
+                      title="{{ section.settings.review_7_name }} video"
+                    ></iframe>
+                  {% elsif section.settings.review_7_external_video_url contains 'vimeo.com' %}
+                    {% assign vimeo_id_7 = section.settings.review_7_external_video_url | split: 'vimeo.com/' | last | split: '?' | first | split: '/' | first %}
+                    <iframe
+                      src="https://player.vimeo.com/video/{{ vimeo_id_7 }}?playsinline=1"
+                      allow="autoplay; fullscreen; picture-in-picture"
+                      allowfullscreen
+                      loading="lazy"
+                      title="{{ section.settings.review_7_name }} video"
+                    ></iframe>
+                  {% endif %}
+                {% endif %}
+              {% endif %}
+            </div>
+            <div class="rc-body">
+              <div class="rc-stars" role="img" aria-label="{{ section.settings.review_7_rating }} out of 5 stars">
+                {% for s in (1..5) %}
+                  {% assign half_7 = s | minus: 0.5 %}
+                  {% if section.settings.review_7_rating >= s %}
+                    <svg viewBox="0 0 24 24"><path class="rc-star-full" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                  {% elsif section.settings.review_7_rating >= half_7 %}
+                    <svg viewBox="0 0 24 24">
+                      <defs><linearGradient id="half-{{ section_id }}-7-{{ s }}"><stop offset="50%" stop-color="var(--rc-star-color)"/><stop offset="50%" stop-color="#ddd"/></linearGradient></defs>
+                      <path fill="url(#half-{{ section_id }}-7-{{ s }})" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
+                  {% else %}
+                    <svg viewBox="0 0 24 24"><path class="rc-star-empty" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                  {% endif %}
+                {% endfor %}
+              </div>
+              <div class="rc-reviewer">
+                <span class="rc-reviewer-name">{{ section.settings.review_7_name }}</span>
+                {% if section.settings.review_7_age != blank %}
+                  <span class="rc-reviewer-age">{{ section.settings.review_7_age }}</span>
+                {% endif %}
+                {% if section.settings.review_7_verified %}
+                  <span class="rc-verified">
+                    <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
+                    Verified Buyer
+                  </span>
+                {% endif %}
+              </div>
+              {% if section.settings.review_7_text != blank %}
+                <div class="rc-text rc-text-clamped" style="-webkit-line-clamp: {{ section.settings.review_7_truncate_lines }};" data-truncate="{{ section.settings.review_7_truncate_lines }}">
+                  {{ section.settings.review_7_text }}
+                </div>
+                {% if section.settings.review_7_show_read_more %}
+                  <button class="rc-read-more" data-expanded="false">Read more</button>
+                {% endif %}
+              {% endif %}
+              {% if section.settings.review_7_product != blank %}
+                <div class="rc-product">
+                  {% if section.settings.review_7_product.featured_image != blank %}
+                    <img class="rc-product-img" src="{{ section.settings.review_7_product.featured_image | image_url: width: 120 }}" alt="{{ section.settings.review_7_product.featured_image.alt | escape }}" loading="lazy" width="56" height="56">
+                  {% endif %}
+                  <div class="rc-product-info">
+                    <p class="rc-product-title"><a href="{{ section.settings.review_7_product.url }}">{{ section.settings.review_7_product.title }}</a></p>
+                    <div class="rc-product-pricing">
+                      <span class="rc-product-price">{{ section.settings.review_7_product.price | money }}</span>
+                      {% if section.settings.review_7_show_compare_price and section.settings.review_7_product.compare_at_price > section.settings.review_7_product.price %}
+                        <span class="rc-product-compare">{{ section.settings.review_7_product.compare_at_price | money }}</span>
+                      {% endif %}
+                    </div>
+                    {% if section.settings.review_7_purchase_note != blank %}
+                      <div class="rc-purchase-note">{{ section.settings.review_7_purchase_note }}</div>
+                    {% endif %}
+                  </div>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        {% endif %}
+
+        <!-- Review Card 8 -->
+        {% if section.settings.review_8_name != blank %}
+          <div class="rc-card{% if section.settings.card_shadow %} rc-card--shadow{% endif %}">
+            <div class="rc-media-wrap">
+              {% if section.settings.review_8_media_type == 'image' %}
+                {% if section.settings.review_8_image != blank %}
+                  <img
+                    src="{{ section.settings.review_8_image | image_url: width: 800 }}"
+                    alt="{{ section.settings.review_8_image_alt | escape }}"
+                    loading="lazy"
+                    width="800"
+                    height="{{ 800 | divided_by: section.settings.review_8_image.aspect_ratio | round }}"
+                  >
+                {% else %}
+                  {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+                {% endif %}
+              {% elsif section.settings.review_8_media_type == 'video_upload' %}
+                {% if section.settings.review_8_video != blank %}
+                  <video
+                    playsinline
+                    {% if section.settings.review_8_video_autoplay %}autoplay{% endif %}
+                    {% if section.settings.review_8_video_loop %}loop{% endif %}
+                    {% if section.settings.review_8_video_muted %}muted{% endif %}
+                    {% if section.settings.review_8_image != blank %}poster="{{ section.settings.review_8_image | image_url: width: 800 }}"{% endif %}
+                    data-fallback-img="{% if section.settings.review_8_image != blank %}{{ section.settings.review_8_image | image_url: width: 800 }}{% endif %}"
+                  >
+                    {% for source in section.settings.review_8_video.sources %}
+                      <source src="{{ source.url }}" type="{{ source.mime_type }}">
+                    {% endfor %}
+                  </video>
+                {% endif %}
+                {% if section.settings.review_8_show_play_icon %}
+                  <div class="rc-play-overlay" aria-label="Play video" role="button" tabindex="0">
+                    <svg viewBox="0 0 64 64"><path d="M24 16 L48 32 L24 48 Z"/></svg>
+                  </div>
+                {% endif %}
+              {% elsif section.settings.review_8_media_type == 'external_video' %}
+                {% if section.settings.review_8_external_video_url != blank %}
+                  {% if section.settings.review_8_external_video_url contains 'youtube.com' or section.settings.review_8_external_video_url contains 'youtu.be' %}
+                    {% assign yt_id_8 = section.settings.review_8_external_video_url | split: 'v=' | last | split: '&' | first %}
+                    <iframe
+                      src="https://www.youtube.com/embed/{{ yt_id_8 }}?playsinline=1&rel=0"
+                      allow="autoplay; encrypted-media; picture-in-picture"
+                      allowfullscreen
+                      loading="lazy"
+                      title="{{ section.settings.review_8_name }} video"
+                    ></iframe>
+                  {% elsif section.settings.review_8_external_video_url contains 'vimeo.com' %}
+                    {% assign vimeo_id_8 = section.settings.review_8_external_video_url | split: 'vimeo.com/' | last | split: '?' | first | split: '/' | first %}
+                    <iframe
+                      src="https://player.vimeo.com/video/{{ vimeo_id_8 }}?playsinline=1"
+                      allow="autoplay; fullscreen; picture-in-picture"
+                      allowfullscreen
+                      loading="lazy"
+                      title="{{ section.settings.review_8_name }} video"
+                    ></iframe>
+                  {% endif %}
+                {% endif %}
+              {% endif %}
+            </div>
+            <div class="rc-body">
+              <div class="rc-stars" role="img" aria-label="{{ section.settings.review_8_rating }} out of 5 stars">
+                {% for s in (1..5) %}
+                  {% assign half_8 = s | minus: 0.5 %}
+                  {% if section.settings.review_8_rating >= s %}
+                    <svg viewBox="0 0 24 24"><path class="rc-star-full" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                  {% elsif section.settings.review_8_rating >= half_8 %}
+                    <svg viewBox="0 0 24 24">
+                      <defs><linearGradient id="half-{{ section_id }}-8-{{ s }}"><stop offset="50%" stop-color="var(--rc-star-color)"/><stop offset="50%" stop-color="#ddd"/></linearGradient></defs>
+                      <path fill="url(#half-{{ section_id }}-8-{{ s }})" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
+                  {% else %}
+                    <svg viewBox="0 0 24 24"><path class="rc-star-empty" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                  {% endif %}
+                {% endfor %}
+              </div>
+              <div class="rc-reviewer">
+                <span class="rc-reviewer-name">{{ section.settings.review_8_name }}</span>
+                {% if section.settings.review_8_age != blank %}
+                  <span class="rc-reviewer-age">{{ section.settings.review_8_age }}</span>
+                {% endif %}
+                {% if section.settings.review_8_verified %}
+                  <span class="rc-verified">
+                    <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
+                    Verified Buyer
+                  </span>
+                {% endif %}
+              </div>
+              {% if section.settings.review_8_text != blank %}
+                <div class="rc-text rc-text-clamped" style="-webkit-line-clamp: {{ section.settings.review_8_truncate_lines }};" data-truncate="{{ section.settings.review_8_truncate_lines }}">
+                  {{ section.settings.review_8_text }}
+                </div>
+                {% if section.settings.review_8_show_read_more %}
+                  <button class="rc-read-more" data-expanded="false">Read more</button>
+                {% endif %}
+              {% endif %}
+              {% if section.settings.review_8_product != blank %}
+                <div class="rc-product">
+                  {% if section.settings.review_8_product.featured_image != blank %}
+                    <img class="rc-product-img" src="{{ section.settings.review_8_product.featured_image | image_url: width: 120 }}" alt="{{ section.settings.review_8_product.featured_image.alt | escape }}" loading="lazy" width="56" height="56">
+                  {% endif %}
+                  <div class="rc-product-info">
+                    <p class="rc-product-title"><a href="{{ section.settings.review_8_product.url }}">{{ section.settings.review_8_product.title }}</a></p>
+                    <div class="rc-product-pricing">
+                      <span class="rc-product-price">{{ section.settings.review_8_product.price | money }}</span>
+                      {% if section.settings.review_8_show_compare_price and section.settings.review_8_product.compare_at_price > section.settings.review_8_product.price %}
+                        <span class="rc-product-compare">{{ section.settings.review_8_product.compare_at_price | money }}</span>
+                      {% endif %}
+                    </div>
+                    {% if section.settings.review_8_purchase_note != blank %}
+                      <div class="rc-purchase-note">{{ section.settings.review_8_purchase_note }}</div>
+                    {% endif %}
+                  </div>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        {% endif %}
+
       </div>
     </div>
   </div>
