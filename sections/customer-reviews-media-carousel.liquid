@@ -408,14 +408,14 @@
       {%- if section.settings.show_arrows -%}
         <button
           class="rc-arrow rc-arrow--prev"
-          aria-label="{{ 'accessibility.previous_slide' | t | default: 'Previous slide' }}"
+          aria-label="Previous slide"
           data-dir="prev"
         >
           <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
         </button>
         <button
           class="rc-arrow rc-arrow--next"
-          aria-label="{{ 'accessibility.next_slide' | t | default: 'Next slide' }}"
+          aria-label="Next slide"
           data-dir="next"
         >
           <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
@@ -428,13 +428,7 @@
         aria-label="{{ section.settings.heading | default: 'Customer reviews carousel' }}"
         tabindex="0"
       >
-        {%- for block in section.blocks -%}
-          {%- if block.type == 'review' -%}
-            <div class="rc-card{% if section.settings.card_shadow %} rc-card--shadow{% endif %}">
-              {% content_for_block block %}
-            </div>
-          {%- endif -%}
-        {%- endfor -%}
+        {% content_for_blocks %}
       </div>
     </div>
   </div>
@@ -477,12 +471,12 @@
           textEl.classList.add('rc-text-clamped');
           textEl.style.webkitLineClamp = textEl.getAttribute('data-truncate');
           btn.setAttribute('data-expanded', 'false');
-          btn.textContent = '{{ "customer.reviews.read_more" | t | default: "Read more" }}';
+          btn.textContent = 'Read more';
         } else {
           textEl.classList.remove('rc-text-clamped');
           textEl.style.webkitLineClamp = 'unset';
           btn.setAttribute('data-expanded', 'true');
-          btn.textContent = '{{ "customer.reviews.read_less" | t | default: "Read less" }}';
+          btn.textContent = 'Read less';
         }
       });
     });
