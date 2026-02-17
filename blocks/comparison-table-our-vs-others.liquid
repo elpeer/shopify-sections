@@ -123,8 +123,8 @@
   }
 
   .ai-cmp-block-{{ ai_gen_id }} .cmp-header__img {
-    width: 56px;
-    height: 56px;
+    width: {{ block.settings.our_image_size }}px;
+    height: auto;
     object-fit: contain;
     border-radius: 12px;
   }
@@ -534,11 +534,10 @@
               {% if block.settings.our_product_image != blank %}
                 <img
                   class="cmp-header__img"
-                  src="{{ block.settings.our_product_image | image_url: width: 112 }}"
+                  src="{{ block.settings.our_product_image | image_url: width: block.settings.our_image_size | times: 2 }}"
                   alt="{{ block.settings.our_label | escape }}"
                   loading="lazy"
-                  width="56"
-                  height="56"
+                  width="{{ block.settings.our_image_size }}"
                 >
               {% endif %}
               <p class="cmp-header__label">{{ block.settings.our_label }}</p>
@@ -797,6 +796,16 @@
       "type": "image_picker",
       "id": "our_product_image",
       "label": "Our product image"
+    },
+    {
+      "type": "range",
+      "id": "our_image_size",
+      "label": "Product image size",
+      "min": 40,
+      "max": 200,
+      "step": 10,
+      "unit": "px",
+      "default": 80
     },
     {
       "type": "text",
