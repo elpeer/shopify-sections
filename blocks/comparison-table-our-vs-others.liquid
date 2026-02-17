@@ -92,7 +92,7 @@
   /* ── Table ── */
   .ai-cmp-block-{{ ai_gen_id }} .cmp-table {
     display: grid;
-    grid-template-columns: 1fr 48px 1fr;
+    grid-template-columns: 1fr 80px 1fr;
     width: 100%;
   }
 
@@ -110,9 +110,15 @@
 
   .ai-cmp-block-{{ ai_gen_id }} .cmp-header__our {
     display: flex;
+    align-items: flex-end;
+    justify-content: flex-start;
+  }
+
+  .ai-cmp-block-{{ ai_gen_id }} .cmp-header__mid {
+    display: flex;
     flex-direction: column;
     align-items: center;
-    text-align: center;
+    justify-content: flex-end;
     gap: 8px;
   }
 
@@ -124,12 +130,17 @@
   }
 
   .ai-cmp-block-{{ ai_gen_id }} .cmp-header__label {
+    display: inline-block;
     color: {{ block.settings.accent_color }};
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.08em;
     margin: 0;
+    padding: 4px 14px;
+    border: 1.5px solid {{ block.settings.accent_color }};
+    border-radius: 20px;
+    white-space: nowrap;
   }
 
   .ai-cmp-block-{{ ai_gen_id }} .cmp-header__badge {
@@ -156,8 +167,8 @@
 
   .ai-cmp-block-{{ ai_gen_id }} .cmp-header__other-label {
     color: {{ block.settings.muted_text_color }};
-    font-size: 13px;
-    font-weight: 700;
+    font-size: 12px;
+    font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.08em;
     margin: 0;
@@ -189,8 +200,8 @@
   }
 
   .ai-cmp-block-{{ ai_gen_id }} .cmp-row__our {
-    justify-content: flex-end;
-    text-align: right;
+    justify-content: flex-start;
+    text-align: left;
     color: {{ block.settings.text_color }};
     font-size: 15px;
     font-weight: 500;
@@ -208,8 +219,8 @@
   }
 
   .ai-cmp-block-{{ ai_gen_id }} .cmp-row__other {
-    justify-content: flex-start;
-    text-align: left;
+    justify-content: center;
+    text-align: center;
     color: {{ block.settings.muted_text_color }};
     font-size: 15px;
     font-weight: 400;
@@ -365,7 +376,7 @@
 
     /* compact mobile */
     .ai-cmp-block-{{ ai_gen_id }}.cmp-mob-compact .cmp-table {
-      grid-template-columns: 1fr 36px 1fr;
+      grid-template-columns: 1fr 48px 1fr;
     }
 
     .ai-cmp-block-{{ ai_gen_id }}.cmp-mob-compact .cmp-row__our,
@@ -518,7 +529,8 @@
         <div class="cmp-table">
           {%- comment -%} Header row {%- endcomment -%}
           <div class="cmp-header">
-            <div class="cmp-header__our">
+            <div class="cmp-header__our"></div>
+            <div class="cmp-header__mid">
               {% if block.settings.our_product_image != blank %}
                 <img
                   class="cmp-header__img"
@@ -534,7 +546,6 @@
                 <span class="cmp-header__badge">{{ block.settings.our_badge_text }}</span>
               {% endif %}
             </div>
-            <div class="cmp-header__mid"></div>
             <div class="cmp-header__other">
               <p class="cmp-header__other-label">{{ block.settings.other_label }}</p>
               {% if block.settings.other_sub_label != blank %}
