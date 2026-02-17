@@ -270,13 +270,23 @@
   }
 
   @media (max-width: 749px) {
+    .ai-testimonials-carousel__wrapper-{{ ai_gen_id }} {
+      padding-left: 0;
+      padding-right: 0;
+    }
+
+    .ai-testimonials-carousel__track-{{ ai_gen_id }} {
+      padding-left: 16px;
+      padding-right: 16px;
+    }
+
     .ai-testimonials-carousel__card-{{ ai_gen_id }} {
       {% if block.settings.mobile_slides == '1' %}
-        flex: 0 0 100%;
+        flex: 0 0 calc(100% - 32px);
       {% elsif block.settings.mobile_slides == '1.5' %}
-        flex: 0 0 calc((100% - {{ block.settings.card_gap }}px) / 1.5);
+        flex: 0 0 calc((100% - 32px - {{ block.settings.card_gap }}px) / 1.5);
       {% elsif block.settings.mobile_slides == '2' %}
-        flex: 0 0 calc((100% - {{ block.settings.card_gap }}px) / 2);
+        flex: 0 0 calc((100% - 32px - {{ block.settings.card_gap }}px) / 2);
       {% endif %}
     }
   }
