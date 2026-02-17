@@ -1,0 +1,26 @@
+<div class="hello-test">
+  <p>{{ block.settings.text }}</p>
+</div>
+
+<style>
+  .hello-test {
+    padding: 12px 0;
+    font-size: 16px;
+    color: #333;
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Hello Test",
+  "target": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "text",
+      "label": "Text",
+      "default": "Hello from App Block!"
+    }
+  ]
+}
+{% endschema %}
