@@ -531,16 +531,17 @@
           <div class="cmp-header">
             <div class="cmp-header__our"></div>
             <div class="cmp-header__mid">
-              {% if block.settings.our_product_image != blank %}
+              {%- if block.settings.our_product_image != blank -%}
+                {%- assign img_width_2x = block.settings.our_image_size | times: 2 -%}
                 <img
                   class="cmp-header__img"
-                  src="{{ block.settings.our_product_image | image_url: width: block.settings.our_image_size | times: 2 }}"
+                  src="{{ block.settings.our_product_image | image_url: width: img_width_2x }}"
                   alt="{{ block.settings.our_label | escape }}"
                   loading="lazy"
                   width="{{ block.settings.our_image_size }}"
                   height="{{ block.settings.our_image_size }}"
                 >
-              {% endif %}
+              {%- endif -%}
               <p class="cmp-header__label">{{ block.settings.our_label }}</p>
               {% if block.settings.our_badge_enabled and block.settings.our_badge_text != blank %}
                 <span class="cmp-header__badge">{{ block.settings.our_badge_text }}</span>
