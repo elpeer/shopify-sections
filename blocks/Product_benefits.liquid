@@ -60,7 +60,8 @@
   /* ── Heading ── */
   .ib-heading-{{ bid }} {
     text-align: center;
-    margin-bottom: 48px;
+    margin-top: {{ block.settings.heading_margin_top }}px;
+    margin-bottom: {{ block.settings.heading_margin_bottom }}px;
     {% if block.settings.heading_max_width > 0 %}
       max-width: {{ block.settings.heading_max_width }}px;
       margin-left: auto;
@@ -208,7 +209,8 @@
   /* ── CTA ── */
   .ib-cta-wrap-{{ bid }} {
     text-align: center;
-    margin-top: 48px;
+    margin-top: {{ block.settings.cta_margin_top }}px;
+    margin-bottom: {{ block.settings.cta_margin_bottom }}px;
   }
 
   .ib-cta-{{ bid }} {
@@ -758,6 +760,26 @@
       "default": 0
     },
     {
+      "type": "range",
+      "id": "heading_margin_top",
+      "label": "Heading – top spacing",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "heading_margin_bottom",
+      "label": "Heading – bottom spacing",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    },
+    {
       "type": "header",
       "content": "Background Media"
     },
@@ -958,6 +980,26 @@
       "step": 2,
       "unit": "px",
       "default": 6
+    },
+    {
+      "type": "range",
+      "id": "cta_margin_top",
+      "label": "Button – top spacing",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "cta_margin_bottom",
+      "label": "Button – bottom spacing",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 0
     },
     {
       "type": "header",
