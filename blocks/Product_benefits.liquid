@@ -61,6 +61,11 @@
   .ib-heading-{{ bid }} {
     text-align: center;
     margin-bottom: 48px;
+    {% if block.settings.heading_max_width > 0 %}
+      max-width: {{ block.settings.heading_max_width }}px;
+      margin-left: auto;
+      margin-right: auto;
+    {% endif %}
   }
 
   .ib-heading-{{ bid }} h2 {
@@ -84,7 +89,7 @@
   .ib-grid-{{ bid }} {
     display: grid;
     grid-template-columns: 1fr 1.4fr 1fr;
-    gap: 40px;
+    gap: {{ block.settings.columns_gap }}px;
     align-items: center;
   }
 
@@ -724,6 +729,28 @@
       "type": "range",
       "id": "min_height_mobile",
       "label": "Min height – mobile",
+      "min": 0,
+      "max": 900,
+      "step": 10,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "columns_gap",
+      "label": "Columns gap – desktop",
+      "info": "Space between the benefit columns and center media",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "heading_max_width",
+      "label": "Heading max width",
+      "info": "Limit heading width so it won't overlap center media. 0 = full width",
       "min": 0,
       "max": 900,
       "step": 10,
