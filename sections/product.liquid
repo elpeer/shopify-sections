@@ -931,54 +931,76 @@
                   {%- when 'promo_label' -%}
                     <div class="product__block block-padding" {{ block.shopify_attributes }} {{ block_style }}>
                       <style>
-                        .promo-label {
+                        #PromoBlock-{{ block.id }} .promo-label {
                           display: inline-flex;
                           align-items: center;
                           gap: 8px;
-                          padding: 8px 18px;
-                          border: 2px solid;
-                          border-radius: 8px;
-                          font-size: 14px;
+                          padding: var(--promo-pad-v) var(--promo-pad-h);
+                          border: 2px solid var(--promo-border);
+                          border-radius: var(--promo-radius);
+                          font-size: var(--promo-fs);
                           font-weight: 600;
                           line-height: 1.4;
                           cursor: pointer;
                           position: relative;
                           overflow: hidden;
                           transition: opacity 0.2s;
+                          background-color: var(--promo-bg);
+                          color: var(--promo-color);
                           -webkit-appearance: none;
                           appearance: none;
                         }
-                        .promo-label:hover { opacity: 0.85; }
+                        #PromoBlock-{{ block.id }} .promo-label:hover { opacity: 0.85; }
 
-                        @keyframes promo-shimmer {
+                        /* ── Shimmer: button sweep ── */
+                        @keyframes promo-sweep-{{ block.id }} {
                           0% { transform: translateX(-100%); }
                           100% { transform: translateX(300%); }
                         }
-                        .promo-label--shimmer::after {
+                        #PromoBlock-{{ block.id }} .promo-label--shimmer-button::after {
                           content: '';
                           position: absolute;
-                          top: 0;
-                          left: 0;
+                          top: 0; left: 0;
                           width: 50%;
                           height: 100%;
-                          background: linear-gradient(105deg, transparent 20%, rgba(255,255,255,0.35) 50%, transparent 80%);
-                          animation: promo-shimmer 3s ease-in-out infinite;
+                          background: linear-gradient(105deg, transparent 20%, var(--promo-glow) 50%, transparent 80%);
+                          animation: promo-sweep-{{ block.id }} 3s ease-in-out infinite;
                           pointer-events: none;
                         }
 
-                        .promo-label__arrow {
+                        /* ── Shimmer: border glow ── */
+                        @keyframes promo-border-glow-{{ block.id }} {
+                          0%, 100% { box-shadow: 0 0 0 0 var(--promo-glow); }
+                          50% { box-shadow: 0 0 14px 3px var(--promo-glow); }
+                        }
+                        #PromoBlock-{{ block.id }} .promo-label--shimmer-border {
+                          animation: promo-border-glow-{{ block.id }} 2.5s ease-in-out infinite;
+                        }
+
+                        /* ── Shimmer: text glow ── */
+                        @keyframes promo-text-glow-{{ block.id }} {
+                          0%, 100% { text-shadow: 0 0 0 var(--promo-glow); }
+                          50% { text-shadow: 0 0 10px var(--promo-glow), 0 0 20px var(--promo-glow); }
+                        }
+                        #PromoBlock-{{ block.id }} .promo-label--shimmer-text .promo-label__text {
+                          animation: promo-text-glow-{{ block.id }} 2.5s ease-in-out infinite;
+                        }
+
+                        /* ── Arrow ── */
+                        #PromoBlock-{{ block.id }} .promo-label__arrow {
                           flex-shrink: 0;
                           transition: transform 0.2s;
                         }
-                        .promo-label:hover .promo-label__arrow {
+                        #PromoBlock-{{ block.id }} .promo-label:hover .promo-label__arrow {
                           transform: translateX(3px);
                         }
 
-                        .promo-popup {
+                        /* ── Popup ── */
+                        #PromoPopup-{{ block.id }} {
+                          display: none;
                           position: fixed;
                           inset: 0;
                           z-index: 99999;
-                          display: flex;
                           align-items: center;
                           justify-content: center;
                           padding: 20px;
@@ -986,14 +1008,19 @@
                           transition: opacity 0.3s ease;
                           overflow-y: auto;
                         }
-                        .promo-popup.is-open { opacity: 1; }
-                        .promo-popup__overlay {
+                        #PromoPopup-{{ block.id }}.is-active {
+                          display: flex;
+                        }
+                        #PromoPopup-{{ block.id }}.is-open {
+                          opacity: 1;
+                        }
+                        #PromoPopup-{{ block.id }} .promo-popup__overlay {
                           position: fixed;
                           inset: 0;
                           background: rgba(0,0,0,0.65);
                           z-index: 1;
                         }
-                        .promo-popup__container {
+                        #PromoPopup-{{ block.id }} .promo-popup__container {
                           position: relative;
                           z-index: 2;
                           width: 90vw;
@@ -1003,14 +1030,14 @@
                           transform: translateY(20px) scale(0.97);
                           transition: transform 0.3s ease;
                         }
-                        .promo-popup.is-open .promo-popup__container {
+                        #PromoPopup-{{ block.id }}.is-open .promo-popup__container {
                           transform: translateY(0) scale(1);
                         }
-                        .promo-popup__container--image { max-width: 1200px; }
-                        .promo-popup__container--video { max-width: 900px; }
-                        .promo-popup__container--image_text { max-width: 1000px; }
+                        #PromoPopup-{{ block.id }} .promo-popup__container--image { max-width: 1200px; }
+                        #PromoPopup-{{ block.id }} .promo-popup__container--video { max-width: 900px; }
+                        #PromoPopup-{{ block.id }} .promo-popup__container--image_text { max-width: 1000px; }
 
-                        .promo-popup__close {
+                        #PromoPopup-{{ block.id }} .promo-popup__close {
                           position: absolute;
                           top: 12px;
                           right: 12px;
@@ -1027,80 +1054,83 @@
                           transition: background 0.2s;
                           padding: 0;
                         }
-                        .promo-popup__close:hover { background: rgba(0,0,0,0.8); }
+                        #PromoPopup-{{ block.id }} .promo-popup__close:hover { background: rgba(0,0,0,0.8); }
 
-                        .promo-popup__banner img {
+                        #PromoPopup-{{ block.id }} .promo-popup__banner img {
+                          width: 100%;
+                          height: auto;
+                          display: block;
+                        }
+                        #PromoPopup-{{ block.id }} .promo-popup__video-wrap { background: #000; }
+                        #PromoPopup-{{ block.id }} .promo-popup__video-wrap video {
                           width: 100%;
                           height: auto;
                           display: block;
                         }
 
-                        .promo-popup__video-wrap {
-                          background: #000;
-                        }
-                        .promo-popup__video-wrap video {
-                          width: 100%;
-                          height: auto;
-                          display: block;
-                        }
-
-                        .promo-popup__split {
+                        #PromoPopup-{{ block.id }} .promo-popup__split {
                           display: flex;
                           overflow: hidden;
                         }
-                        .promo-popup__split--right {
-                          flex-direction: row-reverse;
-                        }
-                        .promo-popup__split-image {
-                          flex: 0 0 50%;
-                        }
-                        .promo-popup__split-image img {
+                        #PromoPopup-{{ block.id }} .promo-popup__split--right { flex-direction: row-reverse; }
+                        #PromoPopup-{{ block.id }} .promo-popup__split-image { flex: 0 0 50%; }
+                        #PromoPopup-{{ block.id }} .promo-popup__split-image img {
                           width: 100%;
                           height: 100%;
                           object-fit: cover;
                           display: block;
                         }
-                        .promo-popup__split-text {
+                        #PromoPopup-{{ block.id }} .promo-popup__split-text {
                           flex: 1;
                           padding: 32px;
                           overflow-y: auto;
                           max-height: 80vh;
                         }
-                        .promo-popup__richtext h1,
-                        .promo-popup__richtext h2,
-                        .promo-popup__richtext h3,
-                        .promo-popup__richtext h4,
-                        .promo-popup__richtext h5,
-                        .promo-popup__richtext h6 { margin: 0 0 12px; }
-                        .promo-popup__richtext p { margin: 0 0 12px; }
-                        .promo-popup__richtext ul,
-                        .promo-popup__richtext ol { margin: 0 0 12px; padding-left: 20px; }
-                        .promo-popup__richtext > *:last-child { margin-bottom: 0; }
+                        #PromoPopup-{{ block.id }} .promo-popup__richtext h1,
+                        #PromoPopup-{{ block.id }} .promo-popup__richtext h2,
+                        #PromoPopup-{{ block.id }} .promo-popup__richtext h3,
+                        #PromoPopup-{{ block.id }} .promo-popup__richtext h4,
+                        #PromoPopup-{{ block.id }} .promo-popup__richtext h5,
+                        #PromoPopup-{{ block.id }} .promo-popup__richtext h6 { margin: 0 0 12px; }
+                        #PromoPopup-{{ block.id }} .promo-popup__richtext p { margin: 0 0 12px; }
+                        #PromoPopup-{{ block.id }} .promo-popup__richtext ul,
+                        #PromoPopup-{{ block.id }} .promo-popup__richtext ol { margin: 0 0 12px; padding-left: 20px; }
+                        #PromoPopup-{{ block.id }} .promo-popup__richtext > *:last-child { margin-bottom: 0; }
 
                         @media (max-width: 767px) {
-                          .promo-popup { padding: 16px; }
-                          .promo-popup__container { width: 95vw; }
-                          .promo-popup__split { flex-direction: column !important; }
-                          .promo-popup__split-image { flex: none; max-height: 40vh; }
-                          .promo-popup__split-text { padding: 24px; max-height: none; }
+                          #PromoPopup-{{ block.id }} { padding: 16px; }
+                          #PromoPopup-{{ block.id }} .promo-popup__container { width: 95vw; }
+                          #PromoPopup-{{ block.id }} .promo-popup__split { flex-direction: column !important; }
+                          #PromoPopup-{{ block.id }} .promo-popup__split-image { flex: none; max-height: 40vh; }
+                          #PromoPopup-{{ block.id }} .promo-popup__split-text { padding: 24px; max-height: none; }
                         }
                       </style>
 
-                      <button
-                        class="promo-label{% if block.settings.enable_shimmer %} promo-label--shimmer{% endif %}"
-                        id="PromoLabel-{{ block.id }}"
-                        type="button"
-                        style="background-color:{{ block.settings.label_bg_color }};color:{{ block.settings.label_text_color }};border-color:{{ block.settings.label_border_color }};"
-                      >
-                        <span>{{ block.settings.label_text }}</span>
-                        {%- if block.settings.show_arrow -%}
-                          <svg class="promo-label__arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M3 8H13M13 8L8.5 3.5M13 8L8.5 12.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                          </svg>
-                        {%- endif -%}
-                      </button>
+                      {%- liquid
+                        assign shimmer_class = ''
+                        if block.settings.enable_shimmer
+                          assign shimmer_class = 'promo-label--shimmer-' | append: block.settings.shimmer_target
+                        endif
+                      -%}
 
-                      <div class="promo-popup" id="PromoPopup-{{ block.id }}" hidden>
+                      <div id="PromoBlock-{{ block.id }}"
+                        style="--promo-fs:{{ block.settings.label_font_size }}px;--promo-pad-v:{{ block.settings.label_padding_v }}px;--promo-pad-h:{{ block.settings.label_padding_h }}px;--promo-radius:{{ block.settings.label_border_radius }}px;--promo-bg:{{ block.settings.label_bg_color }};--promo-color:{{ block.settings.label_text_color }};--promo-border:{{ block.settings.label_border_color }};--promo-glow:{{ block.settings.shimmer_color }};"
+                      >
+                        <button
+                          class="promo-label {{ shimmer_class }}"
+                          id="PromoLabel-{{ block.id }}"
+                          type="button"
+                        >
+                          <span class="promo-label__text">{{ block.settings.label_text }}</span>
+                          {%- if block.settings.show_arrow -%}
+                            <svg class="promo-label__arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M3 8H13M13 8L8.5 3.5M13 8L8.5 12.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                          {%- endif -%}
+                        </button>
+                      </div>
+
+                      <div id="PromoPopup-{{ block.id }}">
                         <div class="promo-popup__overlay"></div>
                         <div class="promo-popup__container promo-popup__container--{{ block.settings.popup_type }}">
                           <button class="promo-popup__close" type="button" aria-label="Close">
@@ -1117,11 +1147,7 @@
                                     {%- if block.settings.popup_image_mobile != blank -%}
                                       <source media="(max-width: 767px)" srcset="{{ block.settings.popup_image_mobile | image_url: width: 900 }}">
                                     {%- endif -%}
-                                    <img
-                                      src="{{ block.settings.popup_image_desktop | image_url: width: 1400 }}"
-                                      alt="{{ block.settings.label_text | escape }}"
-                                      loading="lazy"
-                                    >
+                                    <img src="{{ block.settings.popup_image_desktop | image_url: width: 1400 }}" alt="{{ block.settings.label_text | escape }}" loading="lazy">
                                   </picture>
                                 </div>
                               {%- endif -%}
@@ -1139,15 +1165,10 @@
                               >
                                 {%- if block.settings.popup_it_image != blank -%}
                                   <div class="promo-popup__split-image">
-                                    <img
-                                      src="{{ block.settings.popup_it_image | image_url: width: 800 }}"
-                                      alt=""
-                                      loading="lazy"
-                                    >
+                                    <img src="{{ block.settings.popup_it_image | image_url: width: 800 }}" alt="" loading="lazy">
                                   </div>
                                 {%- endif -%}
-                                <div
-                                  class="promo-popup__split-text"
+                                <div class="promo-popup__split-text"
                                   style="color:{{ block.settings.popup_it_text_color }};background-color:{{ block.settings.popup_it_bg_color }};"
                                 >
                                   <div class="promo-popup__richtext">
@@ -1161,38 +1182,41 @@
 
                       <script>
                         (function(){
-                          var label = document.getElementById('PromoLabel-{{ block.id }}');
-                          var popup = document.getElementById('PromoPopup-{{ block.id }}');
-                          if (!label || !popup) return;
-                          var overlay = popup.querySelector('.promo-popup__overlay');
-                          var closeBtn = popup.querySelector('.promo-popup__close');
-                          var video = popup.querySelector('video');
+                          var labelEl = document.getElementById('PromoLabel-{{ block.id }}');
+                          var popupEl = document.getElementById('PromoPopup-{{ block.id }}');
+                          if (!labelEl || !popupEl) return;
+                          var overlayEl = popupEl.querySelector('.promo-popup__overlay');
+                          var closeBtnEl = popupEl.querySelector('.promo-popup__close');
+                          var videoEl = popupEl.querySelector('video');
 
-                          function open() {
-                            popup.hidden = false;
+                          function openPopup() {
+                            popupEl.classList.add('is-active');
                             document.body.style.overflow = 'hidden';
                             requestAnimationFrame(function(){
                               requestAnimationFrame(function(){
-                                popup.classList.add('is-open');
+                                popupEl.classList.add('is-open');
                               });
                             });
-                            if (video) { video.currentTime = 0; video.play(); }
+                            if (videoEl) {
+                              videoEl.currentTime = 0;
+                              videoEl.play().catch(function(){});
+                            }
                           }
 
-                          function close() {
-                            popup.classList.remove('is-open');
-                            if (video) video.pause();
+                          function closePopup() {
+                            popupEl.classList.remove('is-open');
+                            if (videoEl) videoEl.pause();
                             setTimeout(function(){
-                              popup.hidden = true;
+                              popupEl.classList.remove('is-active');
                               document.body.style.overflow = '';
                             }, 300);
                           }
 
-                          label.addEventListener('click', open);
-                          if (overlay) overlay.addEventListener('click', close);
-                          if (closeBtn) closeBtn.addEventListener('click', close);
+                          labelEl.addEventListener('click', openPopup);
+                          if (overlayEl) overlayEl.addEventListener('click', closePopup);
+                          if (closeBtnEl) closeBtnEl.addEventListener('click', closePopup);
                           document.addEventListener('keydown', function(e){
-                            if (e.key === 'Escape' && !popup.hidden) close();
+                            if (e.key === 'Escape' && popupEl.classList.contains('is-active')) closePopup();
                           });
                         })();
                       </script>
@@ -3027,6 +3051,46 @@
           "default": "Special Offer"
         },
         {
+          "type": "range",
+          "id": "label_font_size",
+          "label": "Font size",
+          "min": 10,
+          "max": 28,
+          "step": 1,
+          "unit": "px",
+          "default": 14
+        },
+        {
+          "type": "range",
+          "id": "label_padding_v",
+          "label": "Padding vertical",
+          "min": 2,
+          "max": 24,
+          "step": 1,
+          "unit": "px",
+          "default": 8
+        },
+        {
+          "type": "range",
+          "id": "label_padding_h",
+          "label": "Padding horizontal",
+          "min": 4,
+          "max": 40,
+          "step": 1,
+          "unit": "px",
+          "default": 18
+        },
+        {
+          "type": "range",
+          "id": "label_border_radius",
+          "label": "Border radius",
+          "min": 0,
+          "max": 30,
+          "step": 1,
+          "unit": "px",
+          "default": 8
+        },
+        {
           "type": "color",
           "id": "label_bg_color",
           "label": "Background color",
@@ -3046,15 +3110,36 @@
         },
         {
           "type": "checkbox",
-          "id": "enable_shimmer",
-          "label": "Enable shimmer animation",
-          "default": true
-        },
-        {
-          "type": "checkbox",
           "id": "show_arrow",
           "label": "Show arrow",
           "default": true
+        },
+        {
+          "type": "header",
+          "content": "Animation"
+        },
+        {
+          "type": "checkbox",
+          "id": "enable_shimmer",
+          "label": "Enable animation",
+          "default": true
+        },
+        {
+          "type": "select",
+          "id": "shimmer_target",
+          "label": "Animation target",
+          "default": "button",
+          "options": [
+            {"value": "button", "label": "Full button (sweep)"},
+            {"value": "border", "label": "Border (glow)"},
+            {"value": "text", "label": "Text (glow)"}
+          ]
+        },
+        {
+          "type": "color",
+          "id": "shimmer_color",
+          "label": "Glow color",
+          "default": "#ffffff"
         },
         {
           "type": "header",
