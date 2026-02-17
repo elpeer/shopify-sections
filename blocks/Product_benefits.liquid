@@ -18,6 +18,12 @@
     color: {{ block.settings.text_color }};
     padding-top: {{ block.settings.spacing_top }}px;
     padding-bottom: {{ block.settings.spacing_bottom }}px;
+    {% if block.settings.min_height_desktop > 0 %}
+      min-height: {{ block.settings.min_height_desktop }}px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    {% endif %}
   }
 
   /* ── Background media ── */
@@ -239,6 +245,15 @@
 
   /* ── Mobile ── */
   @media (max-width: 768px) {
+    {% if block.settings.min_height_mobile > 0 %}
+      .ib-section-{{ bid }} {
+        min-height: {{ block.settings.min_height_mobile }}px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+    {% endif %}
+
     .ib-heading-{{ bid }} {
       margin-bottom: 24px;
     }
@@ -694,6 +709,26 @@
       "step": 4,
       "unit": "px",
       "default": 60
+    },
+    {
+      "type": "range",
+      "id": "min_height_desktop",
+      "label": "Min height – desktop",
+      "min": 0,
+      "max": 900,
+      "step": 10,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "min_height_mobile",
+      "label": "Min height – mobile",
+      "min": 0,
+      "max": 900,
+      "step": 10,
+      "unit": "px",
+      "default": 0
     },
     {
       "type": "header",
