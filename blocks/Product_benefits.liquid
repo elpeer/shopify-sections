@@ -7,16 +7,6 @@
 
 {% assign bid = block.id | replace: '_', '' | downcase %}
 
-{%- liquid
-  assign left_benefits = ''
-  assign right_benefits = ''
-  assign left_count = 0
-  assign right_count = 0
-
-  for b in block.settings
-  endfor
--%}
-
 {% style %}
   /* ── Wrapper ── */
   .ib-section-{{ bid }} {
@@ -348,7 +338,7 @@
           <div class="ib-benefit-{{ bid }}">
             {% if block.settings[b_icon_type] == 'image' and block.settings[b_icon_image] != blank %}
               <div class="ib-benefit__icon-{{ bid }}" style="--ib-icon-size: {{ block.settings[b_icon_size] | default: 40 }}px;">
-                <img src="{{ block.settings[b_icon_image] | image_url: width: 120 }}" alt="" loading="lazy">
+                <img src="{{ block.settings[b_icon_image] | image_url: width: 120, height: 120 }}" alt="" loading="lazy" width="120" height="120">
               </div>
             {% elsif block.settings[b_icon_type] == 'svg_upload' and block.settings[b_icon_svg] != blank %}
               <div class="ib-benefit__icon-{{ bid }}" style="--ib-icon-size: {{ block.settings[b_icon_size] | default: 40 }}px;">
@@ -370,9 +360,11 @@
         {% if block.settings.center_media_type == 'image' %}
           {% if block.settings.center_image != blank %}
             <img
-              src="{{ block.settings.center_image | image_url: width: 900 }}"
+              src="{{ block.settings.center_image | image_url: width: 900, height: 900 }}"
               alt="{{ block.settings.center_image_alt | escape }}"
               loading="lazy"
+              width="{{ block.settings.center_image.width }}"
+              height="{{ block.settings.center_image.height }}"
             >
           {% else %}
             {% if request.design_mode %}
@@ -384,7 +376,7 @@
           {% if block.settings.center_video != blank %}
             {% assign poster_img = block.settings.fallback_image | default: block.settings.center_image %}
             <video
-              {% if poster_img != blank %}poster="{{ poster_img | image_url: width: 900 }}"{% endif %}
+              {% if poster_img != blank %}poster="{{ poster_img | image_url: width: 900, height: 900 }}"{% endif %}
               {% if block.settings.video_autoplay %}autoplay{% endif %}
               {% if block.settings.video_loop %}loop{% endif %}
               {% if block.settings.video_muted %}muted{% endif %}
@@ -484,7 +476,7 @@
           <div class="ib-benefit-{{ bid }}">
             {% if block.settings[b_icon_type] == 'image' and block.settings[b_icon_image] != blank %}
               <div class="ib-benefit__icon-{{ bid }}" style="--ib-icon-size: {{ block.settings[b_icon_size] | default: 40 }}px;">
-                <img src="{{ block.settings[b_icon_image] | image_url: width: 120 }}" alt="" loading="lazy">
+                <img src="{{ block.settings[b_icon_image] | image_url: width: 120, height: 120 }}" alt="" loading="lazy" width="120" height="120">
               </div>
             {% elsif block.settings[b_icon_type] == 'svg_upload' and block.settings[b_icon_svg] != blank %}
               <div class="ib-benefit__icon-{{ bid }}" style="--ib-icon-size: {{ block.settings[b_icon_size] | default: 40 }}px;">
@@ -522,7 +514,7 @@
         <div class="ib-benefit-{{ bid }}" style="order: {{ block.settings[b_order] | default: idx }};">
           {% if block.settings[b_icon_type] == 'image' and block.settings[b_icon_image] != blank %}
             <div class="ib-benefit__icon-{{ bid }}" style="--ib-icon-size: {{ block.settings[b_icon_size] | default: 40 }}px;">
-              <img src="{{ block.settings[b_icon_image] | image_url: width: 120 }}" alt="" loading="lazy">
+              <img src="{{ block.settings[b_icon_image] | image_url: width: 120, height: 120 }}" alt="" loading="lazy" width="120" height="120">
             </div>
           {% elsif block.settings[b_icon_type] == 'svg_upload' and block.settings[b_icon_svg] != blank %}
             <div class="ib-benefit__icon-{{ bid }}" style="--ib-icon-size: {{ block.settings[b_icon_size] | default: 40 }}px;">
@@ -563,7 +555,6 @@
 {% schema %}
 {
   "name": "Icon Benefits + Center Media",
-  "target": "section",
   "settings": [
     {
       "type": "header",
