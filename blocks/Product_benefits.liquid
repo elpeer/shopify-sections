@@ -310,6 +310,8 @@
       <img
         src="{{ block.settings.bg_image | image_url: width: 1920 }}"
         alt="{{ block.settings.bg_image_alt | escape }}"
+        width="{{ block.settings.bg_image.width }}"
+        height="{{ block.settings.bg_image.height }}"
         loading="lazy"
       >
     </div>
@@ -323,9 +325,11 @@
         {% if bg_poster != blank %}poster="{{ bg_poster | image_url: width: 1920 }}"{% endif %}
         autoplay loop muted playsinline
       >
+        {%- comment -%}theme-check-disable RemoteAsset{%- endcomment -%}
         {% for source in block.settings.bg_video.sources %}
           <source src="{{ source.url }}" type="{{ source.mime_type }}">
         {% endfor %}
+        {%- comment -%}theme-check-enable RemoteAsset{%- endcomment -%}
       </video>
     </div>
     {% if block.settings.bg_overlay_opacity > 0 %}
@@ -454,9 +458,11 @@
               {% if block.settings.show_video_controls %}controls{% endif %}
               playsinline
             >
+              {%- comment -%}theme-check-disable RemoteAsset{%- endcomment -%}
               {% for source in block.settings.center_video.sources %}
                 <source src="{{ source.url }}" type="{{ source.mime_type }}">
               {% endfor %}
+              {%- comment -%}theme-check-enable RemoteAsset{%- endcomment -%}
             </video>
           {% else %}
             {% if request.design_mode %}
