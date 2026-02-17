@@ -66,6 +66,7 @@
     flex: 0 0 {{ block.settings.card_width }}px;
     background: {{ block.settings.card_bg_color }};
     border-radius: {{ block.settings.card_border_radius }}px;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
   }
@@ -79,7 +80,6 @@
     aspect-ratio: 4 / 3;
     overflow: hidden;
     position: relative;
-    border-radius: {{ block.settings.card_border_radius }}px {{ block.settings.card_border_radius }}px 0 0;
   }
 
   .ai-testimonials-carousel__media-{{ ai_gen_id }} img,
@@ -531,16 +531,15 @@
         const buttons = this.querySelectorAll('[data-read-more]');
 
         buttons.forEach((btn) => {
+          const textEl = btn.previousElementSibling;
+          if (!textEl) return;
+
+          const clampClass = Array.from(textEl.classList).find((c) =>
+            c.indexOf('review-text-clamped') !== -1
+          );
+          if (!clampClass) return;
+
           btn.addEventListener('click', () => {
-            const textEl = btn.previousElementSibling;
-            if (!textEl) return;
-
-            const clampClass = Array.from(textEl.classList).find((c) =>
-              c.indexOf('review-text-clamped') !== -1
-            );
-
-            if (!clampClass) return;
-
             if (textEl.classList.contains(clampClass)) {
               textEl.classList.remove(clampClass);
               btn.textContent = 'Read less';
