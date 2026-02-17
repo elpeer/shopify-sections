@@ -932,14 +932,15 @@
                     <div class="product__block block-padding" {{ block.shopify_attributes }} {{ block_style }}>
                       <style>
                         #PromoBlock-{{ block.id }} .promo-label {
-                          display: inline-flex;
+                          display: var(--promo-display);
                           align-items: center;
+                          justify-content: var(--promo-justify);
                           gap: 8px;
                           padding: var(--promo-pad-v) var(--promo-pad-h);
                           border: 2px solid var(--promo-border);
                           border-radius: var(--promo-radius);
                           font-size: var(--promo-fs);
-                          font-weight: 600;
+                          font-weight: var(--promo-fw);
                           line-height: 1.4;
                           cursor: pointer;
                           position: relative;
@@ -949,6 +950,8 @@
                           color: var(--promo-color);
                           -webkit-appearance: none;
                           appearance: none;
+                          width: var(--promo-width);
+                          text-align: var(--promo-align);
                         }
                         #PromoBlock-{{ block.id }} .promo-label:hover { opacity: 0.85; }
 
@@ -1122,7 +1125,7 @@
                       -%}
 
                       <div id="PromoBlock-{{ block.id }}"
-                        style="--promo-fs:{{ block.settings.label_font_size }}px;--promo-pad-v:{{ block.settings.label_padding_v }}px;--promo-pad-h:{{ block.settings.label_padding_h }}px;--promo-radius:{{ block.settings.label_border_radius }}px;--promo-bg:{{ block.settings.label_bg_color }};--promo-color:{{ block.settings.label_text_color }};--promo-border:{{ block.settings.label_border_color }};--promo-glow:{{ block.settings.shimmer_color }};--promo-icon-size:{{ block.settings.icon_size }}px;"
+                        style="--promo-fs:{{ block.settings.label_font_size }}px;--promo-fw:{{ block.settings.label_font_weight }};--promo-pad-v:{{ block.settings.label_padding_v }}px;--promo-pad-h:{{ block.settings.label_padding_h }}px;--promo-radius:{{ block.settings.label_border_radius }}px;--promo-bg:{{ block.settings.label_bg_color }};--promo-color:{{ block.settings.label_text_color }};--promo-border:{{ block.settings.label_border_color }};--promo-glow:{{ block.settings.shimmer_color }};--promo-icon-size:{{ block.settings.icon_size }}px;--promo-display:{% if block.settings.label_full_width %}flex{% else %}inline-flex{% endif %};--promo-width:{% if block.settings.label_full_width %}100%{% else %}auto{% endif %};--promo-justify:{{ block.settings.label_text_align }};--promo-align:{{ block.settings.label_text_align }};"
                       >
                         <button
                           class="promo-label {{ shimmer_class }}{% if block.settings.icon_position == 'left' %} promo-label--icon-left{% endif %}"
@@ -3084,6 +3087,35 @@
           "step": 1,
           "unit": "px",
           "default": 14
+        },
+        {
+          "type": "select",
+          "id": "label_font_weight",
+          "label": "Font weight",
+          "default": "600",
+          "options": [
+            {"value": "300", "label": "Light"},
+            {"value": "400", "label": "Regular"},
+            {"value": "600", "label": "Semi-bold"},
+            {"value": "700", "label": "Bold"}
+          ]
+        },
+        {
+          "type": "checkbox",
+          "id": "label_full_width",
+          "label": "Full width",
+          "default": false
+        },
+        {
+          "type": "select",
+          "id": "label_text_align",
+          "label": "Text alignment",
+          "default": "center",
+          "options": [
+            {"value": "left", "label": "Left"},
+            {"value": "center", "label": "Center"},
+            {"value": "right", "label": "Right"}
+          ]
         },
         {
           "type": "range",
