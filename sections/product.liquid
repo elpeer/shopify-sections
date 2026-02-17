@@ -752,6 +752,156 @@
                       </div>
                     </div>
 
+                  {%- when 'video_slider' -%}
+                    <div class="product__block block-padding" {{ block.shopify_attributes }} {{ block_style }}>
+                      <style>
+                        .video-slider__heading {
+                          margin: 0 0 16px;
+                          font-size: 18px;
+                          font-style: italic;
+                          font-weight: 400;
+                          color: inherit;
+                        }
+                        .video-slider__track {
+                          display: flex;
+                          overflow-x: auto;
+                          scroll-snap-type: x mandatory;
+                          -webkit-overflow-scrolling: touch;
+                          scrollbar-width: none;
+                          gap: 12px;
+                        }
+                        .video-slider__track::-webkit-scrollbar { display: none; }
+                        .video-slider__item {
+                          flex: 0 0 calc((100% - (var(--slides) - 1) * 12px) / var(--slides));
+                          scroll-snap-align: start;
+                          min-width: 0;
+                        }
+                        @media (min-width: 768px) {
+                          .video-slider__track { --slides: var(--desktop-slides); }
+                        }
+                        @media (max-width: 767px) {
+                          .video-slider__track { --slides: var(--mobile-slides); }
+                        }
+                        .video-slider__video-wrap {
+                          position: relative;
+                          aspect-ratio: 9 / 16;
+                          border-radius: 12px;
+                          overflow: hidden;
+                          background: #000;
+                          cursor: pointer;
+                        }
+                        .video-slider__video-wrap video {
+                          width: 100%;
+                          height: 100%;
+                          object-fit: cover;
+                          display: block;
+                        }
+                        .video-slider__play-btn {
+                          position: absolute;
+                          bottom: 12px;
+                          left: 12px;
+                          width: 36px;
+                          height: 36px;
+                          border-radius: 50%;
+                          background: rgba(255, 255, 255, 0.9);
+                          border: none;
+                          cursor: pointer;
+                          display: flex;
+                          align-items: center;
+                          justify-content: center;
+                          transition: opacity 0.25s ease;
+                          z-index: 2;
+                          padding: 0;
+                        }
+                        .video-slider__play-btn svg { pointer-events: none; }
+                        .video-slider__play-btn .video-slider__icon-pause { display: none; }
+                        .video-slider__video-wrap.is-playing .video-slider__play-btn { opacity: 0; }
+                        .video-slider__video-wrap.is-playing:hover .video-slider__play-btn { opacity: 0.8; }
+                        .video-slider__video-wrap.is-playing .video-slider__play-btn .video-slider__icon-play { display: none; }
+                        .video-slider__video-wrap.is-playing .video-slider__play-btn .video-slider__icon-pause { display: block; }
+                        .video-slider__title {
+                          margin: 8px 0 0;
+                          font-size: 13px;
+                          line-height: 1.4;
+                          color: inherit;
+                          opacity: 0.7;
+                        }
+                      </style>
+
+                      {%- if block.settings.heading != blank -%}
+                        <p class="video-slider__heading">{{ block.settings.heading }}</p>
+                      {%- endif -%}
+
+                      <div class="video-slider__track"
+                        id="VideoSlider-{{ block.id }}"
+                        style="--desktop-slides: {{ block.settings.desktop_slides }}; --mobile-slides: {{ block.settings.mobile_slides }};"
+                      >
+                        {%- for i in (1..6) -%}
+                          {%- capture video_key -%}video_{{ i }}{%- endcapture -%}
+                          {%- capture title_key -%}video_title_{{ i }}{%- endcapture -%}
+                          {%- assign video_obj = block.settings[video_key] -%}
+                          {%- if video_obj != blank -%}
+                            <div class="video-slider__item">
+                              <div class="video-slider__video-wrap">
+                                {{ video_obj | video_tag: image_size: '720x', autoplay: false, loop: true, muted: true, controls: false, playsinline: true, preload: 'metadata' }}
+                                <button class="video-slider__play-btn" type="button" aria-label="Play video">
+                                  <svg class="video-slider__icon-play" width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M3 1.5V12.5L12 7L3 1.5Z" fill="#333"/>
+                                  </svg>
+                                  <svg class="video-slider__icon-pause" width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <rect x="2.5" y="1.5" width="3" height="11" rx="0.5" fill="#333"/>
+                                    <rect x="8.5" y="1.5" width="3" height="11" rx="0.5" fill="#333"/>
+                                  </svg>
+                                </button>
+                              </div>
+                              {%- if block.settings[title_key] != blank -%}
+                                <p class="video-slider__title">{{ block.settings[title_key] }}</p>
+                              {%- endif -%}
+                            </div>
+                          {%- endif -%}
+                        {%- endfor -%}
+                      </div>
+
+                      <script>
+                        (function() {
+                          var container = document.getElementById('VideoSlider-{{ block.id }}');
+                          if (!container) return;
+
+                          container.addEventListener('click', function(e) {
+                            var wrap = e.target.closest('.video-slider__video-wrap');
+                            if (!wrap) return;
+
+                            var video = wrap.querySelector('video');
+                            if (!video) return;
+
+                            /* Pause all other videos in this slider */
+                            container.querySelectorAll('.video-slider__video-wrap').forEach(function(w) {
+                              if (w !== wrap) {
+                                var v = w.querySelector('video');
+                                if (v && !v.paused) { v.pause(); }
+                                w.classList.remove('is-playing');
+                              }
+                            });
+
+                            if (video.paused) {
+                              video.play();
+                              wrap.classList.add('is-playing');
+                            } else {
+                              video.pause();
+                              wrap.classList.remove('is-playing');
+                            }
+                          });
+
+                          /* Sync state if video ends */
+                          container.querySelectorAll('video').forEach(function(v) {
+                            v.addEventListener('ended', function() {
+                              v.closest('.video-slider__video-wrap').classList.remove('is-playing');
+                            });
+                          });
+                        })();
+                      </script>
+                    </div>
+
                 {%- endcase -%}
               {%- endfor -%}
             </div>
@@ -2527,6 +2677,145 @@
             {"value": "text-left", "label": "Left"},
             {"value": "text-center", "label": "Centered"}
           ]
+        },
+        {
+          "type": "header",
+          "content": "Padding"
+        },
+        {
+          "type": "range",
+          "id": "padding_bottom",
+          "min": 0,
+          "max": 50,
+          "step": 2,
+          "unit": "px",
+          "label": "Bottom",
+          "default": 16
+        }
+      ]
+    },
+    {
+      "type": "video_slider",
+      "name": "Video Slider",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Hear it from the professionals..."
+        },
+        {
+          "type": "select",
+          "id": "desktop_slides",
+          "label": "Videos visible (Desktop)",
+          "default": "3.5",
+          "options": [
+            {"value": "2", "label": "2"},
+            {"value": "2.5", "label": "2.5"},
+            {"value": "3", "label": "3"},
+            {"value": "3.5", "label": "3.5"},
+            {"value": "4", "label": "4"},
+            {"value": "4.5", "label": "4.5"},
+            {"value": "5", "label": "5"}
+          ]
+        },
+        {
+          "type": "select",
+          "id": "mobile_slides",
+          "label": "Videos visible (Mobile)",
+          "default": "2.5",
+          "options": [
+            {"value": "1", "label": "1"},
+            {"value": "1.5", "label": "1.5"},
+            {"value": "2", "label": "2"},
+            {"value": "2.5", "label": "2.5"},
+            {"value": "3", "label": "3"}
+          ]
+        },
+        {
+          "type": "header",
+          "content": "Video 1"
+        },
+        {
+          "type": "video",
+          "id": "video_1",
+          "label": "Video"
+        },
+        {
+          "type": "text",
+          "id": "video_title_1",
+          "label": "Title"
+        },
+        {
+          "type": "header",
+          "content": "Video 2"
+        },
+        {
+          "type": "video",
+          "id": "video_2",
+          "label": "Video"
+        },
+        {
+          "type": "text",
+          "id": "video_title_2",
+          "label": "Title"
+        },
+        {
+          "type": "header",
+          "content": "Video 3"
+        },
+        {
+          "type": "video",
+          "id": "video_3",
+          "label": "Video"
+        },
+        {
+          "type": "text",
+          "id": "video_title_3",
+          "label": "Title"
+        },
+        {
+          "type": "header",
+          "content": "Video 4"
+        },
+        {
+          "type": "video",
+          "id": "video_4",
+          "label": "Video"
+        },
+        {
+          "type": "text",
+          "id": "video_title_4",
+          "label": "Title"
+        },
+        {
+          "type": "header",
+          "content": "Video 5"
+        },
+        {
+          "type": "video",
+          "id": "video_5",
+          "label": "Video"
+        },
+        {
+          "type": "text",
+          "id": "video_title_5",
+          "label": "Title"
+        },
+        {
+          "type": "header",
+          "content": "Video 6"
+        },
+        {
+          "type": "video",
+          "id": "video_6",
+          "label": "Video"
+        },
+        {
+          "type": "text",
+          "id": "video_title_6",
+          "label": "Title"
         },
         {
           "type": "header",
