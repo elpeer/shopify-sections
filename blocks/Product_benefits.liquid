@@ -1,8 +1,10 @@
 {% doc %}
-  Icon Benefits + Center Media (Image/Video)
+  Icon Benefits + Media (Image/Video)
   ────────────────────────────────────────────
   Desktop: headline centered, 3-column layout (left benefits | center media | right benefits), CTA below.
-  Mobile: headline, center media full-width, benefits 2-column grid, CTA full-width.
+          When center media = "none", switches to 2-column layout (left | right).
+  Mobile:  headline, center media full-width (if enabled), benefits 2-column grid, CTA full-width.
+  Optional full-screen background image or autoplay video behind the entire section.
 {% enddoc %}
 
 {% assign bid = block.id | replace: '_', '' | downcase %}
@@ -10,13 +12,40 @@
 {% style %}
   /* ── Wrapper ── */
   .ib-section-{{ bid }} {
+    position: relative;
+    overflow: hidden;
     background-color: {{ block.settings.background_color }};
     color: {{ block.settings.text_color }};
     padding-top: {{ block.settings.spacing_top }}px;
     padding-bottom: {{ block.settings.spacing_bottom }}px;
   }
 
+  /* ── Background media ── */
+  .ib-bg-media-{{ bid }} {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+
+  .ib-bg-media-{{ bid }} img,
+  .ib-bg-media-{{ bid }} video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .ib-bg-overlay-{{ bid }} {
+    position: absolute;
+    inset: 0;
+    background: {{ block.settings.bg_overlay_color | default: '#000000' }};
+    opacity: {{ block.settings.bg_overlay_opacity | divided_by: 100.0 }};
+    z-index: 1;
+  }
+
   .ib-container-{{ bid }} {
+    position: relative;
+    z-index: 2;
     max-width: {{ block.settings.max_width }}px;
     margin: 0 auto;
     padding: 0 24px;
@@ -48,7 +77,11 @@
   /* ── Desktop Grid ── */
   .ib-grid-{{ bid }} {
     display: grid;
-    grid-template-columns: 1fr 1.4fr 1fr;
+    {% if block.settings.center_media_type == 'none' %}
+      grid-template-columns: 1fr 1fr;
+    {% else %}
+      grid-template-columns: 1fr 1.4fr 1fr;
+    {% endif %}
     gap: 40px;
     align-items: center;
   }
@@ -61,7 +94,11 @@
   }
 
   .ib-col-left-{{ bid }} {
-    text-align: right;
+    {% if block.settings.center_media_type == 'none' %}
+      text-align: left;
+    {% else %}
+      text-align: right;
+    {% endif %}
   }
 
   .ib-col-right-{{ bid }} {
@@ -76,7 +113,11 @@
   }
 
   .ib-col-left-{{ bid }} .ib-benefit-{{ bid }} {
-    align-items: flex-end;
+    {% if block.settings.center_media_type == 'none' %}
+      align-items: flex-start;
+    {% else %}
+      align-items: flex-end;
+    {% endif %}
   }
 
   .ib-col-right-{{ bid }} .ib-benefit-{{ bid }} {
@@ -263,6 +304,35 @@
 {% endstyle %}
 
 <div class="ib-section-{{ bid }}">
+  {%- comment -%} ── Background media layer ── {%- endcomment -%}
+  {% if block.settings.bg_media_type == 'image' and block.settings.bg_image != blank %}
+    <div class="ib-bg-media-{{ bid }}">
+      <img
+        src="{{ block.settings.bg_image | image_url: width: 1920 }}"
+        alt="{{ block.settings.bg_image_alt | escape }}"
+        loading="lazy"
+      >
+    </div>
+    {% if block.settings.bg_overlay_opacity > 0 %}
+      <div class="ib-bg-overlay-{{ bid }}"></div>
+    {% endif %}
+  {% elsif block.settings.bg_media_type == 'video' and block.settings.bg_video != blank %}
+    <div class="ib-bg-media-{{ bid }}">
+      {% assign bg_poster = block.settings.bg_image %}
+      <video
+        {% if bg_poster != blank %}poster="{{ bg_poster | image_url: width: 1920 }}"{% endif %}
+        autoplay loop muted playsinline
+      >
+        {% for source in block.settings.bg_video.sources %}
+          <source src="{{ source.url }}" type="{{ source.mime_type }}">
+        {% endfor %}
+      </video>
+    </div>
+    {% if block.settings.bg_overlay_opacity > 0 %}
+      <div class="ib-bg-overlay-{{ bid }}"></div>
+    {% endif %}
+  {% endif %}
+
   <div class="ib-container-{{ bid }}">
 
     {%- comment -%} ── Heading ── {%- endcomment -%}
@@ -355,7 +425,8 @@
         {% endfor %}
       </div>
 
-      {%- comment -%} Center media {%- endcomment -%}
+      {%- comment -%} Center media (hidden when "none") {%- endcomment -%}
+      {% if block.settings.center_media_type != 'none' %}
       <div class="ib-media-{{ bid }}">
         {% if block.settings.center_media_type == 'image' %}
           {% if block.settings.center_image != blank %}
@@ -461,6 +532,7 @@
           {% endif %}
         {% endif %}
       </div>
+      {% endif %}
 
       {%- comment -%} Right column {%- endcomment -%}
       <div class="ib-col-{{ bid }} ib-col-right-{{ bid }}">
@@ -629,6 +701,52 @@
     },
     {
       "type": "header",
+      "content": "Background Media"
+    },
+    {
+      "type": "select",
+      "id": "bg_media_type",
+      "label": "Background media type",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "image", "label": "Image" },
+        { "value": "video", "label": "Video (autoplay)" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "image_picker",
+      "id": "bg_image",
+      "label": "Background image"
+    },
+    {
+      "type": "text",
+      "id": "bg_image_alt",
+      "label": "Background image alt text"
+    },
+    {
+      "type": "video",
+      "id": "bg_video",
+      "label": "Background video"
+    },
+    {
+      "type": "color",
+      "id": "bg_overlay_color",
+      "label": "Background overlay color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "bg_overlay_opacity",
+      "label": "Background overlay opacity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 30
+    },
+    {
+      "type": "header",
       "content": "Center Media"
     },
     {
@@ -636,6 +754,7 @@
       "id": "center_media_type",
       "label": "Media type",
       "options": [
+        { "value": "none", "label": "None" },
         { "value": "image", "label": "Image" },
         { "value": "video_upload", "label": "Video (Shopify hosted)" },
         { "value": "external_video", "label": "External video (YouTube/Vimeo)" }
