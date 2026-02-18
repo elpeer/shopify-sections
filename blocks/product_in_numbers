@@ -1,0 +1,1222 @@
+{% doc %}
+  @prompt
+    Create a wide hero banner with a background image or looping background video, like the reference:
+    - Full-width rounded container (optional), with a large headline on top-left (or top-right for RTL).
+    - On top of the hero background, place a semi-transparent “overlay bar/card” near the bottom containing 3–6 benefit items in a row.
+    - Each benefit item can display either:
+      A) an icon above the text (icon mode), OR
+      B) a bold title only (no icon) with text under it (title mode).
+    - The overlay bar looks “glass-like”: translucent background, subtle border, optional blur, rounded corners.
+    - Mobile layout: headline stays readable, overlay becomes a 2-column grid (or horizontal scroll option), spacing and font sizes adjust, and merchant can use a different background media (mobile image/video) than desktop., i want option to align the benefits text to left / right / center
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-hero-banner-{{ ai_gen_id }} {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    border-radius: {{ block.settings.container_border_radius }}px;
+    display: block;
+  }
+
+  .ai-hero-banner__media-wrapper-{{ ai_gen_id }} {
+    position: relative;
+    width: 100%;
+    height: {{ block.settings.desktop_height }}px;
+    overflow: hidden;
+  }
+
+  .ai-hero-banner__media-{{ ai_gen_id }} {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .ai-hero-banner__video-{{ ai_gen_id }} {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .ai-hero-banner__placeholder-{{ ai_gen_id }} {
+    width: 100%;
+    height: 100%;
+    background-color: #f4f4f4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .ai-hero-banner__placeholder-{{ ai_gen_id }} svg {
+    width: 100%;
+    height: 100%;
+    max-width: 600px;
+    max-height: 400px;
+  }
+
+  .ai-hero-banner__empty-state-{{ ai_gen_id }} {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 12px 20px;
+    font-size: 14px;
+    color: #666;
+    text-align: center;
+    pointer-events: none;
+  }
+
+  .ai-hero-banner__content-wrapper-{{ ai_gen_id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: {{ block.settings.content_padding }}px;
+  }
+
+  .ai-hero-banner__headline-{{ ai_gen_id }} {
+    max-width: {{ block.settings.headline_max_width }}%;
+    color: {{ block.settings.headline_color }};
+    font-size: {{ block.settings.headline_size }}px;
+    line-height: 1.2;
+    margin: 0;
+    text-align: {{ block.settings.headline_alignment }};
+    {% if block.settings.headline_alignment == 'left' %}
+      align-self: flex-start;
+    {% elsif block.settings.headline_alignment == 'right' %}
+      align-self: flex-end;
+    {% else %}
+      align-self: center;
+    {% endif %}
+  }
+
+  .ai-hero-banner__overlay-bar-{{ ai_gen_id }} {
+    background-color: {{ block.settings.overlay_bg_color | color_modify: 'alpha', block.settings.overlay_opacity }};
+    border: {{ block.settings.overlay_border_width }}px solid {{ block.settings.overlay_border_color }};
+    border-radius: {{ block.settings.overlay_border_radius }}px;
+    padding: {{ block.settings.overlay_padding }}px;
+    {% if block.settings.overlay_blur %}
+      backdrop-filter: blur({{ block.settings.overlay_blur_amount }}px);
+      -webkit-backdrop-filter: blur({{ block.settings.overlay_blur_amount }}px);
+    {% endif %}
+    display: flex;
+    gap: {{ block.settings.items_gap }}px;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .ai-hero-banner__benefit-item-{{ ai_gen_id }} {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+    min-width: 100px;
+    {% if block.settings.benefit_text_alignment == 'left' %}
+      align-items: flex-start;
+      text-align: left;
+    {% elsif block.settings.benefit_text_alignment == 'right' %}
+      align-items: flex-end;
+      text-align: right;
+    {% else %}
+      align-items: center;
+      text-align: center;
+    {% endif %}
+  }
+
+  .ai-hero-banner__benefit-icon-{{ ai_gen_id }} {
+    width: {{ block.settings.icon_size }}px;
+    height: {{ block.settings.icon_size }}px;
+    color: {{ block.settings.icon_color }};
+  }
+
+  .ai-hero-banner__benefit-icon-{{ ai_gen_id }} svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .ai-hero-banner__benefit-title-{{ ai_gen_id }} {
+    font-size: {{ block.settings.benefit_title_size }}px;
+    font-weight: 700;
+    color: {{ block.settings.benefit_text_color }};
+    margin: 0;
+  }
+
+  .ai-hero-banner__benefit-text-{{ ai_gen_id }} {
+    font-size: {{ block.settings.benefit_text_size }}px;
+    color: {{ block.settings.benefit_text_color }};
+    margin: 0;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-hero-banner__media-wrapper-{{ ai_gen_id }} {
+      height: {{ block.settings.mobile_height }}px;
+    }
+
+    .ai-hero-banner__headline-{{ ai_gen_id }} {
+      font-size: {{ block.settings.headline_size_mobile }}px;
+      max-width: 100%;
+    }
+
+    .ai-hero-banner__content-wrapper-{{ ai_gen_id }} {
+      padding: {{ block.settings.content_padding_mobile }}px;
+    }
+
+    .ai-hero-banner__overlay-bar-{{ ai_gen_id }} {
+      {% if block.settings.mobile_layout == 'grid' %}
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: {{ block.settings.items_gap_mobile }}px;
+      {% elsif block.settings.mobile_layout == 'scroll' %}
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+      {% else %}
+        flex-direction: column;
+      {% endif %}
+      padding: {{ block.settings.overlay_padding_mobile }}px;
+    }
+
+    {% if block.settings.mobile_layout == 'scroll' %}
+      .ai-hero-banner__overlay-bar-{{ ai_gen_id }}::-webkit-scrollbar {
+        display: none;
+      }
+
+      .ai-hero-banner__benefit-item-{{ ai_gen_id }} {
+        flex-shrink: 0;
+        min-width: 120px;
+      }
+    {% endif %}
+
+    .ai-hero-banner__benefit-icon-{{ ai_gen_id }} {
+      width: {{ block.settings.icon_size_mobile }}px;
+      height: {{ block.settings.icon_size_mobile }}px;
+    }
+
+    .ai-hero-banner__benefit-title-{{ ai_gen_id }} {
+      font-size: {{ block.settings.benefit_title_size_mobile }}px;
+    }
+
+    .ai-hero-banner__benefit-text-{{ ai_gen_id }} {
+      font-size: {{ block.settings.benefit_text_size_mobile }}px;
+    }
+  }
+{% endstyle %}
+
+<hero-banner-{{ ai_gen_id }} class="ai-hero-banner-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="ai-hero-banner__media-wrapper-{{ ai_gen_id }}">
+    {% if block.settings.media_type == 'video' and block.settings.desktop_video != blank %}
+      <video
+        class="ai-hero-banner__video-{{ ai_gen_id }} ai-hero-banner__media-{{ ai_gen_id }}"
+        autoplay
+        muted
+        loop
+        playsinline
+        {% if block.settings.mobile_video != blank %}
+          data-mobile-video="{{ block.settings.mobile_video }}"
+        {% endif %}
+      >
+        <source src="{{ block.settings.desktop_video }}" type="video/mp4">
+      </video>
+    {% elsif block.settings.desktop_image %}
+      <picture>
+        {% if block.settings.mobile_image %}
+          <source media="(max-width: 749px)" srcset="{{ block.settings.mobile_image | image_url: width: 800 }}">
+        {% endif %}
+        <img
+          src="{{ block.settings.desktop_image | image_url: width: 2000 }}"
+          alt="{{ block.settings.desktop_image.alt | escape }}"
+          loading="lazy"
+          width="{{ block.settings.desktop_image.width }}"
+          height="{{ block.settings.desktop_image.height }}"
+          class="ai-hero-banner__media-{{ ai_gen_id }}"
+        >
+      </picture>
+    {% else %}
+      <div class="ai-hero-banner__placeholder-{{ ai_gen_id }}">
+        {{ 'hero-apparel-1' | placeholder_svg_tag }}
+        <div class="ai-hero-banner__empty-state-{{ ai_gen_id }}">
+          Next, add a background image or video
+        </div>
+      </div>
+    {% endif %}
+
+    <div class="ai-hero-banner__content-wrapper-{{ ai_gen_id }}">
+      {% if block.settings.headline != blank %}
+        <h2 class="ai-hero-banner__headline-{{ ai_gen_id }}">{{ block.settings.headline }}</h2>
+      {% endif %}
+
+      <div class="ai-hero-banner__overlay-bar-{{ ai_gen_id }}">
+        {% for i in (1..6) %}
+          {% liquid
+            assign enabled_key = 'benefit_' | append: i | append: '_enabled'
+            assign mode_key = 'benefit_' | append: i | append: '_mode'
+            assign icon_key = 'benefit_' | append: i | append: '_icon'
+            assign title_key = 'benefit_' | append: i | append: '_title'
+            assign text_key = 'benefit_' | append: i | append: '_text'
+
+            assign enabled = block.settings[enabled_key]
+            assign mode = block.settings[mode_key]
+            assign icon = block.settings[icon_key]
+            assign title = block.settings[title_key]
+            assign text = block.settings[text_key]
+          %}
+
+          {% if enabled %}
+            <div class="ai-hero-banner__benefit-item-{{ ai_gen_id }}">
+              {% if mode == 'icon' %}
+                <div class="ai-hero-banner__benefit-icon-{{ ai_gen_id }}">
+                  {% case icon %}
+                    {% when 'shipping' %}
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+                      </svg>
+                    {% when 'returns' %}
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+                      </svg>
+                    {% when 'secure' %}
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                      </svg>
+                    {% when 'support' %}
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
+                      </svg>
+                    {% when 'quality' %}
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    {% when 'gift' %}
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
+                      </svg>
+                    {% when 'star' %}
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                      </svg>
+                    {% when 'heart' %}
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                      </svg>
+                  {% endcase %}
+                </div>
+              {% endif %}
+
+              {% if title != blank %}
+                <p class="ai-hero-banner__benefit-title-{{ ai_gen_id }}">{{ title }}</p>
+              {% endif %}
+
+              {% if text != blank %}
+                <p class="ai-hero-banner__benefit-text-{{ ai_gen_id }}">{{ text }}</p>
+              {% endif %}
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</hero-banner-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class HeroBanner{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+      }
+
+      connectedCallback() {
+        this.video = this.querySelector('.ai-hero-banner__video-{{ ai_gen_id }}');
+        if (this.video) {
+          this.handleResponsiveVideo();
+          window.addEventListener('resize', () => this.handleResponsiveVideo());
+        }
+      }
+
+      handleResponsiveVideo() {
+        if (!this.video) return;
+        
+        const mobileVideo = this.video.getAttribute('data-mobile-video');
+        const isMobile = window.innerWidth <= 749;
+        
+        if (mobileVideo && isMobile) {
+          const currentSrc = this.video.querySelector('source').getAttribute('src');
+          if (currentSrc !== mobileVideo) {
+            this.video.querySelector('source').setAttribute('src', mobileVideo);
+            this.video.load();
+          }
+        }
+      }
+    }
+
+    customElements.define('hero-banner-{{ ai_gen_id }}', HeroBanner{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Hero banner",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "desktop_height",
+      "label": "Desktop height",
+      "min": 300,
+      "max": 900,
+      "step": 50,
+      "unit": "px",
+      "default": 600
+    },
+    {
+      "type": "range",
+      "id": "mobile_height",
+      "label": "Mobile height",
+      "min": 300,
+      "max": 700,
+      "step": 50,
+      "unit": "px",
+      "default": 500
+    },
+    {
+      "type": "range",
+      "id": "container_border_radius",
+      "label": "Container border radius",
+      "min": 0,
+      "max": 40,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "content_padding",
+      "label": "Content padding (desktop)",
+      "min": 20,
+      "max": 100,
+      "step": 10,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "content_padding_mobile",
+      "label": "Content padding (mobile)",
+      "min": 10,
+      "max": 60,
+      "step": 5,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "Background media"
+    },
+    {
+      "type": "select",
+      "id": "media_type",
+      "label": "Media type",
+      "options": [
+        {
+          "value": "image",
+          "label": "Image"
+        },
+        {
+          "value": "video",
+          "label": "Video"
+        }
+      ],
+      "default": "image"
+    },
+    {
+      "type": "image_picker",
+      "id": "desktop_image",
+      "label": "Desktop image"
+    },
+    {
+      "type": "image_picker",
+      "id": "mobile_image",
+      "label": "Mobile image"
+    },
+    {
+      "type": "url",
+      "id": "desktop_video",
+      "label": "Desktop video URL"
+    },
+    {
+      "type": "url",
+      "id": "mobile_video",
+      "label": "Mobile video URL"
+    },
+    {
+      "type": "header",
+      "content": "Headline"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "headline",
+      "label": "Headline",
+      "default": "Discover Our Collection"
+    },
+    {
+      "type": "select",
+      "id": "headline_alignment",
+      "label": "Alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "range",
+      "id": "headline_size",
+      "label": "Size (desktop)",
+      "min": 24,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 56
+    },
+    {
+      "type": "range",
+      "id": "headline_size_mobile",
+      "label": "Size (mobile)",
+      "min": 20,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "headline_max_width",
+      "label": "Max width",
+      "min": 30,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 50
+    },
+    {
+      "type": "color",
+      "id": "headline_color",
+      "label": "Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Overlay bar"
+    },
+    {
+      "type": "color",
+      "id": "overlay_bg_color",
+      "label": "Background color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Background opacity",
+      "min": 0,
+      "max": 1,
+      "step": 0.1,
+      "default": 0.8
+    },
+    {
+      "type": "color",
+      "id": "overlay_border_color",
+      "label": "Border color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "overlay_border_width",
+      "label": "Border width",
+      "min": 0,
+      "max": 4,
+      "step": 1,
+      "unit": "px",
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "overlay_border_radius",
+      "label": "Border radius",
+      "min": 0,
+      "max": 40,
+      "step": 4,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "checkbox",
+      "id": "overlay_blur",
+      "label": "Enable blur effect",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "overlay_blur_amount",
+      "label": "Blur amount",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "overlay_padding",
+      "label": "Padding (desktop)",
+      "min": 10,
+      "max": 60,
+      "step": 5,
+      "unit": "px",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "overlay_padding_mobile",
+      "label": "Padding (mobile)",
+      "min": 10,
+      "max": 40,
+      "step": 5,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "items_gap",
+      "label": "Items gap (desktop)",
+      "min": 10,
+      "max": 60,
+      "step": 5,
+      "unit": "px",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "items_gap_mobile",
+      "label": "Items gap (mobile)",
+      "min": 10,
+      "max": 40,
+      "step": 5,
+      "unit": "px",
+      "default": 15
+    },
+    {
+      "type": "select",
+      "id": "mobile_layout",
+      "label": "Mobile layout",
+      "options": [
+        {
+          "value": "grid",
+          "label": "2-column grid"
+        },
+        {
+          "value": "scroll",
+          "label": "Horizontal scroll"
+        },
+        {
+          "value": "stack",
+          "label": "Stack vertically"
+        }
+      ],
+      "default": "grid"
+    },
+    {
+      "type": "header",
+      "content": "Benefit items style"
+    },
+    {
+      "type": "select",
+      "id": "benefit_text_alignment",
+      "label": "Text alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "icon_size",
+      "label": "Icon size (desktop)",
+      "min": 24,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "icon_size_mobile",
+      "label": "Icon size (mobile)",
+      "min": 20,
+      "max": 60,
+      "step": 4,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "color",
+      "id": "icon_color",
+      "label": "Icon color",
+      "default": "#212121"
+    },
+    {
+      "type": "range",
+      "id": "benefit_title_size",
+      "label": "Title size (desktop)",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "benefit_title_size_mobile",
+      "label": "Title size (mobile)",
+      "min": 10,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "benefit_text_size",
+      "label": "Text size (desktop)",
+      "min": 10,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "benefit_text_size_mobile",
+      "label": "Text size (mobile)",
+      "min": 10,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "color",
+      "id": "benefit_text_color",
+      "label": "Text color",
+      "default": "#212121"
+    },
+    {
+      "type": "header",
+      "content": "Benefit 1"
+    },
+    {
+      "type": "checkbox",
+      "id": "benefit_1_enabled",
+      "label": "Enable benefit 1",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "benefit_1_mode",
+      "label": "Display mode",
+      "options": [
+        {
+          "value": "icon",
+          "label": "Icon with text"
+        },
+        {
+          "value": "title",
+          "label": "Title only"
+        }
+      ],
+      "default": "icon"
+    },
+    {
+      "type": "select",
+      "id": "benefit_1_icon",
+      "label": "Icon",
+      "options": [
+        {
+          "value": "shipping",
+          "label": "Shipping"
+        },
+        {
+          "value": "returns",
+          "label": "Returns"
+        },
+        {
+          "value": "secure",
+          "label": "Secure"
+        },
+        {
+          "value": "support",
+          "label": "Support"
+        },
+        {
+          "value": "quality",
+          "label": "Quality"
+        },
+        {
+          "value": "gift",
+          "label": "Gift"
+        },
+        {
+          "value": "star",
+          "label": "Star"
+        },
+        {
+          "value": "heart",
+          "label": "Heart"
+        }
+      ],
+      "default": "shipping"
+    },
+    {
+      "type": "text",
+      "id": "benefit_1_title",
+      "label": "Title",
+      "default": "Free Shipping"
+    },
+    {
+      "type": "text",
+      "id": "benefit_1_text",
+      "label": "Text",
+      "default": "On orders over $50"
+    },
+    {
+      "type": "header",
+      "content": "Benefit 2"
+    },
+    {
+      "type": "checkbox",
+      "id": "benefit_2_enabled",
+      "label": "Enable benefit 2",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "benefit_2_mode",
+      "label": "Display mode",
+      "options": [
+        {
+          "value": "icon",
+          "label": "Icon with text"
+        },
+        {
+          "value": "title",
+          "label": "Title only"
+        }
+      ],
+      "default": "icon"
+    },
+    {
+      "type": "select",
+      "id": "benefit_2_icon",
+      "label": "Icon",
+      "options": [
+        {
+          "value": "shipping",
+          "label": "Shipping"
+        },
+        {
+          "value": "returns",
+          "label": "Returns"
+        },
+        {
+          "value": "secure",
+          "label": "Secure"
+        },
+        {
+          "value": "support",
+          "label": "Support"
+        },
+        {
+          "value": "quality",
+          "label": "Quality"
+        },
+        {
+          "value": "gift",
+          "label": "Gift"
+        },
+        {
+          "value": "star",
+          "label": "Star"
+        },
+        {
+          "value": "heart",
+          "label": "Heart"
+        }
+      ],
+      "default": "returns"
+    },
+    {
+      "type": "text",
+      "id": "benefit_2_title",
+      "label": "Title",
+      "default": "Easy Returns"
+    },
+    {
+      "type": "text",
+      "id": "benefit_2_text",
+      "label": "Text",
+      "default": "30-day return policy"
+    },
+    {
+      "type": "header",
+      "content": "Benefit 3"
+    },
+    {
+      "type": "checkbox",
+      "id": "benefit_3_enabled",
+      "label": "Enable benefit 3",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "benefit_3_mode",
+      "label": "Display mode",
+      "options": [
+        {
+          "value": "icon",
+          "label": "Icon with text"
+        },
+        {
+          "value": "title",
+          "label": "Title only"
+        }
+      ],
+      "default": "icon"
+    },
+    {
+      "type": "select",
+      "id": "benefit_3_icon",
+      "label": "Icon",
+      "options": [
+        {
+          "value": "shipping",
+          "label": "Shipping"
+        },
+        {
+          "value": "returns",
+          "label": "Returns"
+        },
+        {
+          "value": "secure",
+          "label": "Secure"
+        },
+        {
+          "value": "support",
+          "label": "Support"
+        },
+        {
+          "value": "quality",
+          "label": "Quality"
+        },
+        {
+          "value": "gift",
+          "label": "Gift"
+        },
+        {
+          "value": "star",
+          "label": "Star"
+        },
+        {
+          "value": "heart",
+          "label": "Heart"
+        }
+      ],
+      "default": "secure"
+    },
+    {
+      "type": "text",
+      "id": "benefit_3_title",
+      "label": "Title",
+      "default": "Secure Payment"
+    },
+    {
+      "type": "text",
+      "id": "benefit_3_text",
+      "label": "Text",
+      "default": "100% secure checkout"
+    },
+    {
+      "type": "header",
+      "content": "Benefit 4"
+    },
+    {
+      "type": "checkbox",
+      "id": "benefit_4_enabled",
+      "label": "Enable benefit 4",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "benefit_4_mode",
+      "label": "Display mode",
+      "options": [
+        {
+          "value": "icon",
+          "label": "Icon with text"
+        },
+        {
+          "value": "title",
+          "label": "Title only"
+        }
+      ],
+      "default": "icon"
+    },
+    {
+      "type": "select",
+      "id": "benefit_4_icon",
+      "label": "Icon",
+      "options": [
+        {
+          "value": "shipping",
+          "label": "Shipping"
+        },
+        {
+          "value": "returns",
+          "label": "Returns"
+        },
+        {
+          "value": "secure",
+          "label": "Secure"
+        },
+        {
+          "value": "support",
+          "label": "Support"
+        },
+        {
+          "value": "quality",
+          "label": "Quality"
+        },
+        {
+          "value": "gift",
+          "label": "Gift"
+        },
+        {
+          "value": "star",
+          "label": "Star"
+        },
+        {
+          "value": "heart",
+          "label": "Heart"
+        }
+      ],
+      "default": "support"
+    },
+    {
+      "type": "text",
+      "id": "benefit_4_title",
+      "label": "Title",
+      "default": "24/7 Support"
+    },
+    {
+      "type": "text",
+      "id": "benefit_4_text",
+      "label": "Text",
+      "default": "Always here to help"
+    },
+    {
+      "type": "header",
+      "content": "Benefit 5"
+    },
+    {
+      "type": "checkbox",
+      "id": "benefit_5_enabled",
+      "label": "Enable benefit 5",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "benefit_5_mode",
+      "label": "Display mode",
+      "options": [
+        {
+          "value": "icon",
+          "label": "Icon with text"
+        },
+        {
+          "value": "title",
+          "label": "Title only"
+        }
+      ],
+      "default": "icon"
+    },
+    {
+      "type": "select",
+      "id": "benefit_5_icon",
+      "label": "Icon",
+      "options": [
+        {
+          "value": "shipping",
+          "label": "Shipping"
+        },
+        {
+          "value": "returns",
+          "label": "Returns"
+        },
+        {
+          "value": "secure",
+          "label": "Secure"
+        },
+        {
+          "value": "support",
+          "label": "Support"
+        },
+        {
+          "value": "quality",
+          "label": "Quality"
+        },
+        {
+          "value": "gift",
+          "label": "Gift"
+        },
+        {
+          "value": "star",
+          "label": "Star"
+        },
+        {
+          "value": "heart",
+          "label": "Heart"
+        }
+      ],
+      "default": "quality"
+    },
+    {
+      "type": "text",
+      "id": "benefit_5_title",
+      "label": "Title",
+      "default": "Premium Quality"
+    },
+    {
+      "type": "text",
+      "id": "benefit_5_text",
+      "label": "Text",
+      "default": "Carefully crafted"
+    },
+    {
+      "type": "header",
+      "content": "Benefit 6"
+    },
+    {
+      "type": "checkbox",
+      "id": "benefit_6_enabled",
+      "label": "Enable benefit 6",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "benefit_6_mode",
+      "label": "Display mode",
+      "options": [
+        {
+          "value": "icon",
+          "label": "Icon with text"
+        },
+        {
+          "value": "title",
+          "label": "Title only"
+        }
+      ],
+      "default": "icon"
+    },
+    {
+      "type": "select",
+      "id": "benefit_6_icon",
+      "label": "Icon",
+      "options": [
+        {
+          "value": "shipping",
+          "label": "Shipping"
+        },
+        {
+          "value": "returns",
+          "label": "Returns"
+        },
+        {
+          "value": "secure",
+          "label": "Secure"
+        },
+        {
+          "value": "support",
+          "label": "Support"
+        },
+        {
+          "value": "quality",
+          "label": "Quality"
+        },
+        {
+          "value": "gift",
+          "label": "Gift"
+        },
+        {
+          "value": "star",
+          "label": "Star"
+        },
+        {
+          "value": "heart",
+          "label": "Heart"
+        }
+      ],
+      "default": "gift"
+    },
+    {
+      "type": "text",
+      "id": "benefit_6_title",
+      "label": "Title",
+      "default": "Gift Wrapping"
+    },
+    {
+      "type": "text",
+      "id": "benefit_6_text",
+      "label": "Text",
+      "default": "Available on request"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hero banner"
+    }
+  ]
+}
+{% endschema %}
