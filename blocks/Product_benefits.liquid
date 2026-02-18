@@ -48,6 +48,10 @@
     z-index: 1;
   }
 
+  .ib-mobile-gradient-{{ bid }} {
+    display: none;
+  }
+
   .ib-container-{{ bid }} {
     position: relative;
     z-index: 2;
@@ -73,7 +77,7 @@
   }
 
   .ib-heading-{{ bid }} h2 {
-    font-size: 32px;
+    font-size: {{ block.settings.heading_font_size_desktop }}px;
     font-weight: 800;
     line-height: 1.2;
     letter-spacing: 0.02em;
@@ -83,7 +87,7 @@
   }
 
   .ib-heading-{{ bid }} p {
-    font-size: 16px;
+    font-size: {{ block.settings.subheading_font_size_desktop }}px;
     opacity: 0.75;
     margin: 0;
     color: {{ block.settings.text_color }};
@@ -150,7 +154,7 @@
   }
 
   .ib-benefit__title-{{ bid }} {
-    font-size: 15px;
+    font-size: {{ block.settings.benefit_title_font_size_desktop }}px;
     font-weight: 700;
     line-height: 1.3;
     margin: 0;
@@ -164,7 +168,7 @@
   }
 
   .ib-benefit__text-{{ bid }} {
-    font-size: 13px;
+    font-size: {{ block.settings.benefit_text_font_size_desktop }}px;
     line-height: 1.5;
     margin: 0;
     opacity: 0.7;
@@ -223,18 +227,17 @@
     justify-content: center;
     gap: 8px;
     padding: 14px 36px;
-    font-size: 14px;
+    font-size: {{ block.settings.cta_font_size_desktop }}px;
     font-weight: 700;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     text-decoration: none;
     border-radius: {{ block.settings.cta_radius }}px;
-    transition: opacity 0.2s;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s;
     cursor: pointer;
-  }
-
-  .ib-cta-{{ bid }}:hover {
-    opacity: 0.85;
+    border: none;
+    background: none;
+    font-family: inherit;
   }
 
   .ib-cta-filled-{{ bid }} {
@@ -243,10 +246,24 @@
     border: 2px solid {{ block.settings.cta_bg_color }};
   }
 
+  .ib-cta-filled-{{ bid }}:hover {
+    background-color: {{ block.settings.cta_hover_bg_color }};
+    color: {{ block.settings.cta_hover_text_color }};
+    border-color: {{ block.settings.cta_hover_bg_color }};
+    opacity: 1;
+  }
+
   .ib-cta-outline-{{ bid }} {
     background-color: transparent;
     color: {{ block.settings.cta_bg_color }};
     border: 2px solid {{ block.settings.cta_bg_color }};
+  }
+
+  .ib-cta-outline-{{ bid }}:hover {
+    background-color: {{ block.settings.cta_hover_bg_color }};
+    color: {{ block.settings.cta_hover_text_color }};
+    border-color: {{ block.settings.cta_hover_bg_color }};
+    opacity: 1;
   }
 
   .ib-cta__arrow-{{ bid }} {
@@ -275,8 +292,39 @@
     }
 
     .ib-heading-{{ bid }} h2 {
-      font-size: 22px;
+      font-size: {{ block.settings.heading_font_size_mobile }}px;
     }
+
+    .ib-heading-{{ bid }} p {
+      font-size: {{ block.settings.subheading_font_size_mobile }}px;
+    }
+
+    .ib-benefit__title-{{ bid }} {
+      font-size: {{ block.settings.benefit_title_font_size_mobile }}px;
+    }
+
+    .ib-benefit__text-{{ bid }} {
+      font-size: {{ block.settings.benefit_text_font_size_mobile }}px;
+    }
+
+    .ib-cta-{{ bid }} {
+      font-size: {{ block.settings.cta_font_size_mobile }}px;
+    }
+
+    {% if block.settings.mobile_gradient_enable %}
+      .ib-mobile-gradient-{{ bid }} {
+        display: block;
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        background: linear-gradient(
+          {{ block.settings.mobile_gradient_direction }},
+          {{ block.settings.mobile_gradient_color }} {{ block.settings.mobile_gradient_start }}%,
+          {{ block.settings.mobile_gradient_color | color_modify: 'alpha', 0 }} {{ block.settings.mobile_gradient_end }}%
+        );
+        pointer-events: none;
+      }
+    {% endif %}
 
     .ib-grid-{{ bid }} {
       display: flex;
@@ -356,6 +404,9 @@
       <div class="ib-bg-overlay-{{ bid }}"></div>
     {% endif %}
   {% endif %}
+
+  {%- comment -%} ── Mobile gradient overlay ── {%- endcomment -%}
+  <div class="ib-mobile-gradient-{{ bid }}"></div>
 
   <div class="ib-container-{{ bid }}">
 
@@ -636,18 +687,35 @@
     {%- comment -%} ── CTA ── {%- endcomment -%}
     {% if block.settings.cta_text != blank %}
       <div class="ib-cta-wrap-{{ bid }}">
-        <a
-          href="{{ block.settings.cta_link | default: '#' }}"
-          class="ib-cta-{{ bid }} ib-cta-{{ block.settings.cta_style }}-{{ bid }}"
-        >
-          {{ block.settings.cta_text }}
-          {% if block.settings.cta_icon %}
-            <svg class="ib-cta__arrow-{{ bid }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="5" y1="12" x2="19" y2="12"></line>
-              <polyline points="12 5 19 12 12 19"></polyline>
-            </svg>
-          {% endif %}
-        </a>
+        {% if block.settings.cta_action == 'scroll' %}
+          <button
+            type="button"
+            class="ib-cta-{{ bid }} ib-cta-{{ block.settings.cta_style }}-{{ bid }}"
+            data-scroll-target="{{ block.settings.cta_scroll_target }}"
+            onclick="(function(btn){var t=btn.getAttribute('data-scroll-target');var el=document.querySelector(t);if(el){el.scrollIntoView({behavior:'smooth',block:'start'})}})(this)"
+          >
+            {{ block.settings.cta_text }}
+            {% if block.settings.cta_icon %}
+              <svg class="ib-cta__arrow-{{ bid }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            {% endif %}
+          </button>
+        {% else %}
+          <a
+            href="{{ block.settings.cta_link | default: '#' }}"
+            class="ib-cta-{{ bid }} ib-cta-{{ block.settings.cta_style }}-{{ bid }}"
+          >
+            {{ block.settings.cta_text }}
+            {% if block.settings.cta_icon %}
+              <svg class="ib-cta__arrow-{{ bid }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            {% endif %}
+          </a>
+        {% endif %}
       </div>
     {% endif %}
 
@@ -831,6 +899,110 @@
     },
     {
       "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "range",
+      "id": "heading_font_size_desktop",
+      "label": "Heading font size – desktop",
+      "min": 16,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "heading_font_size_mobile",
+      "label": "Heading font size – mobile",
+      "min": 14,
+      "max": 48,
+      "step": 1,
+      "unit": "px",
+      "default": 22
+    },
+    {
+      "type": "range",
+      "id": "subheading_font_size_desktop",
+      "label": "Subheading font size – desktop",
+      "min": 12,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "subheading_font_size_mobile",
+      "label": "Subheading font size – mobile",
+      "min": 10,
+      "max": 28,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "benefit_title_font_size_desktop",
+      "label": "Benefit title font size – desktop",
+      "min": 10,
+      "max": 28,
+      "step": 1,
+      "unit": "px",
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "benefit_title_font_size_mobile",
+      "label": "Benefit title font size – mobile",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "benefit_text_font_size_desktop",
+      "label": "Benefit description font size – desktop",
+      "min": 10,
+      "max": 22,
+      "step": 1,
+      "unit": "px",
+      "default": 13
+    },
+    {
+      "type": "range",
+      "id": "benefit_text_font_size_mobile",
+      "label": "Benefit description font size – mobile",
+      "min": 10,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "cta_font_size_desktop",
+      "label": "Button font size – desktop",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "cta_font_size_mobile",
+      "label": "Button font size – mobile",
+      "min": 10,
+      "max": 22,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "header",
       "content": "Background Media"
     },
     {
@@ -874,6 +1046,55 @@
       "step": 5,
       "unit": "%",
       "default": 30
+    },
+    {
+      "type": "header",
+      "content": "Mobile Gradient Overlay"
+    },
+    {
+      "type": "checkbox",
+      "id": "mobile_gradient_enable",
+      "label": "Enable gradient overlay on mobile",
+      "info": "Adds a gradient between the background and text for better readability",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "mobile_gradient_color",
+      "label": "Gradient color",
+      "default": "#000000"
+    },
+    {
+      "type": "select",
+      "id": "mobile_gradient_direction",
+      "label": "Gradient direction",
+      "options": [
+        { "value": "to top", "label": "Bottom to top" },
+        { "value": "to bottom", "label": "Top to bottom" }
+      ],
+      "default": "to top"
+    },
+    {
+      "type": "range",
+      "id": "mobile_gradient_start",
+      "label": "Gradient solid start %",
+      "info": "Where the solid color begins",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "mobile_gradient_end",
+      "label": "Gradient fade end %",
+      "info": "Where the color becomes fully transparent",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 60
     },
     {
       "type": "header",
@@ -983,9 +1204,27 @@
       "default": "SHOP NOW"
     },
     {
+      "type": "select",
+      "id": "cta_action",
+      "label": "Button action",
+      "options": [
+        { "value": "link", "label": "Navigate to link" },
+        { "value": "scroll", "label": "Scroll to element" }
+      ],
+      "default": "link"
+    },
+    {
       "type": "url",
       "id": "cta_link",
-      "label": "Button link"
+      "label": "Button link",
+      "info": "Used when action is 'Navigate to link'"
+    },
+    {
+      "type": "text",
+      "id": "cta_scroll_target",
+      "label": "Scroll target CSS selector",
+      "info": "CSS selector to scroll to, e.g. '.product__info-wrapper' or '#product-price'",
+      "default": ".product__info-wrapper"
     },
     {
       "type": "select",
@@ -1019,6 +1258,18 @@
       "type": "color",
       "id": "cta_text_color",
       "label": "Button text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "cta_hover_bg_color",
+      "label": "Button hover color",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "cta_hover_text_color",
+      "label": "Button hover text color",
       "default": "#ffffff"
     },
     {
