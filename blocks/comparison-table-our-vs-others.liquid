@@ -1,0 +1,1217 @@
+{% doc %}
+  @prompt
+    Comparison Table – Our Product vs Others
+    Premium comparison block with dark/gradient background, glass card,
+    3-column layout (our advantages | indicators | competitors),
+    product image header, badge support, tooltips, and excellent mobile behavior.
+{% enddoc %}
+
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-cmp-block-{{ ai_gen_id }} {
+    display: block;
+    width: 100%;
+    padding: {{ block.settings.section_padding }}px 20px;
+    {% if block.settings.background_gradient != blank %}
+      background: {{ block.settings.background_gradient }};
+    {% else %}
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    {% endif %}
+    position: relative;
+    overflow: hidden;
+  }
+
+  .ai-cmp-block-{{ ai_gen_id }} .cmp-bg-image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+  }
+
+  .ai-cmp-block-{{ ai_gen_id }} .cmp-inner {
+    position: relative;
+    z-index: 1;
+    max-width: {{ block.settings.max_width }}px;
+    margin: 0 auto;
+  }
+
+  /* ── Layout ── */
+  .ai-cmp-block-{{ ai_gen_id }} .cmp-layout {
+    {% if block.settings.desktop_layout == 'headline-left-card-right' %}
+      display: grid;
+      grid-template-columns: minmax(200px, 320px) 1fr;
+      gap: 40px;
+      align-items: start;
+    {% else %}
+      display: block;
+    {% endif %}
+  }
+
+  /* ── Headline ── */
+  .ai-cmp-block-{{ ai_gen_id }} .cmp-headline {
+    {% if block.settings.desktop_layout == 'headline-left-card-right' %}
+      position: sticky;
+      top: 100px;
+    {% else %}
+      margin-bottom: 32px;
+    {% endif %}
+  }
+
+  .ai-cmp-block-{{ ai_gen_id }} .cmp-headline__title {
+    color: {{ block.settings.text_color }};
+    font-size: 36px;
+    font-weight: 700;
+    line-height: 1.2;
+    margin: 0 0 12px 0;
+  }
+
+  .ai-cmp-block-{{ ai_gen_id }} .cmp-headline__sub {
+    color: {{ block.settings.muted_text_color }};
+    font-size: 16px;
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  /* ── Card ── */
+  .ai-cmp-block-{{ ai_gen_id }} .cmp-card {
+    background: rgba(255, 255, 255, {{ block.settings.card_background_opacity }});
+    border-radius: {{ block.settings.card_radius }}px;
+    border: 1px solid {{ block.settings.card_border_color }};
+    padding: 32px;
+    {% if block.settings.enable_glass_effect %}
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    {% endif %}
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+  }
+
+  /* ── Table ── */
+  .ai-cmp-block-{{ ai_gen_id }} .cmp-table {
+    display: grid;
+    grid-template-columns: 1fr 80px 1fr;
+    width: 100%;
+  }
+
+  /* ── Header ── */
+  .ai-cmp-block-{{ ai_gen_id }} .cmp-header {
+    display: contents;
+  }
+
+  .ai-cmp-block-{{ ai_gen_id }} .cmp-header__our,
+  .ai-cmp-block-{{ ai_gen_id }} .cmp-header__mid,
+  .ai-cmp-block-{{ ai_gen_id }} .cmp-header__other {
+    padding: 16px 12px 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .ai-cmp-block-{{ ai_gen_id }} .cmp-header__our {
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-start;
+  }
+
+  .ai-cmp-block-{{ ai_gen_id }} .cmp-header__mid {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+
+  .ai-cmp-block-{{ ai_gen_id }} .cmp-header__img {
+    width: {{ block.settings.our_image_size }}px;
+    height: auto;
+    object-fit: contain;
+    border-radius: 12px;
+  }
+
+  .ai-cmp-block-{{ ai_gen_id }} .cmp-header__label {
+    display: inline-block;
+    color: {{ block.settings.accent_color }};
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 0;
+    padding: 4px 14px;
+    border: 1.5px solid {{ block.settings.accent_color }};
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+
+  .ai-cmp-block-{{ ai_gen_id }} .cmp-header__badge {
+    display: inline-block;
+    background: {{ block.settings.accent_color }};
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 3px 10px;
+    border-radius: 20px;
+    line-height: 1.4;
+  }
+
+  .ai-cmp-block-{{ ai_gen_id }} .cmp-header__other {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    text-align: center;
+    gap: 4px;
+  }
+
+  .ai-cmp-block-{{ ai_gen_id }} .cmp-header__other-label {
+    color: {{ block.settings.muted_text_color }};
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 0;
+  }
+
+  .ai-cmp-block-{{ ai_gen_id }} .cmp-header__other-sub {
+    color: {{ block.settings.muted_text_color }};
+    font-size: 11px;
+    font-weight: 400;
+    margin: 0;
+    opacity: 0.7;
+  }
+
+  /* ── Rows ── */
+  .ai-cmp-block-{{ ai_gen_id }} .cmp-row {
+    display: contents;
+  }
+
+  .ai-cmp-block-{{ ai_gen_id }} .cmp-row__our,
+  .ai-cmp-block-{{ ai_gen_id }} .cmp-row__ind,
+  .ai-cmp-block-{{ ai_gen_id }} .cmp-row__other {
+    padding: 14px 12px;
+    display: flex;
+    align-items: center;
+    min-height: 48px;
+    {% if block.settings.show_dividers %}
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    {% endif %}
+  }
+
+  .ai-cmp-block-{{ ai_gen_id }} .cmp-row__our {
+    justify-content: flex-start;
+    text-align: left;
+    color: {{ block.settings.text_color }};
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.4;
+    gap: 6px;
+  }
+
+  .ai-cmp-block-{{ ai_gen_id }} .cmp-row__our--em {
+    font-weight: 700;
+    color: {{ block.settings.accent_color }};
+  }
+
+  .ai-cmp-block-{{ ai_gen_id }} .cmp-row__ind {
+    justify-content: center;
+  }
+
+  .ai-cmp-block-{{ ai_gen_id }} .cmp-row__other {
+    justify-content: center;
+    text-align: center;
+    color: {{ block.settings.muted_text_color }};
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 1.4;
+  }
+
+  .ai-cmp-block-{{ ai_gen_id }} .cmp-row__other--em {
+    font-weight: 600;
+  }
+
+  /* ── Tooltip ── */
+  .ai-cmp-block-{{ ai_gen_id }} .cmp-tip {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    cursor: help;
+    flex-shrink: 0;
+  }
+
+  .ai-cmp-block-{{ ai_gen_id }} .cmp-tip__icon {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    color: {{ block.settings.muted_text_color }};
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .ai-cmp-block-{{ ai_gen_id }} .cmp-tip__text {
+    display: none;
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.9);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 400;
+    padding: 8px 12px;
+    border-radius: 8px;
+    max-width: 220px;
+    white-space: normal;
+    z-index: 10;
+    pointer-events: none;
+    line-height: 1.4;
+  }
+
+  .ai-cmp-block-{{ ai_gen_id }} .cmp-tip__text::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: rgba(0, 0, 0, 0.9);
+  }
+
+  .ai-cmp-block-{{ ai_gen_id }} .cmp-tip:hover .cmp-tip__text,
+  .ai-cmp-block-{{ ai_gen_id }} .cmp-tip.is-active .cmp-tip__text {
+    display: block;
+  }
+
+  /* ── Indicators ── */
+  .ai-cmp-block-{{ ai_gen_id }} .cmp-ind {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .ai-cmp-block-{{ ai_gen_id }} .cmp-ind--yes {
+    background: {{ block.settings.accent_color }};
+  }
+
+  .ai-cmp-block-{{ ai_gen_id }} .cmp-ind--partial {
+    background: transparent;
+    border: 2px solid {{ block.settings.accent_color }};
+  }
+
+  .ai-cmp-block-{{ ai_gen_id }} .cmp-ind--no {
+    background: transparent;
+    border: 2px solid rgba(255, 255, 255, 0.15);
+  }
+
+  .ai-cmp-block-{{ ai_gen_id }} .cmp-ind__chk {
+    width: 14px;
+    height: 14px;
+    stroke: #fff;
+    stroke-width: 2.5;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .ai-cmp-block-{{ ai_gen_id }} .cmp-ind__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #fff;
+  }
+
+  .ai-cmp-block-{{ ai_gen_id }} .cmp-ind__half {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: {{ block.settings.accent_color }};
+  }
+
+  .ai-cmp-block-{{ ai_gen_id }} .cmp-ind__x {
+    width: 12px;
+    height: 12px;
+    stroke: {{ block.settings.muted_text_color }};
+    stroke-width: 2;
+    fill: none;
+    stroke-linecap: round;
+    opacity: 0.5;
+  }
+
+  /* ── Mobile ── */
+  @media screen and (max-width: 749px) {
+    .ai-cmp-block-{{ ai_gen_id }} {
+      padding: 40px 16px;
+    }
+
+    .ai-cmp-block-{{ ai_gen_id }} .cmp-layout {
+      display: block !important;
+    }
+
+    .ai-cmp-block-{{ ai_gen_id }} .cmp-headline {
+      position: static !important;
+      margin-bottom: 24px !important;
+    }
+
+    .ai-cmp-block-{{ ai_gen_id }} .cmp-headline__title {
+      font-size: 26px;
+    }
+
+    .ai-cmp-block-{{ ai_gen_id }} .cmp-headline__sub {
+      font-size: 14px;
+    }
+
+    .ai-cmp-block-{{ ai_gen_id }} .cmp-card {
+      padding: 16px;
+    }
+
+    /* compact mobile */
+    .ai-cmp-block-{{ ai_gen_id }}.cmp-mob-compact .cmp-table {
+      grid-template-columns: 1fr 48px 1fr;
+    }
+
+    .ai-cmp-block-{{ ai_gen_id }}.cmp-mob-compact .cmp-row__our,
+    .ai-cmp-block-{{ ai_gen_id }}.cmp-mob-compact .cmp-row__other {
+      font-size: 13px;
+      padding: 10px 6px;
+    }
+
+    .ai-cmp-block-{{ ai_gen_id }}.cmp-mob-compact .cmp-row__ind {
+      padding: 10px 4px;
+    }
+
+    .ai-cmp-block-{{ ai_gen_id }}.cmp-mob-compact .cmp-header__our,
+    .ai-cmp-block-{{ ai_gen_id }}.cmp-mob-compact .cmp-header__mid,
+    .ai-cmp-block-{{ ai_gen_id }}.cmp-mob-compact .cmp-header__other {
+      padding: 12px 6px 16px;
+    }
+
+    .ai-cmp-block-{{ ai_gen_id }}.cmp-mob-compact .cmp-header__img {
+      width: 40px;
+      height: 40px;
+    }
+
+    .ai-cmp-block-{{ ai_gen_id }}.cmp-mob-compact .cmp-ind {
+      width: 20px;
+      height: 20px;
+    }
+
+    .ai-cmp-block-{{ ai_gen_id }}.cmp-mob-compact .cmp-ind__chk {
+      width: 11px;
+      height: 11px;
+    }
+
+    .ai-cmp-block-{{ ai_gen_id }}.cmp-mob-compact .cmp-ind__dot,
+    .ai-cmp-block-{{ ai_gen_id }}.cmp-mob-compact .cmp-ind__half {
+      width: 6px;
+      height: 6px;
+    }
+
+    /* stacked mobile */
+    .ai-cmp-block-{{ ai_gen_id }}.cmp-mob-stacked .cmp-table {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .ai-cmp-block-{{ ai_gen_id }}.cmp-mob-stacked .cmp-header {
+      display: grid;
+      grid-template-columns: 1fr 36px 1fr;
+    }
+
+    .ai-cmp-block-{{ ai_gen_id }}.cmp-mob-stacked .cmp-header__our,
+    .ai-cmp-block-{{ ai_gen_id }}.cmp-mob-stacked .cmp-header__mid,
+    .ai-cmp-block-{{ ai_gen_id }}.cmp-mob-stacked .cmp-header__other {
+      padding: 12px 6px 16px;
+    }
+
+    .ai-cmp-block-{{ ai_gen_id }}.cmp-mob-stacked .cmp-header__img {
+      width: 40px;
+      height: 40px;
+    }
+
+    .ai-cmp-block-{{ ai_gen_id }}.cmp-mob-stacked .cmp-row {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      {% if block.settings.show_dividers %}
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      {% endif %}
+      padding: 12px 0;
+    }
+
+    .ai-cmp-block-{{ ai_gen_id }}.cmp-mob-stacked .cmp-row__our,
+    .ai-cmp-block-{{ ai_gen_id }}.cmp-mob-stacked .cmp-row__ind,
+    .ai-cmp-block-{{ ai_gen_id }}.cmp-mob-stacked .cmp-row__other {
+      border-bottom: none !important;
+      padding: 0;
+      min-height: auto;
+    }
+
+    .ai-cmp-block-{{ ai_gen_id }}.cmp-mob-stacked .cmp-row__our {
+      justify-content: flex-start;
+      text-align: left;
+      font-size: 14px;
+      font-weight: 600;
+      color: {{ block.settings.text_color }};
+      padding-bottom: 8px;
+    }
+
+    .ai-cmp-block-{{ ai_gen_id }}.cmp-mob-stacked .cmp-stacked-bot {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .ai-cmp-block-{{ ai_gen_id }}.cmp-mob-stacked .cmp-stacked-side {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+    }
+
+    .ai-cmp-block-{{ ai_gen_id }}.cmp-mob-stacked .cmp-stacked-side--ours {
+      color: {{ block.settings.accent_color }};
+      font-weight: 600;
+    }
+
+    .ai-cmp-block-{{ ai_gen_id }}.cmp-mob-stacked .cmp-stacked-side--other {
+      color: {{ block.settings.muted_text_color }};
+      text-align: right;
+    }
+  }
+{% endstyle %}
+
+{%- comment -%} ── MACRO: render indicator ── {%- endcomment -%}
+{%- capture ind_yes_dots -%}<span class="cmp-ind cmp-ind--yes"><span class="cmp-ind__dot"></span></span>{%- endcapture -%}
+{%- capture ind_partial_dots -%}<span class="cmp-ind cmp-ind--partial"><span class="cmp-ind__half"></span></span>{%- endcapture -%}
+{%- capture ind_no_dots -%}<span class="cmp-ind cmp-ind--no"></span>{%- endcapture -%}
+{%- capture ind_yes_check -%}<span class="cmp-ind cmp-ind--yes"><svg class="cmp-ind__chk" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></span>{%- endcapture -%}
+{%- capture ind_partial_check -%}<span class="cmp-ind cmp-ind--partial"><svg class="cmp-ind__chk" viewBox="0 0 24 24" style="stroke: {{ block.settings.accent_color }};"><polyline points="20 6 9 17 4 12"></polyline></svg></span>{%- endcapture -%}
+{%- capture ind_no_check -%}<span class="cmp-ind cmp-ind--no"><svg class="cmp-ind__x" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></span>{%- endcapture -%}
+
+<div class="ai-cmp-block-{{ ai_gen_id }} cmp-mob-{{ block.settings.mobile_layout }}" {{ block.shopify_attributes }}>
+  {% if block.settings.background_image != blank %}
+    <img
+      class="cmp-bg-image"
+      src="{{ block.settings.background_image | image_url: width: 1920 }}"
+      alt=""
+      loading="lazy"
+      width="1920"
+      height="{{ 1920 | divided_by: block.settings.background_image.aspect_ratio | round }}"
+    >
+  {% endif %}
+
+  <div class="cmp-inner">
+    <div class="cmp-layout">
+      {%- if block.settings.heading != blank or block.settings.subheading != blank -%}
+        <div class="cmp-headline">
+          {% if block.settings.heading != blank %}
+            <h2 class="cmp-headline__title">{{ block.settings.heading }}</h2>
+          {% endif %}
+          {% if block.settings.subheading != blank %}
+            <p class="cmp-headline__sub">{{ block.settings.subheading }}</p>
+          {% endif %}
+        </div>
+      {%- endif -%}
+
+      <div class="cmp-card">
+        <div class="cmp-table">
+          {%- comment -%} Header row {%- endcomment -%}
+          <div class="cmp-header">
+            <div class="cmp-header__our"></div>
+            <div class="cmp-header__mid">
+              {%- if block.settings.our_product_image != blank -%}
+                {%- assign img_width_2x = block.settings.our_image_size | times: 2 -%}
+                <img
+                  class="cmp-header__img"
+                  src="{{ block.settings.our_product_image | image_url: width: img_width_2x }}"
+                  alt="{{ block.settings.our_label | escape }}"
+                  loading="lazy"
+                  width="{{ block.settings.our_image_size }}"
+                  height="{{ block.settings.our_image_size }}"
+                >
+              {%- endif -%}
+              <p class="cmp-header__label">{{ block.settings.our_label }}</p>
+              {% if block.settings.our_badge_enabled and block.settings.our_badge_text != blank %}
+                <span class="cmp-header__badge">{{ block.settings.our_badge_text }}</span>
+              {% endif %}
+            </div>
+            <div class="cmp-header__other">
+              <p class="cmp-header__other-label">{{ block.settings.other_label }}</p>
+              {% if block.settings.other_sub_label != blank %}
+                <p class="cmp-header__other-sub">{{ block.settings.other_sub_label }}</p>
+              {% endif %}
+            </div>
+          </div>
+
+          {%- comment -%} Data rows {%- endcomment -%}
+          {% for i in (1..10) %}
+            {%- liquid
+              assign feat_key = 'row_' | append: i | append: '_feature'
+              assign state_key = 'row_' | append: i | append: '_state'
+              assign other_key = 'row_' | append: i | append: '_other'
+              assign emph_key = 'row_' | append: i | append: '_emphasis'
+              assign tip_key = 'row_' | append: i | append: '_tooltip'
+
+              assign feat = block.settings[feat_key]
+              assign state = block.settings[state_key]
+              assign otxt = block.settings[other_key]
+              assign emph = block.settings[emph_key]
+              assign tip = block.settings[tip_key]
+              assign ind_style = block.settings.indicator_style
+            -%}
+
+            {% if feat != blank %}
+              <div class="cmp-row">
+                <div class="cmp-row__our{% if emph %} cmp-row__our--em{% endif %}">
+                  {{ feat }}
+                  {% if tip != blank %}
+                    <span class="cmp-tip" data-cmp-tooltip>
+                      <span class="cmp-tip__icon">?</span>
+                      <span class="cmp-tip__text">{{ tip }}</span>
+                    </span>
+                  {% endif %}
+                </div>
+                <div class="cmp-row__ind">
+                  {% if ind_style == 'dots' %}
+                    {% if state == 'yes' %}{{ ind_yes_dots }}{% elsif state == 'partial' %}{{ ind_partial_dots }}{% else %}{{ ind_no_dots }}{% endif %}
+                  {% elsif ind_style == 'check' %}
+                    {% if state == 'yes' %}{{ ind_yes_check }}{% elsif state == 'partial' %}{{ ind_partial_check }}{% else %}{{ ind_no_check }}{% endif %}
+                  {% else %}
+                    {% if state == 'yes' %}{{ ind_yes_check }}{% elsif state == 'partial' %}{{ ind_partial_dots }}{% else %}{{ ind_no_check }}{% endif %}
+                  {% endif %}
+                </div>
+                <div class="cmp-row__other{% if emph %} cmp-row__other--em{% endif %}">
+                  {{ otxt }}
+                </div>
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function() {
+    var block = document.querySelector('.ai-cmp-block-{{ ai_gen_id }}');
+    if (!block) return;
+    block.querySelectorAll('[data-cmp-tooltip]').forEach(function(el) {
+      el.addEventListener('click', function(e) {
+        e.stopPropagation();
+        var wasActive = el.classList.contains('is-active');
+        block.querySelectorAll('.cmp-tip.is-active').forEach(function(t) {
+          t.classList.remove('is-active');
+        });
+        if (!wasActive) el.classList.add('is-active');
+      });
+    });
+    document.addEventListener('click', function() {
+      block.querySelectorAll('.cmp-tip.is-active').forEach(function(t) {
+        t.classList.remove('is-active');
+      });
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Comparison Table",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Heading"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "How HERA Compares:"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading"
+    },
+    {
+      "type": "header",
+      "content": "Background"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "Background image"
+    },
+    {
+      "type": "color_background",
+      "id": "background_gradient",
+      "label": "Background gradient",
+      "default": "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)"
+    },
+    {
+      "type": "range",
+      "id": "section_padding",
+      "label": "Section padding",
+      "min": 20,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 60
+    },
+    {
+      "type": "header",
+      "content": "Card"
+    },
+    {
+      "type": "range",
+      "id": "card_background_opacity",
+      "label": "Card background opacity",
+      "min": 0,
+      "max": 1,
+      "step": 0.1,
+      "default": 0.1
+    },
+    {
+      "type": "color",
+      "id": "card_border_color",
+      "label": "Card border color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "label": "Card border radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_glass_effect",
+      "label": "Enable glass blur effect",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "muted_text_color",
+      "label": "Muted text color",
+      "default": "#94a3b8"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent color",
+      "default": "#4ade80"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "max_width",
+      "label": "Max width",
+      "options": [
+        { "value": "1000", "label": "1000px" },
+        { "value": "1100", "label": "1100px" },
+        { "value": "1200", "label": "1200px" }
+      ],
+      "default": "1100"
+    },
+    {
+      "type": "select",
+      "id": "desktop_layout",
+      "label": "Desktop layout",
+      "options": [
+        { "value": "headline-left-card-right", "label": "Headline left, card right" },
+        { "value": "headline-top-card-bottom", "label": "Headline top, card below" }
+      ],
+      "default": "headline-left-card-right"
+    },
+    {
+      "type": "select",
+      "id": "mobile_layout",
+      "label": "Mobile layout",
+      "options": [
+        { "value": "compact", "label": "Compact (3 columns)" },
+        { "value": "stacked", "label": "Stacked (row per feature)" }
+      ],
+      "default": "compact"
+    },
+    {
+      "type": "header",
+      "content": "Table style"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_dividers",
+      "label": "Show row dividers",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "indicator_style",
+      "label": "Indicator style",
+      "options": [
+        { "value": "dots", "label": "Dots" },
+        { "value": "check", "label": "Checkmarks" },
+        { "value": "mixed", "label": "Mixed (check + dots)" }
+      ],
+      "default": "check"
+    },
+    {
+      "type": "header",
+      "content": "Our column"
+    },
+    {
+      "type": "text",
+      "id": "our_label",
+      "label": "Our product label",
+      "default": "HERA"
+    },
+    {
+      "type": "image_picker",
+      "id": "our_product_image",
+      "label": "Our product image"
+    },
+    {
+      "type": "range",
+      "id": "our_image_size",
+      "label": "Product image size",
+      "min": 40,
+      "max": 200,
+      "step": 10,
+      "unit": "px",
+      "default": 80
+    },
+    {
+      "type": "text",
+      "id": "our_badge_text",
+      "label": "Badge text",
+      "default": "Best Choice"
+    },
+    {
+      "type": "checkbox",
+      "id": "our_badge_enabled",
+      "label": "Show badge",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Other column"
+    },
+    {
+      "type": "text",
+      "id": "other_label",
+      "label": "Other products label",
+      "default": "Other Products"
+    },
+    {
+      "type": "text",
+      "id": "other_sub_label",
+      "label": "Sub-label",
+      "default": "Generic / Competitors"
+    },
+    {
+      "type": "header",
+      "content": "Row 1"
+    },
+    {
+      "type": "text",
+      "id": "row_1_feature",
+      "label": "Feature text",
+      "default": "15 Probiotic Strains"
+    },
+    {
+      "type": "select",
+      "id": "row_1_state",
+      "label": "Our state",
+      "options": [
+        { "value": "yes", "label": "Yes" },
+        { "value": "partial", "label": "Partial" },
+        { "value": "no", "label": "No" }
+      ],
+      "default": "yes"
+    },
+    {
+      "type": "text",
+      "id": "row_1_other",
+      "label": "Other text",
+      "default": "5 or less strains"
+    },
+    {
+      "type": "checkbox",
+      "id": "row_1_emphasis",
+      "label": "Emphasize",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "row_1_tooltip",
+      "label": "Tooltip"
+    },
+    {
+      "type": "header",
+      "content": "Row 2"
+    },
+    {
+      "type": "text",
+      "id": "row_2_feature",
+      "label": "Feature text",
+      "default": "Clinically Tested"
+    },
+    {
+      "type": "select",
+      "id": "row_2_state",
+      "label": "Our state",
+      "options": [
+        { "value": "yes", "label": "Yes" },
+        { "value": "partial", "label": "Partial" },
+        { "value": "no", "label": "No" }
+      ],
+      "default": "yes"
+    },
+    {
+      "type": "text",
+      "id": "row_2_other",
+      "label": "Other text",
+      "default": "Rarely tested"
+    },
+    {
+      "type": "checkbox",
+      "id": "row_2_emphasis",
+      "label": "Emphasize",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "row_2_tooltip",
+      "label": "Tooltip"
+    },
+    {
+      "type": "header",
+      "content": "Row 3"
+    },
+    {
+      "type": "text",
+      "id": "row_3_feature",
+      "label": "Feature text",
+      "default": "Delayed-Release Capsule"
+    },
+    {
+      "type": "select",
+      "id": "row_3_state",
+      "label": "Our state",
+      "options": [
+        { "value": "yes", "label": "Yes" },
+        { "value": "partial", "label": "Partial" },
+        { "value": "no", "label": "No" }
+      ],
+      "default": "yes"
+    },
+    {
+      "type": "text",
+      "id": "row_3_other",
+      "label": "Other text",
+      "default": "Standard capsule"
+    },
+    {
+      "type": "checkbox",
+      "id": "row_3_emphasis",
+      "label": "Emphasize",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "row_3_tooltip",
+      "label": "Tooltip"
+    },
+    {
+      "type": "header",
+      "content": "Row 4"
+    },
+    {
+      "type": "text",
+      "id": "row_4_feature",
+      "label": "Feature text",
+      "default": "No Artificial Fillers"
+    },
+    {
+      "type": "select",
+      "id": "row_4_state",
+      "label": "Our state",
+      "options": [
+        { "value": "yes", "label": "Yes" },
+        { "value": "partial", "label": "Partial" },
+        { "value": "no", "label": "No" }
+      ],
+      "default": "yes"
+    },
+    {
+      "type": "text",
+      "id": "row_4_other",
+      "label": "Other text",
+      "default": "Contains fillers"
+    },
+    {
+      "type": "checkbox",
+      "id": "row_4_emphasis",
+      "label": "Emphasize",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "row_4_tooltip",
+      "label": "Tooltip"
+    },
+    {
+      "type": "header",
+      "content": "Row 5"
+    },
+    {
+      "type": "text",
+      "id": "row_5_feature",
+      "label": "Feature text",
+      "default": "Shelf-Stable Formula"
+    },
+    {
+      "type": "select",
+      "id": "row_5_state",
+      "label": "Our state",
+      "options": [
+        { "value": "yes", "label": "Yes" },
+        { "value": "partial", "label": "Partial" },
+        { "value": "no", "label": "No" }
+      ],
+      "default": "yes"
+    },
+    {
+      "type": "text",
+      "id": "row_5_other",
+      "label": "Other text",
+      "default": "Requires refrigeration"
+    },
+    {
+      "type": "checkbox",
+      "id": "row_5_emphasis",
+      "label": "Emphasize",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "row_5_tooltip",
+      "label": "Tooltip"
+    },
+    {
+      "type": "header",
+      "content": "Row 6"
+    },
+    {
+      "type": "text",
+      "id": "row_6_feature",
+      "label": "Feature text"
+    },
+    {
+      "type": "select",
+      "id": "row_6_state",
+      "label": "Our state",
+      "options": [
+        { "value": "yes", "label": "Yes" },
+        { "value": "partial", "label": "Partial" },
+        { "value": "no", "label": "No" }
+      ],
+      "default": "yes"
+    },
+    {
+      "type": "text",
+      "id": "row_6_other",
+      "label": "Other text"
+    },
+    {
+      "type": "checkbox",
+      "id": "row_6_emphasis",
+      "label": "Emphasize",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "row_6_tooltip",
+      "label": "Tooltip"
+    },
+    {
+      "type": "header",
+      "content": "Row 7"
+    },
+    {
+      "type": "text",
+      "id": "row_7_feature",
+      "label": "Feature text"
+    },
+    {
+      "type": "select",
+      "id": "row_7_state",
+      "label": "Our state",
+      "options": [
+        { "value": "yes", "label": "Yes" },
+        { "value": "partial", "label": "Partial" },
+        { "value": "no", "label": "No" }
+      ],
+      "default": "yes"
+    },
+    {
+      "type": "text",
+      "id": "row_7_other",
+      "label": "Other text"
+    },
+    {
+      "type": "checkbox",
+      "id": "row_7_emphasis",
+      "label": "Emphasize",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "row_7_tooltip",
+      "label": "Tooltip"
+    },
+    {
+      "type": "header",
+      "content": "Row 8"
+    },
+    {
+      "type": "text",
+      "id": "row_8_feature",
+      "label": "Feature text"
+    },
+    {
+      "type": "select",
+      "id": "row_8_state",
+      "label": "Our state",
+      "options": [
+        { "value": "yes", "label": "Yes" },
+        { "value": "partial", "label": "Partial" },
+        { "value": "no", "label": "No" }
+      ],
+      "default": "yes"
+    },
+    {
+      "type": "text",
+      "id": "row_8_other",
+      "label": "Other text"
+    },
+    {
+      "type": "checkbox",
+      "id": "row_8_emphasis",
+      "label": "Emphasize",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "row_8_tooltip",
+      "label": "Tooltip"
+    },
+    {
+      "type": "header",
+      "content": "Row 9"
+    },
+    {
+      "type": "text",
+      "id": "row_9_feature",
+      "label": "Feature text"
+    },
+    {
+      "type": "select",
+      "id": "row_9_state",
+      "label": "Our state",
+      "options": [
+        { "value": "yes", "label": "Yes" },
+        { "value": "partial", "label": "Partial" },
+        { "value": "no", "label": "No" }
+      ],
+      "default": "yes"
+    },
+    {
+      "type": "text",
+      "id": "row_9_other",
+      "label": "Other text"
+    },
+    {
+      "type": "checkbox",
+      "id": "row_9_emphasis",
+      "label": "Emphasize",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "row_9_tooltip",
+      "label": "Tooltip"
+    },
+    {
+      "type": "header",
+      "content": "Row 10"
+    },
+    {
+      "type": "text",
+      "id": "row_10_feature",
+      "label": "Feature text"
+    },
+    {
+      "type": "select",
+      "id": "row_10_state",
+      "label": "Our state",
+      "options": [
+        { "value": "yes", "label": "Yes" },
+        { "value": "partial", "label": "Partial" },
+        { "value": "no", "label": "No" }
+      ],
+      "default": "yes"
+    },
+    {
+      "type": "text",
+      "id": "row_10_other",
+      "label": "Other text"
+    },
+    {
+      "type": "checkbox",
+      "id": "row_10_emphasis",
+      "label": "Emphasize",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "row_10_tooltip",
+      "label": "Tooltip"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Comparison Table"
+    }
+  ]
+}
+{% endschema %}
