@@ -17,10 +17,16 @@
   assign show_thumbnails = false
   assign enable_thumbs = false
   assign enable_thumbs_mobile = false
+  assign enable_fader_desktop = false
 
   if image_layout == 'thumbnails' or image_layout == 'thumbnails-left'
     assign enable_thumbs = true
     assign show_thumbnails = true
+    assign enable_fader_desktop = true
+  endif
+
+  if image_layout == 'slider'
+    assign slider_slides_per_view = section.settings.slider_slides_per_view | default: '1.5'
   endif
 
   if mobile_image_style == 'thumbs'
@@ -121,11 +127,166 @@
 
     --swatch-size: var(--swatch-size-product);
   }
+
+  #Product--{{ section.id }} .product__wrapper__inner {
+    {%- if section.settings.section_full_width -%}
+      max-width: none;
+    {%- else -%}
+      max-width: {{ section.settings.section_max_width | default: 1200 }}px;
+    {%- endif -%}
+    margin: 0 auto;
+  }
+
+  @media screen and (min-width: 768px) {
+    #Product--{{ section.id }} .product__page {
+      display: grid !important;
+      grid-template-columns: {{ section.settings.image_width | default: 55 }}% 1fr !important;
+      gap: {{ section.settings.content_gap | default: 30 }}px !important;
+      align-items: start;
+      padding: 0 !important;
+    }
+
+    #Product--{{ section.id }} .product__page > product-images {
+      width: 100%;
+      min-width: 0;
+    }
+
+    #Product--{{ section.id }} .product__page > .product__content {
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+    }
+  }
+
+  {%- if image_layout == 'slider' -%}
+    @media screen and (min-width: 768px) {
+      /* Sticky images container */
+      #Product--{{ section.id }} .product__wrapper--slider product-images {
+        position: sticky;
+        top: var(--header-height, 100px);
+        align-self: flex-start;
+      }
+
+      /* Horizontal scroll-snap slider (RTL) */
+      #Product--{{ section.id }} .product__wrapper--slider .product__slides {
+        --slides-per-view: {{ slider_slides_per_view }};
+        display: flex;
+        direction: rtl;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
+        gap: 10px;
+        scrollbar-width: none;
+      }
+
+      #Product--{{ section.id }} .product__wrapper--slider .product__slides [data-image-id] > * {
+        direction: ltr;
+      }
+
+      #Product--{{ section.id }} .product__wrapper--slider .product__slides::-webkit-scrollbar {
+        display: none;
+      }
+
+      /* Each slide */
+      #Product--{{ section.id }} .product__wrapper--slider .product__slides [data-image-id] {
+        flex: 0 0 calc(100% / var(--slides-per-view));
+        scroll-snap-align: start;
+        min-width: 0;
+      }
+
+      #Product--{{ section.id }} .product__wrapper--slider .product__slides [data-image-id] img {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+
+      /* Slides wrapper for arrow positioning */
+      #Product--{{ section.id }} .product__wrapper--slider product-images {
+        --slider-arrow-size: 40px;
+      }
+
+      /* Arrow navigation - overlaid on slides */
+      #Product--{{ section.id }} .product-slider__nav {
+        display: flex;
+        justify-content: space-between;
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        transform: translateY(-50%);
+        pointer-events: none;
+        padding: 0 8px;
+        z-index: 3;
+      }
+
+      #Product--{{ section.id }} .product-slider__arrow {
+        pointer-events: auto;
+        background: var(--COLOR-BG, #fff);
+        border: 1px solid var(--COLOR-BORDER, #e8e8e1);
+        border-radius: 50%;
+        width: var(--slider-arrow-size);
+        height: var(--slider-arrow-size);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        opacity: 0.85;
+        transition: opacity 0.2s;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      }
+
+      #Product--{{ section.id }} .product-slider__arrow:hover {
+        opacity: 1;
+      }
+
+      #Product--{{ section.id }} .product-slider__arrow svg {
+        width: 16px;
+        height: 16px;
+      }
+    }
+  {%- endif -%}
 {%- endstyle -%}
 
 <script src="{{ 'product.js' | asset_url }}" defer="defer"></script>
 {%- if product_sticky_enable -%}
   <script src="{{ 'product-sticky.js' | asset_url }}" defer="defer"></script>
+{%- endif -%}
+
+{%- if image_layout == 'slider' -%}
+  <script>
+    (function() {
+      var sectionId = '{{ section.id }}';
+      function initSliderArrows() {
+        var section = document.getElementById('Product--' + sectionId);
+        if (!section) return;
+        var slides = section.querySelector('.product__slides');
+        var prevBtn = section.querySelector('[data-slider-prev]');
+        var nextBtn = section.querySelector('[data-slider-next]');
+        if (!slides || !prevBtn || !nextBtn) return;
+
+        function getSlideWidth() {
+          var firstSlide = slides.querySelector('[data-image-id]');
+          if (!firstSlide) return slides.offsetWidth;
+          return firstSlide.offsetWidth + 10;
+        }
+
+        /* RTL: scroll directions are reversed */
+        prevBtn.addEventListener('click', function() {
+          slides.scrollBy({ left: getSlideWidth(), behavior: 'smooth' });
+        });
+
+        nextBtn.addEventListener('click', function() {
+          slides.scrollBy({ left: -getSlideWidth(), behavior: 'smooth' });
+        });
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initSliderArrows);
+      } else {
+        initSliderArrows();
+      }
+    })();
+  </script>
 {%- endif -%}
 
 <product-component
@@ -148,7 +309,7 @@
         <product-images
           class="{{ product_images_classlist }}"
           data-active-media="{{ section.id }}-{{ featured_media.id }}"
-          {% if enable_thumbs %}
+          {% if enable_fader_desktop %}
             data-fader-desktop
           {% endif %}
           {% if enable_thumbs_mobile %}
@@ -201,6 +362,17 @@
 
                 <span class="product-single__view-in-space-text">{{ 'products.general.view_space' | t }}</span>
               </button>
+            {%- endif -%}
+
+            {%- if image_layout == 'slider' and product.media.size > 1 -%}
+              <div class="product-slider__nav">
+                <button class="product-slider__arrow product-slider__arrow--prev" data-slider-prev aria-label="{{ 'general.accessibility.previous' | t | default: 'Previous' }}">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                </button>
+                <button class="product-slider__arrow product-slider__arrow--next" data-slider-next aria-label="{{ 'general.accessibility.next' | t | default: 'Next' }}">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 6 15 12 9 18"></polyline></svg>
+                </button>
+              </div>
             {%- endif -%}
 
             {%- if show_thumbnails -%}
@@ -942,7 +1114,7 @@
                           font-size: var(--promo-fs);
                           font-weight: var(--promo-fw);
                           line-height: 1.4;
-                          cursor: var(--promo-cursor, pointer);
+                          cursor: pointer;
                           position: relative;
                           overflow: hidden;
                           transition: opacity 0.2s;
@@ -1124,25 +1296,14 @@
                         endif
                       -%}
 
-                      {%- assign popup_none = false -%}
-                      {%- if block.settings.popup_type == 'none' -%}
-                        {%- assign popup_none = true -%}
-                      {%- endif -%}
-
                       <div id="PromoBlock-{{ block.id }}"
-                        style="--promo-fs:{{ block.settings.label_font_size }}px;--promo-fw:{{ block.settings.label_font_weight }};--promo-pad-v:{{ block.settings.label_padding_v }}px;--promo-pad-h:{{ block.settings.label_padding_h }}px;--promo-radius:{{ block.settings.label_border_radius }}px;--promo-bg:{{ block.settings.label_bg_color }};--promo-color:{{ block.settings.label_text_color }};--promo-border:{{ block.settings.label_border_color }};--promo-glow:{{ block.settings.shimmer_color }};--promo-icon-size:{{ block.settings.icon_size }}px;--promo-display:{% if block.settings.label_full_width %}flex{% else %}inline-flex{% endif %};--promo-width:{% if block.settings.label_full_width %}100%{% else %}auto{% endif %};--promo-justify:{{ block.settings.label_text_align }};--promo-align:{{ block.settings.label_text_align }};{% if popup_none %}--promo-cursor:default;{% else %}--promo-cursor:pointer;{% endif %}"
+                        style="--promo-fs:{{ block.settings.label_font_size }}px;--promo-fw:{{ block.settings.label_font_weight }};--promo-pad-v:{{ block.settings.label_padding_v }}px;--promo-pad-h:{{ block.settings.label_padding_h }}px;--promo-radius:{{ block.settings.label_border_radius }}px;--promo-bg:{{ block.settings.label_bg_color }};--promo-color:{{ block.settings.label_text_color }};--promo-border:{{ block.settings.label_border_color }};--promo-glow:{{ block.settings.shimmer_color }};--promo-icon-size:{{ block.settings.icon_size }}px;--promo-display:{% if block.settings.label_full_width %}flex{% else %}inline-flex{% endif %};--promo-width:{% if block.settings.label_full_width %}100%{% else %}auto{% endif %};--promo-justify:{{ block.settings.label_text_align }};--promo-align:{{ block.settings.label_text_align }};"
                       >
-                        {%- if popup_none -%}
-                          <span
-                            class="promo-label {{ shimmer_class }}{% if block.settings.icon_position == 'left' %} promo-label--icon-left{% endif %}"
-                          >
-                        {%- else -%}
-                          <button
-                            class="promo-label {{ shimmer_class }}{% if block.settings.icon_position == 'left' %} promo-label--icon-left{% endif %}"
-                            id="PromoLabel-{{ block.id }}"
-                            type="button"
-                          >
-                        {%- endif -%}
+                        <button
+                          class="promo-label {{ shimmer_class }}{% if block.settings.icon_position == 'left' %} promo-label--icon-left{% endif %}"
+                          id="PromoLabel-{{ block.id }}"
+                          type="button"
+                        >
                           <span class="promo-label__text">{{ block.settings.label_text }}</span>
                           {%- if block.settings.icon_type != 'none' -%}
                             {%- case block.settings.icon_type -%}
@@ -1166,105 +1327,99 @@
                                 </svg>
                             {%- endcase -%}
                           {%- endif -%}
-                        {%- if popup_none -%}
-                          </span>
-                        {%- else -%}
-                          </button>
-                        {%- endif -%}
+                        </button>
                       </div>
 
-                      {%- unless popup_none -%}
-                        <div id="PromoPopup-{{ block.id }}">
-                          <div class="promo-popup__overlay"></div>
-                          <div class="promo-popup__container promo-popup__container--{{ block.settings.popup_type }}">
-                            <button class="promo-popup__close" type="button" aria-label="Close">
-                              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M4 4L12 12M12 4L4 12" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
-                              </svg>
-                            </button>
+                      <div id="PromoPopup-{{ block.id }}">
+                        <div class="promo-popup__overlay"></div>
+                        <div class="promo-popup__container promo-popup__container--{{ block.settings.popup_type }}">
+                          <button class="promo-popup__close" type="button" aria-label="Close">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M4 4L12 12M12 4L4 12" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                          </button>
 
-                            {%- case block.settings.popup_type -%}
-                              {%- when 'image' -%}
-                                {%- if block.settings.popup_image_desktop != blank -%}
-                                  <div class="promo-popup__banner">
-                                    <picture>
-                                      {%- if block.settings.popup_image_mobile != blank -%}
-                                        <source media="(max-width: 767px)" srcset="{{ block.settings.popup_image_mobile | image_url: width: 900 }}">
-                                      {%- endif -%}
-                                      <img src="{{ block.settings.popup_image_desktop | image_url: width: 1400 }}" alt="{{ block.settings.label_text | escape }}" loading="lazy">
-                                    </picture>
+                          {%- case block.settings.popup_type -%}
+                            {%- when 'image' -%}
+                              {%- if block.settings.popup_image_desktop != blank -%}
+                                <div class="promo-popup__banner">
+                                  <picture>
+                                    {%- if block.settings.popup_image_mobile != blank -%}
+                                      <source media="(max-width: 767px)" srcset="{{ block.settings.popup_image_mobile | image_url: width: 900 }}">
+                                    {%- endif -%}
+                                    <img src="{{ block.settings.popup_image_desktop | image_url: width: 1400 }}" alt="{{ block.settings.label_text | escape }}" loading="lazy">
+                                  </picture>
+                                </div>
+                              {%- endif -%}
+
+                            {%- when 'video' -%}
+                              {%- if block.settings.popup_video != blank -%}
+                                <div class="promo-popup__video-wrap">
+                                  {{ block.settings.popup_video | video_tag: image_size: '1080x', autoplay: false, loop: false, muted: false, controls: true, playsinline: true }}
+                                </div>
+                              {%- endif -%}
+
+                            {%- when 'image_text' -%}
+                              <div class="promo-popup__split{% if block.settings.popup_it_image_position == 'right' %} promo-popup__split--right{% endif %}"
+                                style="background-color:{{ block.settings.popup_it_bg_color }};"
+                              >
+                                {%- if block.settings.popup_it_image != blank -%}
+                                  <div class="promo-popup__split-image">
+                                    <img src="{{ block.settings.popup_it_image | image_url: width: 800 }}" alt="" loading="lazy">
                                   </div>
                                 {%- endif -%}
-
-                              {%- when 'video' -%}
-                                {%- if block.settings.popup_video != blank -%}
-                                  <div class="promo-popup__video-wrap">
-                                    {{ block.settings.popup_video | video_tag: image_size: '1080x', autoplay: false, loop: false, muted: false, controls: true, playsinline: true }}
-                                  </div>
-                                {%- endif -%}
-
-                              {%- when 'image_text' -%}
-                                <div class="promo-popup__split{% if block.settings.popup_it_image_position == 'right' %} promo-popup__split--right{% endif %}"
-                                  style="background-color:{{ block.settings.popup_it_bg_color }};"
+                                <div class="promo-popup__split-text"
+                                  style="color:{{ block.settings.popup_it_text_color }};background-color:{{ block.settings.popup_it_bg_color }};"
                                 >
-                                  {%- if block.settings.popup_it_image != blank -%}
-                                    <div class="promo-popup__split-image">
-                                      <img src="{{ block.settings.popup_it_image | image_url: width: 800 }}" alt="" loading="lazy">
-                                    </div>
-                                  {%- endif -%}
-                                  <div class="promo-popup__split-text"
-                                    style="color:{{ block.settings.popup_it_text_color }};background-color:{{ block.settings.popup_it_bg_color }};"
-                                  >
-                                    <div class="promo-popup__richtext">
-                                      {{ block.settings.popup_it_text }}
-                                    </div>
+                                  <div class="promo-popup__richtext">
+                                    {{ block.settings.popup_it_text }}
                                   </div>
                                 </div>
-                            {%- endcase -%}
-                          </div>
+                              </div>
+                          {%- endcase -%}
                         </div>
+                      </div>
 
-                        <script>
-                          (function(){
-                            var labelEl = document.getElementById('PromoLabel-{{ block.id }}');
-                            var popupEl = document.getElementById('PromoPopup-{{ block.id }}');
-                            if (!labelEl || !popupEl) return;
-                            var overlayEl = popupEl.querySelector('.promo-popup__overlay');
-                            var closeBtnEl = popupEl.querySelector('.promo-popup__close');
-                            var videoEl = popupEl.querySelector('video');
+                      <script>
+                        (function(){
+                          var labelEl = document.getElementById('PromoLabel-{{ block.id }}');
+                          var popupEl = document.getElementById('PromoPopup-{{ block.id }}');
+                          if (!labelEl || !popupEl) return;
+                          var overlayEl = popupEl.querySelector('.promo-popup__overlay');
+                          var closeBtnEl = popupEl.querySelector('.promo-popup__close');
+                          var videoEl = popupEl.querySelector('video');
 
-                            function openPopup() {
-                              popupEl.classList.add('is-active');
-                              document.body.style.overflow = 'hidden';
+                          function openPopup() {
+                            popupEl.classList.add('is-active');
+                            document.body.style.overflow = 'hidden';
+                            requestAnimationFrame(function(){
                               requestAnimationFrame(function(){
-                                requestAnimationFrame(function(){
-                                  popupEl.classList.add('is-open');
-                                });
+                                popupEl.classList.add('is-open');
                               });
-                              if (videoEl) {
-                                videoEl.currentTime = 0;
-                                videoEl.play().catch(function(){});
-                              }
-                            }
-
-                            function closePopup() {
-                              popupEl.classList.remove('is-open');
-                              if (videoEl) videoEl.pause();
-                              setTimeout(function(){
-                                popupEl.classList.remove('is-active');
-                                document.body.style.overflow = '';
-                              }, 300);
-                            }
-
-                            labelEl.addEventListener('click', openPopup);
-                            if (overlayEl) overlayEl.addEventListener('click', closePopup);
-                            if (closeBtnEl) closeBtnEl.addEventListener('click', closePopup);
-                            document.addEventListener('keydown', function(e){
-                              if (e.key === 'Escape' && popupEl.classList.contains('is-active')) closePopup();
                             });
-                          })();
-                        </script>
-                      {%- endunless -%}
+                            if (videoEl) {
+                              videoEl.currentTime = 0;
+                              videoEl.play().catch(function(){});
+                            }
+                          }
+
+                          function closePopup() {
+                            popupEl.classList.remove('is-open');
+                            if (videoEl) videoEl.pause();
+                            setTimeout(function(){
+                              popupEl.classList.remove('is-active');
+                              document.body.style.overflow = '';
+                            }, 300);
+                          }
+
+                          labelEl.addEventListener('click', openPopup);
+                          if (overlayEl) overlayEl.addEventListener('click', closePopup);
+                          if (closeBtnEl) closeBtnEl.addEventListener('click', closePopup);
+                          document.addEventListener('keydown', function(e){
+                            if (e.key === 'Escape' && popupEl.classList.contains('is-active')) closePopup();
+                          });
+                        })();
+                      </script>
                     </div>
 
                 {%- endcase -%}
@@ -1412,6 +1567,45 @@
       "content": "Desktop"
     },
     {
+      "type": "range",
+      "id": "section_max_width",
+      "min": 900,
+      "max": 1800,
+      "step": 50,
+      "unit": "px",
+      "label": "Section max width",
+      "default": 1200,
+      "info": "Controls the maximum width of the product section"
+    },
+    {
+      "type": "checkbox",
+      "id": "section_full_width",
+      "label": "Full width",
+      "default": false,
+      "info": "Ignore max width and stretch to fill the screen"
+    },
+    {
+      "type": "range",
+      "id": "image_width",
+      "min": 35,
+      "max": 70,
+      "step": 5,
+      "unit": "%",
+      "label": "Image width",
+      "default": 55,
+      "info": "Percentage of the section width allocated to images"
+    },
+    {
+      "type": "range",
+      "id": "content_gap",
+      "min": 0,
+      "max": 80,
+      "step": 5,
+      "unit": "px",
+      "label": "Gap between images and content",
+      "default": 30
+    },
+    {
       "type": "select",
       "id": "image_layout",
       "label": "Product gallery",
@@ -1421,9 +1615,24 @@
         {"value": "thumbnails-left", "label": "Thumbnails - Left"},
         {"value": "stacked", "label": "Stacked"},
         {"value": "grid-1", "label": "Mosaic"},
-        {"value": "grid-2", "label": "Grid"}
+        {"value": "grid-2", "label": "Grid"},
+        {"value": "slider", "label": "Slider"}
       ],
       "info": "Desktop only"
+    },
+    {
+      "type": "select",
+      "id": "slider_slides_per_view",
+      "label": "Slider - Slides per view",
+      "default": "1.5",
+      "options": [
+        {"value": "1", "label": "1"},
+        {"value": "1.5", "label": "1.5"},
+        {"value": "2", "label": "2"},
+        {"value": "2.5", "label": "2.5"},
+        {"value": "3", "label": "3"}
+      ],
+      "info": "Number of slides visible at once (Slider layout only)"
     },
     {
       "type": "select",
@@ -3255,7 +3464,6 @@
           "label": "Content type",
           "default": "image",
           "options": [
-            {"value": "none", "label": "None"},
             {"value": "image", "label": "Image banner"},
             {"value": "video", "label": "Video"},
             {"value": "image_text", "label": "Image + Text"}
