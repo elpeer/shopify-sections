@@ -1114,7 +1114,7 @@
                           font-size: var(--promo-fs);
                           font-weight: var(--promo-fw);
                           line-height: 1.4;
-                          cursor: pointer;
+                          cursor: var(--promo-cursor, pointer);
                           position: relative;
                           overflow: hidden;
                           transition: opacity 0.2s;
@@ -1296,14 +1296,25 @@
                         endif
                       -%}
 
+                      {%- assign popup_none = false -%}
+                      {%- if block.settings.popup_type == 'none' -%}
+                        {%- assign popup_none = true -%}
+                      {%- endif -%}
+
                       <div id="PromoBlock-{{ block.id }}"
-                        style="--promo-fs:{{ block.settings.label_font_size }}px;--promo-fw:{{ block.settings.label_font_weight }};--promo-pad-v:{{ block.settings.label_padding_v }}px;--promo-pad-h:{{ block.settings.label_padding_h }}px;--promo-radius:{{ block.settings.label_border_radius }}px;--promo-bg:{{ block.settings.label_bg_color }};--promo-color:{{ block.settings.label_text_color }};--promo-border:{{ block.settings.label_border_color }};--promo-glow:{{ block.settings.shimmer_color }};--promo-icon-size:{{ block.settings.icon_size }}px;--promo-display:{% if block.settings.label_full_width %}flex{% else %}inline-flex{% endif %};--promo-width:{% if block.settings.label_full_width %}100%{% else %}auto{% endif %};--promo-justify:{{ block.settings.label_text_align }};--promo-align:{{ block.settings.label_text_align }};"
+                        style="--promo-fs:{{ block.settings.label_font_size }}px;--promo-fw:{{ block.settings.label_font_weight }};--promo-pad-v:{{ block.settings.label_padding_v }}px;--promo-pad-h:{{ block.settings.label_padding_h }}px;--promo-radius:{{ block.settings.label_border_radius }}px;--promo-bg:{{ block.settings.label_bg_color }};--promo-color:{{ block.settings.label_text_color }};--promo-border:{{ block.settings.label_border_color }};--promo-glow:{{ block.settings.shimmer_color }};--promo-icon-size:{{ block.settings.icon_size }}px;--promo-display:{% if block.settings.label_full_width %}flex{% else %}inline-flex{% endif %};--promo-width:{% if block.settings.label_full_width %}100%{% else %}auto{% endif %};--promo-justify:{{ block.settings.label_text_align }};--promo-align:{{ block.settings.label_text_align }};{% if popup_none %}--promo-cursor:default;{% else %}--promo-cursor:pointer;{% endif %}"
                       >
-                        <button
-                          class="promo-label {{ shimmer_class }}{% if block.settings.icon_position == 'left' %} promo-label--icon-left{% endif %}"
-                          id="PromoLabel-{{ block.id }}"
-                          type="button"
-                        >
+                        {%- if popup_none -%}
+                          <span
+                            class="promo-label {{ shimmer_class }}{% if block.settings.icon_position == 'left' %} promo-label--icon-left{% endif %}"
+                          >
+                        {%- else -%}
+                          <button
+                            class="promo-label {{ shimmer_class }}{% if block.settings.icon_position == 'left' %} promo-label--icon-left{% endif %}"
+                            id="PromoLabel-{{ block.id }}"
+                            type="button"
+                          >
+                        {%- endif -%}
                           <span class="promo-label__text">{{ block.settings.label_text }}</span>
                           {%- if block.settings.icon_type != 'none' -%}
                             {%- case block.settings.icon_type -%}
@@ -1327,99 +1338,105 @@
                                 </svg>
                             {%- endcase -%}
                           {%- endif -%}
-                        </button>
+                        {%- if popup_none -%}
+                          </span>
+                        {%- else -%}
+                          </button>
+                        {%- endif -%}
                       </div>
 
-                      <div id="PromoPopup-{{ block.id }}">
-                        <div class="promo-popup__overlay"></div>
-                        <div class="promo-popup__container promo-popup__container--{{ block.settings.popup_type }}">
-                          <button class="promo-popup__close" type="button" aria-label="Close">
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                              <path d="M4 4L12 12M12 4L4 12" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
-                            </svg>
-                          </button>
+                      {%- unless popup_none -%}
+                        <div id="PromoPopup-{{ block.id }}">
+                          <div class="promo-popup__overlay"></div>
+                          <div class="promo-popup__container promo-popup__container--{{ block.settings.popup_type }}">
+                            <button class="promo-popup__close" type="button" aria-label="Close">
+                              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M4 4L12 12M12 4L4 12" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+                              </svg>
+                            </button>
 
-                          {%- case block.settings.popup_type -%}
-                            {%- when 'image' -%}
-                              {%- if block.settings.popup_image_desktop != blank -%}
-                                <div class="promo-popup__banner">
-                                  <picture>
-                                    {%- if block.settings.popup_image_mobile != blank -%}
-                                      <source media="(max-width: 767px)" srcset="{{ block.settings.popup_image_mobile | image_url: width: 900 }}">
-                                    {%- endif -%}
-                                    <img src="{{ block.settings.popup_image_desktop | image_url: width: 1400 }}" alt="{{ block.settings.label_text | escape }}" loading="lazy">
-                                  </picture>
-                                </div>
-                              {%- endif -%}
-
-                            {%- when 'video' -%}
-                              {%- if block.settings.popup_video != blank -%}
-                                <div class="promo-popup__video-wrap">
-                                  {{ block.settings.popup_video | video_tag: image_size: '1080x', autoplay: false, loop: false, muted: false, controls: true, playsinline: true }}
-                                </div>
-                              {%- endif -%}
-
-                            {%- when 'image_text' -%}
-                              <div class="promo-popup__split{% if block.settings.popup_it_image_position == 'right' %} promo-popup__split--right{% endif %}"
-                                style="background-color:{{ block.settings.popup_it_bg_color }};"
-                              >
-                                {%- if block.settings.popup_it_image != blank -%}
-                                  <div class="promo-popup__split-image">
-                                    <img src="{{ block.settings.popup_it_image | image_url: width: 800 }}" alt="" loading="lazy">
+                            {%- case block.settings.popup_type -%}
+                              {%- when 'image' -%}
+                                {%- if block.settings.popup_image_desktop != blank -%}
+                                  <div class="promo-popup__banner">
+                                    <picture>
+                                      {%- if block.settings.popup_image_mobile != blank -%}
+                                        <source media="(max-width: 767px)" srcset="{{ block.settings.popup_image_mobile | image_url: width: 900 }}">
+                                      {%- endif -%}
+                                      <img src="{{ block.settings.popup_image_desktop | image_url: width: 1400 }}" alt="{{ block.settings.label_text | escape }}" loading="lazy">
+                                    </picture>
                                   </div>
                                 {%- endif -%}
-                                <div class="promo-popup__split-text"
-                                  style="color:{{ block.settings.popup_it_text_color }};background-color:{{ block.settings.popup_it_bg_color }};"
+
+                              {%- when 'video' -%}
+                                {%- if block.settings.popup_video != blank -%}
+                                  <div class="promo-popup__video-wrap">
+                                    {{ block.settings.popup_video | video_tag: image_size: '1080x', autoplay: false, loop: false, muted: false, controls: true, playsinline: true }}
+                                  </div>
+                                {%- endif -%}
+
+                              {%- when 'image_text' -%}
+                                <div class="promo-popup__split{% if block.settings.popup_it_image_position == 'right' %} promo-popup__split--right{% endif %}"
+                                  style="background-color:{{ block.settings.popup_it_bg_color }};"
                                 >
-                                  <div class="promo-popup__richtext">
-                                    {{ block.settings.popup_it_text }}
+                                  {%- if block.settings.popup_it_image != blank -%}
+                                    <div class="promo-popup__split-image">
+                                      <img src="{{ block.settings.popup_it_image | image_url: width: 800 }}" alt="" loading="lazy">
+                                    </div>
+                                  {%- endif -%}
+                                  <div class="promo-popup__split-text"
+                                    style="color:{{ block.settings.popup_it_text_color }};background-color:{{ block.settings.popup_it_bg_color }};"
+                                  >
+                                    <div class="promo-popup__richtext">
+                                      {{ block.settings.popup_it_text }}
+                                    </div>
                                   </div>
                                 </div>
-                              </div>
-                          {%- endcase -%}
+                            {%- endcase -%}
+                          </div>
                         </div>
-                      </div>
 
-                      <script>
-                        (function(){
-                          var labelEl = document.getElementById('PromoLabel-{{ block.id }}');
-                          var popupEl = document.getElementById('PromoPopup-{{ block.id }}');
-                          if (!labelEl || !popupEl) return;
-                          var overlayEl = popupEl.querySelector('.promo-popup__overlay');
-                          var closeBtnEl = popupEl.querySelector('.promo-popup__close');
-                          var videoEl = popupEl.querySelector('video');
+                        <script>
+                          (function(){
+                            var labelEl = document.getElementById('PromoLabel-{{ block.id }}');
+                            var popupEl = document.getElementById('PromoPopup-{{ block.id }}');
+                            if (!labelEl || !popupEl) return;
+                            var overlayEl = popupEl.querySelector('.promo-popup__overlay');
+                            var closeBtnEl = popupEl.querySelector('.promo-popup__close');
+                            var videoEl = popupEl.querySelector('video');
 
-                          function openPopup() {
-                            popupEl.classList.add('is-active');
-                            document.body.style.overflow = 'hidden';
-                            requestAnimationFrame(function(){
+                            function openPopup() {
+                              popupEl.classList.add('is-active');
+                              document.body.style.overflow = 'hidden';
                               requestAnimationFrame(function(){
-                                popupEl.classList.add('is-open');
+                                requestAnimationFrame(function(){
+                                  popupEl.classList.add('is-open');
+                                });
                               });
-                            });
-                            if (videoEl) {
-                              videoEl.currentTime = 0;
-                              videoEl.play().catch(function(){});
+                              if (videoEl) {
+                                videoEl.currentTime = 0;
+                                videoEl.play().catch(function(){});
+                              }
                             }
-                          }
 
-                          function closePopup() {
-                            popupEl.classList.remove('is-open');
-                            if (videoEl) videoEl.pause();
-                            setTimeout(function(){
-                              popupEl.classList.remove('is-active');
-                              document.body.style.overflow = '';
-                            }, 300);
-                          }
+                            function closePopup() {
+                              popupEl.classList.remove('is-open');
+                              if (videoEl) videoEl.pause();
+                              setTimeout(function(){
+                                popupEl.classList.remove('is-active');
+                                document.body.style.overflow = '';
+                              }, 300);
+                            }
 
-                          labelEl.addEventListener('click', openPopup);
-                          if (overlayEl) overlayEl.addEventListener('click', closePopup);
-                          if (closeBtnEl) closeBtnEl.addEventListener('click', closePopup);
-                          document.addEventListener('keydown', function(e){
-                            if (e.key === 'Escape' && popupEl.classList.contains('is-active')) closePopup();
-                          });
-                        })();
-                      </script>
+                            labelEl.addEventListener('click', openPopup);
+                            if (overlayEl) overlayEl.addEventListener('click', closePopup);
+                            if (closeBtnEl) closeBtnEl.addEventListener('click', closePopup);
+                            document.addEventListener('keydown', function(e){
+                              if (e.key === 'Escape' && popupEl.classList.contains('is-active')) closePopup();
+                            });
+                          })();
+                        </script>
+                      {%- endunless -%}
                     </div>
 
                 {%- endcase -%}
@@ -3464,6 +3481,7 @@
           "label": "Content type",
           "default": "image",
           "options": [
+            {"value": "none", "label": "None"},
             {"value": "image", "label": "Image banner"},
             {"value": "video", "label": "Video"},
             {"value": "image_text", "label": "Image + Text"}
