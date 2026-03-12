@@ -211,6 +211,7 @@
     flex-direction: column;
     gap: 2px;
     min-width: 0;
+    flex: 1;
   }
   .hr-wall__product-name-{{ sid }} {
     font-size: 13px;
@@ -219,6 +220,8 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    display: block;
+    max-width: 100%;
   }
   .hr-wall__product-price-{{ sid }} {
     font-size: 13px;
