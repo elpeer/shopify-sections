@@ -180,7 +180,7 @@
 
     {% if section.settings.grid_height_mode == 'same' %}
       .mg-grid-{{ mg_id }} .mg-item-{{ mg_id }} {
-        height: {{ section.settings.grid_item_height | times: 0.7 }}px;
+        height: {{ section.settings.grid_item_height_mobile }}px;
       }
     {% endif %}
   }
@@ -201,18 +201,14 @@
           assign items_per_row = section.settings.columns_desktop
           assign rows_limit = section.settings.rows_before_show_more
           assign visible_count = items_per_row | times: rows_limit
+          assign items_per_row_mobile = section.settings.columns_mobile
+          assign rows_limit_mobile = section.settings.rows_before_show_more_mobile
+          assign visible_count_mobile = items_per_row_mobile | times: rows_limit_mobile
         -%}
 
-        <div class="mg-grid-{{ mg_id }}">
+        <div class="mg-grid-{{ mg_id }}" data-mg-visible-desktop="{{ visible_count }}" data-mg-visible-mobile="{{ visible_count_mobile }}">
           {% for block in section.blocks %}
-            {%- liquid
-              assign is_hidden = false
-              if forloop.index > visible_count
-                assign is_hidden = true
-              endif
-            -%}
-
-            <div class="mg-item-{{ mg_id }}{% if is_hidden %} mg-hidden-{{ mg_id }}{% endif %}" {{ block.shopify_attributes }}>
+            <div class="mg-item-{{ mg_id }}" data-mg-index="{{ forloop.index }}" {{ block.shopify_attributes }}>
               {% case block.type %}
                 {% when 'image' %}
                   {% if block.settings.image != blank %}
@@ -242,7 +238,13 @@
           {% endfor %}
         </div>
 
-        {% if section.blocks.size > visible_count %}
+        {%- liquid
+          assign min_visible = visible_count
+          if visible_count_mobile < min_visible
+            assign min_visible = visible_count_mobile
+          endif
+        -%}
+        {% if section.blocks.size > min_visible %}
           <div class="mg-show-more-{{ mg_id }}">
             <button class="mg-show-more-btn-{{ mg_id }}" data-mg-show-more>
               {{ section.settings.show_more_text }}
@@ -314,14 +316,39 @@
     if (!section) return;
 
     {% if section.settings.layout_type == 'grid' %}
+      var grid = section.querySelector('.mg-grid-{{ mg_id }}');
       var showMoreBtn = section.querySelector('[data-mg-show-more]');
+      var showMoreWrap = showMoreBtn ? showMoreBtn.parentElement : null;
+      var allItems = section.querySelectorAll('[data-mg-index]');
+      var revealed = false;
+
+      function applyVisibility() {
+        if (revealed || !grid) return;
+        var isMobile = window.innerWidth <= 749;
+        var limit = parseInt(grid.getAttribute(isMobile ? 'data-mg-visible-mobile' : 'data-mg-visible-desktop'));
+        var hasHidden = false;
+        for (var i = 0; i < allItems.length; i++) {
+          var idx = parseInt(allItems[i].getAttribute('data-mg-index'));
+          if (idx > limit) {
+            allItems[i].classList.add('mg-hidden-{{ mg_id }}');
+            hasHidden = true;
+          } else {
+            allItems[i].classList.remove('mg-hidden-{{ mg_id }}');
+          }
+        }
+        if (showMoreWrap) showMoreWrap.style.display = hasHidden ? '' : 'none';
+      }
+
+      applyVisibility();
+      window.addEventListener('resize', applyVisibility);
+
       if (showMoreBtn) {
         showMoreBtn.addEventListener('click', function() {
-          var hidden = section.querySelectorAll('.mg-hidden-{{ mg_id }}');
-          for (var i = 0; i < hidden.length; i++) {
-            hidden[i].classList.remove('mg-hidden-{{ mg_id }}');
+          revealed = true;
+          for (var i = 0; i < allItems.length; i++) {
+            allItems[i].classList.remove('mg-hidden-{{ mg_id }}');
           }
-          showMoreBtn.parentElement.style.display = 'none';
+          if (showMoreWrap) showMoreWrap.style.display = 'none';
         });
       }
     {% else %}
@@ -415,12 +442,22 @@
     {
       "type": "range",
       "id": "grid_item_height",
-      "label": "Item height",
+      "label": "Item height (desktop)",
       "min": 200,
       "max": 600,
       "step": 50,
       "unit": "px",
       "default": 300
+    },
+    {
+      "type": "range",
+      "id": "grid_item_height_mobile",
+      "label": "Item height (mobile)",
+      "min": 100,
+      "max": 400,
+      "step": 25,
+      "unit": "px",
+      "default": 200
     },
     {
       "type": "range",
@@ -443,11 +480,20 @@
     {
       "type": "range",
       "id": "rows_before_show_more",
-      "label": "Rows before show more",
+      "label": "Rows before show more (desktop)",
       "min": 1,
       "max": 10,
       "step": 1,
       "default": 2
+    },
+    {
+      "type": "range",
+      "id": "rows_before_show_more_mobile",
+      "label": "Rows before show more (mobile)",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "default": 3
     },
     {
       "type": "text",
