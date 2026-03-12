@@ -5,14 +5,20 @@
   assign hr_handle_arr = hr_handles | split: ','
   assign products_json = '['
   for handle in hr_handle_arr
-    assign pr = all_products[handle]
-    assign products_json = products_json | append: '{"t":"' | append: pr.title | escape | append: '","u":"' | append: pr.url | append: '","p":' | append: pr.price | append: ',"i":"'
+    assign handle_stripped = handle | strip
+    assign pr = all_products[handle_stripped]
+    assign pr_price = pr.price | default: 0
+    assign pr_compare = pr.compare_at_price | default: 0
+    assign pr_title = pr.title | default: '' | escape | replace: '"', '&quot;'
+    assign pr_url = pr.url | default: ''
+    assign products_json = products_json | append: '{"t":"' | append: pr_title | append: '","u":"' | append: pr_url | append: '","p":' | append: pr_price | append: ',"i":"'
     if pr.featured_image != blank
-      assign products_json = products_json | append: pr.featured_image | image_url: width: 96
+      assign pr_img = pr.featured_image | image_url: width: 96
+      assign products_json = products_json | append: pr_img
     endif
     assign products_json = products_json | append: '","c":'
-    if pr.compare_at_price > pr.price
-      assign products_json = products_json | append: pr.compare_at_price
+    if pr_compare > pr_price
+      assign products_json = products_json | append: pr_compare
     else
       assign products_json = products_json | append: '0'
     endif
