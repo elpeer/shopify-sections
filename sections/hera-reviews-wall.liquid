@@ -1,0 +1,763 @@
+{% assign sid = section.id | replace: '_', '' | downcase %}
+
+{%- liquid
+  assign products_arr = ''
+  for p in collections.all.products limit: 10
+    assign pobj = p.title | append: '|||' | append: p.url | append: '|||' | append: p.price | append: '|||'
+    if p.featured_image != blank
+      assign pobj = pobj | append: p.featured_image | image_url: width: 96
+    endif
+    if p.compare_at_price > p.price
+      assign pobj = pobj | append: '|||' | append: p.compare_at_price
+    else
+      assign pobj = pobj | append: '|||'
+    endif
+    if forloop.last == false
+      assign pobj = pobj | append: '###'
+    endif
+    assign products_arr = products_arr | append: pobj
+  endfor
+-%}
+
+{% style %}
+  .hr-wall__section-{{ sid }} {
+    background-color: {{ section.settings.section_bg_color }};
+    padding: {{ section.settings.padding_top }}px 0 {{ section.settings.padding_bottom }}px;
+    overflow: hidden;
+  }
+  {% if section.settings.rtl_direction %}
+    .hr-wall__section-{{ sid }} { direction: rtl; }
+  {% endif %}
+  .hr-wall__inner-{{ sid }} {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+  .hr-wall__header-{{ sid }} {
+    text-align: center;
+    margin-bottom: 28px;
+    direction: ltr;
+  }
+  .hr-wall__heading-{{ sid }} {
+    color: {{ section.settings.heading_color }};
+    font-size: {{ section.settings.heading_font_size }}px;
+    font-weight: 700;
+    margin: 0 0 8px;
+    line-height: 1.2;
+  }
+  .hr-wall__subheading-{{ sid }} {
+    color: {{ section.settings.subheading_color }};
+    font-size: 16px;
+    margin: 0 0 20px;
+    line-height: 1.5;
+  }
+  .hr-wall__tabs-{{ sid }} {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+    direction: ltr;
+  }
+  .hr-wall__tab-{{ sid }} {
+    padding: 8px 20px;
+    border-radius: 30px;
+    border: 1px solid {{ section.settings.tab_border_color }};
+    background: {{ section.settings.tab_bg_color }};
+    color: {{ section.settings.tab_text_color }};
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .hr-wall__tab-{{ sid }}.active {
+    background: {{ section.settings.tab_active_bg }};
+    color: {{ section.settings.tab_active_text }};
+    border-color: {{ section.settings.tab_active_bg }};
+  }
+  .hr-wall__track-{{ sid }} {
+    display: flex;
+    gap: {{ section.settings.card_gap }}px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    padding: 8px 0 12px;
+  }
+  .hr-wall__track-{{ sid }}::-webkit-scrollbar { display: none; }
+  .hr-wall__card-{{ sid }} {
+    flex: 0 0 {{ section.settings.card_width }}px;
+    background: {{ section.settings.card_bg_color }};
+    border-radius: {{ section.settings.card_border_radius }}px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    direction: ltr;
+    {% if section.settings.show_card_shadow %}
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    {% endif %}
+  }
+  .hr-wall__stars-{{ sid }} {
+    display: flex;
+    gap: 2px;
+  }
+  .hr-wall__stars-{{ sid }} svg {
+    width: 16px;
+    height: 16px;
+  }
+  .hr-wall__text-{{ sid }} {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #444;
+    display: -webkit-box;
+    -webkit-line-clamp: {{ section.settings.truncate_lines }};
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .hr-wall__text-{{ sid }}.expanded {
+    -webkit-line-clamp: unset;
+    display: block;
+  }
+  .hr-wall__readmore-{{ sid }} {
+    background: none;
+    border: none;
+    color: {{ section.settings.accent_color }};
+    cursor: pointer;
+    padding: 0;
+    font-size: 13px;
+    text-align: left;
+    text-decoration: underline;
+  }
+  .hr-wall__author-{{ sid }} {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: auto;
+  }
+  .hr-wall__initial-{{ sid }} {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: 700;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+  .hr-wall__author-info-{{ sid }} {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .hr-wall__name-{{ sid }} {
+    font-weight: 600;
+    font-size: 14px;
+    color: #1a1a1a;
+  }
+  .hr-wall__title-{{ sid }} {
+    font-size: 12px;
+    color: #888;
+  }
+  .hr-wall__badge-{{ sid }} {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: #2e7d32;
+    font-size: 12px;
+    font-weight: 500;
+  }
+  .hr-wall__badge-{{ sid }} svg {
+    width: 14px;
+    height: 14px;
+  }
+  .hr-wall__product-{{ sid }} {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    background: #f5f5f5;
+    border-radius: 8px;
+    text-decoration: none;
+    color: inherit;
+    margin-top: 6px;
+  }
+  .hr-wall__product-{{ sid }} img {
+    width: 48px;
+    height: 48px;
+    object-fit: cover;
+    border-radius: 6px;
+    flex-shrink: 0;
+  }
+  .hr-wall__product-info-{{ sid }} {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+  .hr-wall__product-name-{{ sid }} {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1a1a1a;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .hr-wall__product-price-{{ sid }} {
+    font-size: 13px;
+    color: #444;
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+  .hr-wall__product-compare-{{ sid }} {
+    text-decoration: line-through;
+    color: #999;
+    font-size: 12px;
+  }
+  .hr-wall__arrows-{{ sid }} {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 20px;
+  }
+  .hr-wall__arrow-{{ sid }} {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid #ddd;
+    background: {{ section.settings.arrow_bg_color }};
+    color: {{ section.settings.arrow_color }};
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .hr-wall__arrow-{{ sid }}:hover { opacity: 0.7; }
+  .hr-wall__arrow-{{ sid }} svg { width: 18px; height: 18px; }
+  @media (max-width: 749px) {
+    .hr-wall__card-{{ sid }} {
+      flex: 0 0 {{ section.settings.mobile_card_width }}px;
+    }
+    .hr-wall__heading-{{ sid }} {
+      font-size: {{ section.settings.heading_font_size | times: 0.7 | round }}px;
+    }
+    .hr-wall__inner-{{ sid }} { padding: 0 12px; }
+  }
+{% endstyle %}
+
+<div class="hr-wall__section-{{ sid }}" id="HeraReviews-{{ sid }}">
+  <div class="hr-wall__inner-{{ sid }}">
+    {% if section.settings.heading_text != blank %}
+      <div class="hr-wall__header-{{ sid }}">
+        <h2 class="hr-wall__heading-{{ sid }}">{{ section.settings.heading_text }}</h2>
+        {% if section.settings.subheading_text != blank %}
+          <p class="hr-wall__subheading-{{ sid }}">{{ section.settings.subheading_text }}</p>
+        {% endif %}
+      </div>
+    {% endif %}
+    <div class="hr-wall__tabs-{{ sid }}" data-hr-tabs></div>
+    <div class="hr-wall__track-{{ sid }}" data-hr-track></div>
+    {% if section.settings.show_arrows %}
+      <div class="hr-wall__arrows-{{ sid }}">
+        <button type="button" class="hr-wall__arrow-{{ sid }}" data-hr-arrow="prev" aria-label="Previous">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <button type="button" class="hr-wall__arrow-{{ sid }}" data-hr-arrow="next" aria-label="Next">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<script>
+(function(){
+  var sid = '{{ sid }}';
+  var el = document.getElementById('HeraReviews-' + sid);
+  if (!el) return;
+  var accent = '{{ section.settings.accent_color }}';
+  var moneyFmt = '{{ shop.money_format }}';
+
+  var productsRaw = '{{ products_arr | escape }}';
+  var products = [];
+  if (productsRaw) {
+    productsRaw.split('###').forEach(function(p){
+      var parts = p.split('|||');
+      if (parts[0]) products.push({title:parts[0],url:parts[1],price:parts[2],img:parts[3],compare:parts[4]});
+    });
+  }
+
+  var colors = ['#5B8FB9','#7B68AE','#D4845A','#6BAF7A','#CC6B8A','#4ECDC4','#8B7355','#E8734A','#6C8EAD','#9B8EC5'];
+
+  function getColor(name){
+    var code = 0;
+    for(var i=0;i<name.length;i++) code += name.charCodeAt(i);
+    return colors[code % colors.length];
+  }
+
+  function formatMoney(cents){
+    if (!cents) return '';
+    var amt = (parseInt(cents)/100).toFixed(2);
+    return moneyFmt.replace(/\{\{\s*amount\s*\}\}/g, amt).replace(/\{\{\s*amount_no_decimals\s*\}\}/g, Math.round(parseInt(cents)/100));
+  }
+
+  function starsSvg(rating){
+    var h='';
+    var full=Math.floor(rating);
+    for(var i=1;i<=5;i++){
+      if(i<=full) h+='<svg viewBox="0 0 24 24" fill="'+accent+'"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
+      else h+='<svg viewBox="0 0 24 24" fill="#E0E0E0"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
+    }
+    return h;
+  }
+
+  var reviews = [
+{n:"Samantha Greer",t:"Libero, Division I – University of Kentucky",r:5,x:"I've been playing at the D1 level for three years and I put my knee pads through serious abuse. HERA's foam-gel combo is genuinely different – the sides of my knees are covered, which is where I used to get the worst burns on wide digs. Zero slipping during full practice blocks. These are staying in my bag.",c:"player"},
+{n:"Destiny Thompson",t:"Outside Hitter, Club 18s – Atlanta Juniors",r:5,x:"My old pads left me with a rash every single practice. I thought it was just part of the game. Switched to HERA and the irritation stopped completely. The fabric actually breathes. I wear them for 3-hour sessions and my knees come out fine. Game changer for sensitive skin.",c:"player"},
+{n:"Priya Anand",t:"Setter, High School Varsity – Seattle",r:5,x:"I needed pads that stay up but don't leave red marks. Every other pair I've tried did one or the other. HERA manages both. After two hours of practice my knees are mark-free and the pads are exactly where I put them. Ordered a second pair as backup.",c:"player"},
+{n:"Morgan Wallace",t:"DS/Libero, Club 16s – Phoenix",r:5,x:"First practice with HERA and I noticed the difference immediately. The 3D padding wraps around the side of the knee – I didn't even know I needed that until I had it. My old pair just covered the front cap. After a hard dive I used to feel it in my outer knee for days. Not anymore.",c:"player"},
+{n:"Caitlyn Russo",t:"Middle Blocker, College Club – Pittsburgh",r:5,x:"As a middle I'm landing constantly. My right knee was always beat up by the end of the week. HERA absorbs the landing shock in a way that actually protects the joint, not just the skin. Two months in and my knees feel better than they have in years.",c:"player"},
+{n:"Aisha Johnson",t:"Libero, Semi-Pro – Houston",r:5,x:"I train six days a week. Sweat, floor burns, repetitive impact – my gear has to survive all of it. HERA has held up through months of hard use, the foam hasn't compressed, and the stitching is still solid. Worth every dollar.",c:"player"},
+{n:"Taylor Kim",t:"Outside Hitter, JV High School – Denver",r:4,x:"Super comfortable and they actually match our team colors which is rare. I do wish they were available in more sizes but medium fits me well. No slipping, good protection. My libero ordered a pair after she saw mine at practice.",c:"player"},
+{n:"Jenna Schultz",t:"Right Side, D2 College – Nebraska",r:5,x:"I played my entire freshman year with cheap pads that barely lasted the season. HERA is built differently – you can tell from the first time you put them on. The structural foam is firm in the right places and flexible everywhere else. Will not go back.",c:"player"},
+{n:"Makena Pierce",t:"DS, Club 15s – San Diego",r:5,x:"My coach recommended HERA because she saw players at elite tournaments wearing them. After one tournament weekend I understood why. Even after 7 matches across two days, my knees had zero bruising. The protection is elite without feeling like you're wearing armor.",c:"player"},
+{n:"Lexi Vance",t:"Libero, High School Varsity – Tampa",r:5,x:"I have really narrow legs and knee pads always used to bunch up or twist on me. HERA fits clean – no bunching, no twisting, just stays where it's supposed to. I forget I'm wearing them which is exactly what you want.",c:"player"},
+{n:"Brittany Owens",t:"Outside Hitter, Recreational League – Chicago",r:5,x:"I play twice a week in an adult rec league. Don't need pro gear but I do need something that doesn't destroy my knees on the hardwood. HERA is the first pair I've bought that didn't let me down. Real protection, fair price, comfortable fit.",c:"player"},
+{n:"Yara Okafor",t:"Middle Blocker, Club 17s – Los Angeles",r:5,x:"The fit around my knee is exactly right – secure but never tight. I've had pads that cut off circulation at the back of the knee which is the worst feeling during a long match. HERA has zero of that problem. The back panel is soft and wide.",c:"player"},
+{n:"Hana Park",t:"Setter, High School Varsity – Minneapolis",r:5,x:"Honestly bought these because of the colors and ended up loving them for the protection too. The navy/white looks amazing on the court and the build quality is way better than I expected. Multiple teammates have asked me where I got them.",c:"player"},
+{n:"Cassidy Lane",t:"Libero, NCAA D3 – Portland",r:5,x:"D3 volleyball is serious and I can't afford injuries. HERA's side protection solved a problem I didn't realize I had. I was getting lateral bruising on my outer knee from digs – completely gone after switching. My knees have never felt better mid-season.",c:"player"},
+{n:"Noelle Ferreira",t:"DS, Club 14s – Miami",r:5,x:"At 14 I'm still learning how to fall correctly and my knees take some hits. These pads absorbed every one of them. Mom was happy because I stopped coming home with bruised knees every weekend. The foam is thick but the pad still feels light when you're moving.",c:"player"},
+{n:"Abby Christiansen",t:"Outside Hitter, Club 18s – Columbus",r:5,x:"I've used Mizuno, Nike, and ASICS pads before. HERA's side wrap is something none of those have. It's such an obvious feature once you experience it – volleyball involves lateral falls all the time, not just front impacts. These are the only pads that acknowledge that.",c:"player"},
+{n:"Zoe Ramirez",t:"Right Side, High School JV – Tucson",r:4,x:"Really good pads for the price. Fit is comfortable, they stay up well, and the cushioning is noticeably thicker than my last pair. I'd love to see more color options for my school colors but the protection is definitely there.",c:"player"},
+{n:"Diana Steele",t:"Libero, Adult Competitive League – Boston",r:5,x:"I started playing again after a 5-year break and my knees aren't 22 anymore. HERA gave me the confidence to dive again without fearing the impact. The gel layer is real – you feel the difference immediately on contact with the floor.",c:"player"},
+{n:"Melissa Tanaka",t:"DS, Club 16s – Sacramento",r:5,x:"These pads don't slide. That's the big thing for me. Every other pair I've owned starts creeping down during warmups and by the end of a set they're practically at my ankles. HERA stays locked in place for the entire practice. I haven't had to adjust them once.",c:"player"},
+{n:"Frankie Torres",t:"Middle Blocker, High School Varsity – Dallas",r:5,x:"Heavy jumper and heavy lander. I needed serious padding. HERA delivers it without the bulk – I can still move clean through my blocking approach and the landing protection is genuine. These solved a problem that was starting to affect my willingness to jump aggressively.",c:"player"},
+{n:"Camille Bouchard",t:"Outside Hitter, D1 Club – New Orleans",r:5,x:"Trusted these after seeing them on players at a regional qualifier. The build quality is pro-grade. Foam density, seam construction, breathability – everything checks out. These belong in the same conversation as any premium volleyball knee pad on the market.",c:"player"},
+{n:"Isabella Rowe",t:"Setter, High School – Charlotte",r:5,x:"I set in a lot of low positions and my knees are on the floor more than most setters. HERA holds up to that kind of constant contact. No thinning of the foam, no irritation from the material, no slipping. Three months of heavy use and they still look and feel new.",c:"player"},
+{n:"Kira Nolan",t:"Libero, Club 18s – Nashville",r:5,x:"The colors alone set HERA apart. But more importantly, the protection is legit. I dove on a bare-floor practice court and didn't feel a thing in my knees. That's the gold standard for me. Everything else is secondary to that level of protection.",c:"player"},
+{n:"Sienna Blake",t:"DS, Middle School A Team – Denver",r:5,x:"First real knee pads I've owned. My old ones were from a department store and they were basically useless – they'd twist and fall and offer no real cushion. HERA is the real thing. I actually want to dive now because I'm not scared of the impact.",c:"player"},
+{n:"Mia Carlson",t:"Outside Hitter, Recreational – San Jose",r:4,x:"Solid pads for casual play. The fit is comfortable, the padding is adequate, and they don't overheat. Nothing too fancy but everything that matters is done well. Would recommend to any recreational player looking to protect their knees without overspending.",c:"player"},
+{n:"Reese Hoffman",t:"Libero, High School Varsity – Phoenix",r:5,x:"My knees used to look rough after every match – floor burns, bruises, the works. Since HERA I've had zero floor burns and the bruising is gone. The side wrap covers exactly the spots that used to get hit. These are staying in my gear bag for the rest of my career.",c:"player"},
+{n:"Amara Davis",t:"Middle Blocker, NCAA D2 – Louisville",r:5,x:"I wear these for every practice and every match. They've been through 50+ matches this season and the padding compression is minimal – still feels like the first week. For durability alone these are the best pads I've owned in four years of college ball.",c:"player"},
+{n:"Sydney Park",t:"Outside Hitter, Club 15s – Austin",r:5,x:"My first pair of HERA pads. Compared to the brand I used before, the side coverage is a revelation. I always thought knee pads just covered the kneecap. These protect the whole knee, which is how they should be designed.",c:"player"},
+{n:"Nadia Kowalczyk",t:"Setter, Polish-American Community League – Chicago",r:5,x:"I grew up watching European volleyball and the athletes there always had better gear. HERA is finally bringing that quality standard to the US market. The fit, construction, and protection are on par with what I remember European players using. Highly recommend.",c:"player"},
+{n:"Lauren Beckett",t:"DS/Libero, D3 College – Vermont",r:5,x:"I have a history of knee problems and my PT actually okayed these because the support and padding are solid without adding unnecessary pressure on the joint. That's a rare thing to find in a volleyball-specific pad. My knees have felt consistently good throughout this season.",c:"player"},
+{n:"Toni Washington",t:"Outside Hitter, High School – Baltimore",r:5,x:"The foam is dense but flexible. The sleeve doesn't restrict my movement at all – I can hit my full approach and land without the pad shifting. The colors look great too. I got the navy/white to match our home uniform and it's a clean look.",c:"player"},
+{n:"Jade Nguyen",t:"Right Side, Club 17s – San Francisco",r:5,x:"I've been playing for 8 years. Tried a lot of knee pads. HERA's ergonomic shape is the first one that actually fits the contour of my knee rather than just sitting on top of it. That difference in fit translates directly to better protection and more comfort.",c:"player"},
+{n:"Bianca Morales",t:"Middle Blocker, HS Varsity – San Antonio",r:5,x:"Bought these after my coach showed us a video on knee protection. The 3D side coverage addresses the exact type of impact that causes the most common knee injuries in volleyball. As a middle I'm landing from height regularly – this padding is doing real work.",c:"player"},
+{n:"Harper Collins",t:"Libero, Club 16s – Seattle",r:4,x:"Very good pads. The side coverage is noticeable and effective, the fit is snug without being restrictive, and they've lasted well through a full club season. My only wish is that they offered a thinner profile option – I'm used to very low-profile pads. Still recommending to teammates.",c:"player"},
+{n:"Ana Lima",t:"DS, Recreational Adult League – Miami",r:5,x:"I play for fun and exercise, not competition, but I still need my knees protected. HERA is by far the best recreational knee pad I've used. The foam doesn't break down after a few sessions like cheaper pads do. Worth paying a bit more for gear that lasts.",c:"player"},
+{n:"Rylie Andrews",t:"Outside Hitter, High School JV – Houston",r:5,x:"Super easy to put on, comfortable from day one, and they stay in place all practice. The navy color is beautiful. I'm a sophomore and already converted three of my teammates. Our coach noticed the difference in how willing we were to dive after we all switched.",c:"player"},
+{n:"Emilia Sanchez",t:"Setter, D1 Club – Phoenix",r:5,x:"Playing at the top club level means gear gets tested hard. HERA holds up to that standard. After a full club season including multiple long tournaments, the foam retention is still strong and the fit hasn't changed. Impressive build quality for a volleyball-specific pad.",c:"player"},
+{n:"Kayla Owens",t:"Libero, NCAA D1 – Florida",r:5,x:"My trainer pointed out that most knee pads ignore the medial and lateral sides of the joint. HERA's design explicitly addresses that. As someone who's had knee issues before, wearing gear that actually protects the full joint matters more than anything else.",c:"player"},
+{n:"Lindsey Fox",t:"DS, Club 14s – Las Vegas",r:5,x:"At 14, you don't love wearing gear that makes you look padded up. HERA manages to look sleek while actually protecting my knees properly. I can wear them and feel confident on the court instead of self-conscious. The style matters almost as much as the function at my age.",c:"player"},
+{n:"Patricia Osei",t:"Right Side, Adult Competitive – Atlanta",r:5,x:"I've had two knee surgeries so I need real protection, not cosmetic padding. HERA was recommended by a former college player and I trust the recommendation completely. The side wrap gives me confidence to move aggressively on the court again. Worth every cent.",c:"player"},
+{n:"Vanessa Cho",t:"Middle Blocker, Club 18s – Boston",r:5,x:"I was skeptical of a brand I hadn't heard of before. Tried them at a teammate's recommendation and immediately ordered my own pair. The difference in impact absorption compared to my old pads is substantial. Post-practice knee soreness has dropped noticeably.",c:"player"},
+{n:"Elena Petrov",t:"Libero, Russian-American League – New York",r:5,x:"I trained in Russia where volleyball knee pad quality is very high standard. HERA matches that quality. Proper foam density, ergonomic fit, real side protection. This is professional-grade gear sold at a reasonable price. Exactly what the US market needed.",c:"player"},
+{n:"Natasha Brooks",t:"Outside Hitter, High School Varsity – Memphis",r:4,x:"Solid performance, good protection, comfortable fit. The only reason it's not 5 stars is the sizing ran slightly large for me. Once I sized down they were perfect. If you're between sizes, go smaller. Otherwise these are excellent pads.",c:"player"},
+{n:"Olivia Reed",t:"DS, Club 15s – Portland",r:5,x:"The seam construction is clearly designed by people who understand volleyball. There are no pressure points during movement, the seams don't dig in, and the edges are finished cleanly. You can wear these for a 3-hour session and feel nothing irritating your skin.",c:"player"},
+{n:"Giselle Fontaine",t:"Outside Hitter, High School Varsity – New Orleans",r:5,x:"My old pads used to fall down constantly. I'd burn through 5 minutes of warmup time just pulling them back up. HERA stays put. That alone was worth the switch. Add in the actual protective quality and this is now the only brand I'll recommend to my teammates.",c:"player"},
+{n:"Tricia Hammond",t:"Setter, NCAA D3 – Michigan",r:5,x:"I specifically looked for pads with side coverage after reading about knee injury patterns in volleyball. HERA was the best option I found that actually delivers it. Three months of D3-level training and my knees feel stronger and more protected than any previous season.",c:"player"},
+{n:"Quinn Morrison",t:"Libero, Club 17s – Phoenix",r:5,x:"Real breathability is rare in volleyball knee pads. Most just trap heat and sweat and cause irritation. HERA's fabric actually allows airflow. After a full summer tournament in the heat, I had zero skin issues. That matters more than most people realize until they've experienced the problem.",c:"player"},
+{n:"Jamie Castillo",t:"DS, Middle School A Team – San Diego",r:5,x:"My first real volleyball knee pads. My mom picked them after reading reviews and I'm glad she did. They fit perfectly, they're comfortable, and I haven't had a single bruise on my knees since I started wearing them. My teammates are jealous of the colors.",c:"player"},
+{n:"Alexis Monroe",t:"Middle Blocker, High School Varsity – Raleigh",r:5,x:"For blockers, the landing protection needs to be serious. Lightweight pads that work great for liberos often aren't enough for middles. HERA gives the right amount of cushion for repeated high-impact landings while still allowing full jumping range of motion.",c:"player"},
+{n:"Brooke Matthews",t:"Outside Hitter, D2 College – Kansas City",r:5,x:"I train twice a day during preseason. That means my gear takes double the abuse of a normal player. HERA has held up beautifully through six weeks of two-a-days. The foam is still dense, the fit is still secure, and my knees have never felt this good mid-preseason.",c:"player"},
+{n:"Chloe Bernard",t:"DS/Libero, French-American Community League – LA",r:5,x:"I played club volleyball in France before moving to the US. European players are very particular about knee pad quality. HERA meets the standard I was used to. Proper fit, real protection, quality materials. It's rare to find this level of product in the US recreational market.",c:"player"},
+{n:"Destiny Cruz",t:"Outside Hitter, Club 16s – Houston",r:5,x:"I've been playing for four years and this is the best-fitting knee pad I've ever owned. The shape follows my knee naturally instead of sitting stiffly on top of it. That fit difference translates directly into better protection because the pad stays aligned with my joint during every movement.",c:"player"},
+{n:"Meghan Walsh",t:"Setter, High School Varsity – Chicago",r:4,x:"Great pads that do exactly what they should. The side protection is excellent, they stay in place, and the breathability is good. Taking off one star only because the packaging isn't great – mine arrived a little wrinkled. The product itself is 5 stars.",c:"player"},
+{n:"Autumn Reed",t:"Libero, Club 18s – Salt Lake City",r:5,x:"I did a full season comparison – one knee in HERA, one knee in my old brand (I know, I know). The HERA knee had noticeably less bruising and soreness over the course of the season. Switched both knees. Never going back.",c:"player"},
+{n:"Sofia Guerrero",t:"Right Side, High School Varsity – San Jose",r:5,x:"The 3D ergonomic design isn't just marketing. You can feel how the pad is shaped when you put it on – it cups the knee from multiple angles. That's real engineering. My coach commented on them at practice and several of my teammates ordered pairs the same week.",c:"player"},
+{n:"Paige Donovan",t:"DS, Club 14s – Atlanta",r:5,x:"First pair of proper knee pads for club play. My mom ordered these after watching how hard I was diving at tryouts. They've been incredible. No floor burns, no bruising, comfortable all day at tournaments. These are going to be my go-to for years.",c:"player"},
+{n:"Keely Moss",t:"Middle Blocker, Adult Competitive – Charlotte",r:5,x:"I'm 32 and my knees appreciate good gear more every year. HERA is genuinely protective in a way that cheap pads aren't. The foam-gel combination absorbs impact at a different level. Playing competitive volleyball at my age requires this kind of protection and these deliver.",c:"player"},
+{n:"Nora Hammond",t:"Outside Hitter, High School JV – Minneapolis",r:5,x:"My older sister is in college volleyball and she handed these down to me. She said I had to try them before buying anything else. She was absolutely right. Perfect fit, zero slipping, and the protection is everything she described. Now we both swear by HERA.",c:"player"},
+{n:"Renata Silva",t:"Libero, Brazilian-American Club – Miami",r:5,x:"Brazilian volleyball has high equipment standards. HERA matches them. The fit is exact, the materials are quality, and the side protection is comprehensive. I've recommended these to every player at our local club and the consensus is unanimous. Best knee pad on the market.",c:"player"},
+{n:"Carmen Vega",t:"DS, Recreational Adult – Denver",r:4,x:"Good pads for recreational play. Comfortable, protective, and durable. Nothing fancy but everything that matters is handled well. The side coverage is noticeably better than Nike or Mizuno at this price point. Solid everyday volleyball knee pad.",c:"player"},
+{n:"Danielle Pierce",t:"Middle Blocker, NCAA D1 – Tennessee",r:5,x:"D1 training is relentless. My gear has to survive double sessions, travel, and tournament weekends. HERA survives all of it. The structural integrity after a full fall season is remarkable – no foam compression, no stretched sleeve, no worn seams. Built like it's meant for this level of play.",c:"player"},
+{n:"Faith Coleman",t:"Outside Hitter, Club 17s – Charlotte",r:5,x:"I went to a tournament and noticed half the top teams were wearing HERA. Ordered a pair on my phone that night. Quality is immediately obvious. Better fit than anything I've worn before and the impact protection during tournament weekend was exceptional.",c:"player"},
+{n:"Sara Johansson",t:"Setter, Swedish-American Club – Minneapolis",r:5,x:"Volleyball knee pad culture in Scandinavia is serious. When I came to the US I was disappointed by the options until I found HERA. The ergonomic design, side coverage, and material quality are on par with European pro gear. Exactly what I was looking for.",c:"player"},
+{n:"Whitney Bloom",t:"Right Side, High School Varsity – Nashville",r:5,x:"I have wider knees and always struggled to find pads that fit right. HERA's sizing was perfect for me – the medium fits exactly as described and the ergonomic shape accommodates my natural knee structure without pinching. First pair I've ever worn that genuinely fits.",c:"player"},
+{n:"Aaliyah Grant",t:"Libero, Club 16s – Philadelphia",r:5,x:"Libero life means a lot of time on the floor. My knees were starting to pay the price before I found HERA. The foam-gel construction handles repetitive impact in a way that protects the joint long-term, not just in the moment. My knee soreness after practice has dropped significantly.",c:"player"},
+{n:"Maya Brennan",t:"DS, High School Freshman – Columbus",r:5,x:"Starting high school volleyball and I wanted proper gear from the start. My coach helped me choose HERA and I'm glad she did. They're comfortable, they protect well, and the colors look cool. Three of my teammates bought them after seeing mine at our first practice.",c:"player"},
+{n:"Tessa Huang",t:"Libero, Club 18s – Dallas",r:5,x:"I've worn the same style of pad since 8th grade because I thought they were all the same. A teammate brought HERA to tryouts and let me try them. The difference in lateral coverage was immediately obvious. Ordered the same day. Now I understand why some players are picky about their gear.",c:"player"},
+{n:"Dana Kozlowski",t:"Outside Hitter, D3 College – Maine",r:5,x:"Our equipment budget is limited at D3 so I buy my own gear. HERA was the best decision I made for this season. The foam hasn't thinned, the fit is still perfect, and my knees have survived the conference schedule better than any previous year. This is my gear for the rest of my college career.",c:"player"},
+{n:"Rosa Delgado",t:"DS/Libero, HS Varsity – El Paso",r:5,x:"I practice six days a week between school and club. That's a serious amount of floor contact. HERA's durability is what sold me. But the protection is what keeps me coming back. My outer knee used to ache after long practices. Since HERA, that specific soreness is completely gone.",c:"player"},
+{n:"Steph Warner",t:"Middle Blocker, Adult Recreational – Nashville",r:4,x:"Solid gear for adult recreational play. The protection is real, the fit is comfortable, and they've held up through six months of twice-weekly sessions. I'm not a competitive player anymore but my knees still deserve proper gear. HERA delivers that without requiring a pro athlete budget.",c:"player"},
+{n:"Rachel Greer",t:"Parent of a Club 14s Libero – Ohio",r:5,x:"My daughter came home bruised after every practice until we found HERA. First week wearing these, no bruises. Now two months in and her knees look completely healthy. She also loves the colors which matters at 14. As a parent, knowing she's protected makes every tournament trip worth it.",c:"parent"},
+{n:"Steve and Linda Morrison",t:"Parents of a High School Libero – Colorado",r:5,x:"We bought these after our daughter bruised her knee badly at a tournament. The pediatric sports medicine doctor mentioned that proper knee pads with side coverage were important. HERA was the product that best matched what he described. Our daughter has had zero knee issues since the switch.",c:"parent"},
+{n:"Michelle Tanaka",t:"Parent of a Club 16s DS – California",r:5,x:"My daughter wore through three cheap pairs in one season. HERA has lasted the entire club season without any visible wear. Beyond durability, the protection is visibly better – she used to have floor burns on the sides of her knees and that's completely gone. Worth paying more for gear that actually works.",c:"parent"},
+{n:"David Okafor",t:"Parent of a Club 15s Middle Blocker – Texas",r:5,x:"As a dad who played basketball, I understand knee protection matters. My daughter was getting real lateral bruising from hard landings. We researched and chose HERA specifically for the 3D side coverage. Problem solved. She lands with confidence now and her post-practice soreness is noticeably reduced.",c:"parent"},
+{n:"Karen Schultz",t:"Parent of HS Varsity Outside Hitter – Wisconsin",r:5,x:"My daughter has been playing for 7 years and goes through gear fast. HERA is the first brand I've bought that she hasn't destroyed in a few months. The stitching is solid, the foam holds its shape, and most importantly she loves how they look. Happy daughter, protected knees – what more do you want?",c:"parent"},
+{n:"James and Amy Castillo",t:"Parents of a 13-year-old Setter – Arizona",r:5,x:"Our daughter is still learning how to fall and was getting scared of diving after bruising her knee. HERA restored her confidence. She dives freely now because she trusts the padding. Seeing her play without fear again is worth every dollar we spent.",c:"parent"},
+{n:"Patricia Kim",t:"Parent of Club 14s DS – Virginia",r:4,x:"Good product that does what it says. My daughter's knees are protected and the pads stay in place. My only note is that sizing could be better labeled – we ordered medium and it was slightly large. Customer service helped us sort it out quickly. The product itself is excellent.",c:"parent"},
+{n:"Marcus Thompson",t:"Parent of HS Freshman Libero – Georgia",r:5,x:"My daughter made the varsity team as a freshman and I wanted her to have real protective gear. HERA looked professional, had great reviews, and turned out to be everything advertised. Her coach even commented that they were quality pads. Proud dad, happy daughter.",c:"parent"},
+{n:"Linda Walsh",t:"Parent of Club 16s Outside Hitter – Illinois",r:5,x:"Volleyball is expensive as a parent. I want gear that lasts. HERA has made it through an entire club season – tournaments, practices, indoor and outdoor – and still looks almost new. The ROI compared to cheaper brands that fall apart is excellent. Buying a second pair for next season.",c:"parent"},
+{n:"Robert and Susan Pierce",t:"Parents of a Club 13s Player – Pennsylvania",r:5,x:"Our youngest daughter had knee bruises constantly before HERA. We were concerned enough to talk to her pediatrician, who said better side-coverage pads would help. These solved the problem completely. First time all season her knees have looked healthy. Wonderful product.",c:"parent"},
+{n:"Angela Davis",t:"Parent of HS Middle Blocker – North Carolina",r:5,x:"My daughter is a heavy jumper who lands with a lot of force. Her old pads weren't cutting it – I could see her wincing after hard landings. HERA changed that completely. She comes home from practice talking about how comfortable her knees feel. As a parent that's exactly what you want to hear.",c:"parent"},
+{n:"Michael and Jen Park",t:"Parents of Club 15s Setter – Oregon",r:5,x:"We watched our daughter adjust her pads constantly during matches. HERA solved the slipping problem completely. She hasn't touched them mid-match since the switch. As parents in the bleachers, not watching her fidget with her gear means we can actually focus on watching her play.",c:"parent"},
+{n:"Sandra Morales",t:"Parent of Middle School A Team – New Mexico",r:5,x:"My daughter is 12 and just getting serious about volleyball. I wanted real protective gear that would grow with her game. HERA fits like professional gear and the protection is genuine. She's learning to dive without fear because she trusts the padding. Best volleyball purchase I've made.",c:"parent"},
+{n:"Tom and Lisa Reed",t:"Parents of HS JV Libero – Missouri",r:5,x:"Our daughter had a bad fall at camp that left her with a significant knee bruise. We upgraded to HERA before the next season. Zero bruising since. The 3D foam is clearly working and she has complete confidence diving again. We tell every volleyball parent we know about these.",c:"parent"},
+{n:"Carlos and Maria Guerrero",t:"Parents of Club 14s DS – Texas",r:5,x:"Our daughter is passionate about volleyball and we support her fully. Part of that support is making sure she has real protective gear. HERA has delivered. Her knees look healthy all season, she dives without hesitation, and the colors she chose make her feel confident on the court. All wins.",c:"parent"},
+{n:"Nancy Johansson",t:"Parent of HS Varsity Libero – Minnesota",r:5,x:"My daughter's coach recommended HERA to the whole team and I understand why after one season. These are the first pads my daughter has worn that haven't caused skin irritation. She has sensitive skin and we've tried everything. HERA's fabric is the only material that hasn't given her problems.",c:"parent"},
+{n:"Greg and Tammy Coleman",t:"Parents of Club 16s Outside Hitter – Kansas",r:4,x:"Good product overall. My daughter loves them and her knees are protected. The only slight issue was delivery took longer than expected but once they arrived the quality was obvious. Would recommend to any volleyball family looking for real protection.",c:"parent"},
+{n:"Christine and Paul Hammond",t:"Parents of D1-Committed Senior – Ohio",r:5,x:"Our daughter is committed to play D1 next year. As she wraps up her club career we want the best gear protecting her investment. HERA is pro-grade equipment at a reasonable price. Her knees are healthy, she's playing freely, and we're confident she'll arrive at college in good shape.",c:"parent"},
+{n:"Diana and Jeff Brooks",t:"Parents of Club 13s Player – Michigan",r:5,x:"Youngest kid in a family of three volleyball players. With two older sisters we've tried everything. HERA is by far the best bang for the dollar. The protection is superior, they last longer, and the colors keep the kids excited to wear them. All three daughters are now in HERA.",c:"parent"},
+{n:"Kevin Ramirez",t:"Parent of HS Varsity Middle Blocker – California",r:5,x:"My daughter plays middle blocker and I was worried about repeated hard landings on her knees long-term. HERA's foam density is clearly built for this type of impact. Her knees have held up better this season than any previous year. Happy to spend a little more on gear that protects her long-term health.",c:"parent"},
+{n:"Monica and Steve Fox",t:"Parents of Club 15s Setter – New York",r:5,x:"Our daughter plays 5 days a week between school and club. That's a lot of impact on developing knees. HERA has been part of our effort to protect her joints during these high-volume training years. Her knees show no signs of wear and she's never been more confident on the court.",c:"parent"},
+{n:"John and Sarah Hoffman",t:"Parents of Freshman DS – Colorado",r:5,x:"First year of high school volleyball and I wanted her to start with good habits and good gear. HERA was recommended by the varsity coach as the best protective pad available. Our daughter loves them and the coach noticed the quality immediately. Great investment for year one.",c:"parent"},
+{n:"Theresa and Mark Collins",t:"Parents of Club 14s – Wisconsin",r:5,x:"My daughter's old pads would start bunching up within the first 20 minutes of practice. We could see it from the bleachers. HERA fixed that problem permanently. They stay in place for the entire practice and she's stopped pulling at her gear during warmups. Such a simple thing that makes a big difference.",c:"parent"},
+{n:"Rosa and Antonio Cruz",t:"Parents of Club 17s Outside Hitter – Florida",r:5,x:"Our daughter works incredibly hard and we want her gear working as hard as she does. HERA has been consistent, durable, and genuinely protective throughout a full club season. She's had zero knee injuries this year after dealing with minor bruising issues in prior seasons. Excellent product.",c:"parent"},
+{n:"Heather Morrison",t:"Parent of HS JV Player – Idaho",r:4,x:"Good quality pads that my daughter is happy with. The protection is clearly better than what she had before and she likes the color options. Slight learning curve on sizing but customer service was helpful. Overall a great product for a competitive teen player.",c:"parent"},
+{n:"Brad and Jen Steele",t:"Parents of Club 18s Libero – Massachusetts",r:5,x:"Final year of club volleyball before college. We've been buying knee pads for 9 years and HERA is the best we've found. My daughter agrees. The protection is elite, the durability is excellent, and the fit is the best of any pad she's worn. Wish we'd found these years earlier.",c:"parent"},
+{n:"Laura and Chris Matthews",t:"Parents of HS Varsity Libero – Tennessee",r:5,x:"Our daughter plays 6 months of club and 4 months of school ball. Her gear gets serious use. HERA has lasted through both seasons without losing protection quality. The foam is still dense, the sleeve still fits properly, and her knees are healthy. That's everything we asked for.",c:"parent"},
+{n:"Sean and Kelly Walsh",t:"Parents of Club 16s DS – Virginia",r:5,x:"We went from buying new knee pads every 3 months to one HERA purchase per season. The durability difference is remarkable. The money saved goes back into training and tournament fees. Better gear that costs less overall – that's a win every volleyball parent appreciates.",c:"parent"},
+{n:"Nina and Paul Osei",t:"Parents of Club 15s – Georgia",r:5,x:"My daughter was hesitant about volleyball because she was scared of falling. HERA gave her the confidence she needed. The first practice she dove without fear because she trusted the padding. She came home smiling and now looks forward to every practice. The product changed her relationship with the sport.",c:"parent"},
+{n:"Victor and Diane Sanchez",t:"Parents of HS JV Middle Blocker – New Mexico",r:5,x:"My daughter was coming home with bruised knees weekly. We tried three different brands before HERA and nothing worked. HERA solved it in the first week. Whatever their foam-gel technology is, it works. No bruises, no burns, no soreness. We're grateful we found this product.",c:"parent"},
+{n:"Coach Tamara Wells",t:"Head Coach, HS Varsity Volleyball – Georgia",r:5,x:"I've coached for 14 years and I've seen every knee pad brand come and go. HERA's side-coverage design addresses something I've always told my players mattered but could never find in a product. When half my team switched mid-season, I saw a drop in the knee issues we deal with every year. I now recommend these to every player and parent.",c:"coach"},
+{n:"Coach Derek Holloway",t:"Club Director, 16s/17s/18s – North Carolina",r:5,x:"As a club director I have to think about player safety at scale. When one brand starts showing up consistently with better outcomes than others, I pay attention. HERA is now recommended gear for all of our players. The feedback from parents and players has been uniformly positive and the knee injury rate in our 17s this season was the lowest in three years.",c:"coach"},
+{n:"Coach Alicia Fernandez",t:"Youth Volleyball Coach, Ages 12-15 – California",r:5,x:"Young players are still learning how to fall and they need real protection. HERA is the brand I now recommend to every family that asks. The 3D padding teaches young players that diving is safe when you have proper gear. I've seen it change hesitant players into fearless liberos over the course of a season.",c:"coach"},
+{n:"Coach Marcus Webb",t:"Assistant Coach, D3 College Program – Ohio",r:5,x:"At the college level we see the cumulative effects of poor gear choices in younger years. Players who arrive with knee problems often traced those problems to insufficient protection in high school. I tell every incoming freshman class to use HERA. The side coverage alone addresses the most common source of lateral knee damage in volleyball.",c:"coach"},
+{n:"Coach Jennifer Lowe",t:"Head Coach, Club 14s/15s – Texas",r:5,x:"I test gear before I recommend it to families. Wore HERA pads during my own training sessions for a month before suggesting them. The side coverage is genuine, the foam density holds, and the breathability is real. These are the pads I recommend to every player in my program now.",c:"coach"},
+{n:"Coach Brian Santos",t:"PE Teacher & Volleyball Coach – Florida",r:5,x:"I see knee pad quality from a movement science perspective. Most volleyball pads ignore the lateral aspects of the knee joint entirely. HERA's 3D design is the first I've seen that properly covers all three high-risk areas: front cap, medial side, and lateral side. For any player who dives regularly, this comprehensive coverage is essential.",c:"coach"},
+{n:"Coach Lisa Bergman",t:"AAU Volleyball Coach, 15U – Minnesota",r:5,x:"Tournament weekends mean 8-10 matches over two days. Knee pads need to survive that without compression or fit issues. HERA delivers. After a full weekend tournament my players' pads still fit, still protect, and show minimal wear. That durability at the tournament level is what separates HERA from the competition.",c:"coach"},
+{n:"Coach Anthony Reyes",t:"High School JV Head Coach – Arizona",r:4,x:"Solid recommendation for my JV players. The protection is noticeably better than most budget options and the durability is good. I've referred multiple parents to these and all the feedback has been positive. One player noted the sizing ran large but overall the product performs as expected at this level.",c:"coach"},
+{n:"Coach Michelle Park",t:"Private Volleyball Trainer – New York",r:5,x:"I train individual players one-on-one, focusing heavily on technique for dives, rolls, and floor contact. HERA is the only brand I recommend because the side coverage protects the exact impact zones I work with my players on. When gear protects where the sport actually demands, technique improvement accelerates because players aren't managing pain.",c:"coach"},
+{n:"Coach Patricia Hollins",t:"Head Coach, Club 16s/18s – Tennessee",r:5,x:"I've watched the knee pad market for years. HERA has done something that I thought required a major brand budget – they've designed a pad specifically around volleyball movement patterns rather than general athletic use. The side coverage, fit contour, and foam composition all reflect an understanding of what volleyball actually puts a knee through.",c:"coach"},
+{n:"Coach Roberto Diaz",t:"Boys & Girls Volleyball Coach, HS – Texas",r:5,x:"I coach both boys and girls volleyball and HERA works for both. The ergonomic fit adapts well to different knee structures and sizes. My female athletes particularly appreciate the contoured design – it's clear these were designed with women's knee anatomy specifically in mind. My whole girls' program is now in HERA.",c:"coach"},
+{n:"Coach Shannon Brady",t:"Club Director, Ages 11-18 – Illinois",r:5,x:"As a club director running programs across age groups, I need one knee pad recommendation that works at every level. HERA is that recommendation. From my 11U beginners learning to fall through my 18U elite players, the sizing range and protection levels cover every player we have.",c:"coach"},
+{n:"Coach Kevin Burke",t:"S&C Coach, D2 Volleyball – Colorado",r:5,x:"From a training load perspective, inadequate knee protection leads to cumulative micro-trauma that affects practice quality over the long season. HERA's consistent impact absorption is part of our injury prevention protocol. Multiple players in our program transitioned to these this season and we've seen improvement in reported knee soreness.",c:"coach"},
+{n:"Coach Diane Walsh",t:"Head Coach, HS Varsity – New Jersey",r:5,x:"I showed my entire coaching staff the side-coverage design before I recommended it to players. My assistant coaches immediately understood why this matters – volleyball contact happens from every angle, not just the front. HERA is the first mainstream pad that accounts for that reality. It's now required gear for all my varsity players.",c:"coach"},
+{n:"Coach Tina Nakamura",t:"Youth Director, Rec Volleyball Program – Oregon",r:5,x:"In recreational programs we have players with no experience and no protective habits. HERA makes the learning process safer. New players can focus on technique instead of protecting themselves from the floor. That confidence accelerates learning and makes the sport more enjoyable from day one.",c:"coach"},
+{n:"Coach Frank Morrison",t:"Head Coach, Club 17s National Team – California",r:5,x:"At the national club level, knee health over a long season is critical. I surveyed our players halfway through the season and the ones wearing HERA reported significantly lower knee soreness scores than those in other brands. That's not anecdotal – that's a pattern I'll use to inform my gear recommendations going forward.",c:"coach"},
+{n:"Coach Amanda Cruz",t:"Middle Blocker Skills Coach – Florida",r:5,x:"Middle blockers need specific knee protection. The repeated block-landing cycle puts continuous stress on the knee from height. HERA's foam density is appropriate for that impact level while still allowing the full range of motion needed for the blocking approach. I recommend these specifically to middles who complain about knee soreness.",c:"coach"},
+{n:"Coach James Whitfield",t:"HS Athletic Director & Former Coach – Alabama",r:5,x:"From an athletic administration standpoint, I care about products that reduce injury risk. HERA's 3D coverage design aligns with best practices for knee protection in high-impact sports. I've recommended these to our volleyball coaching staff and the feedback from the coaching staff and parents has been excellent.",c:"coach"},
+{n:"Coach Renee Alvarez",t:"Club 14s Head Coach & Former D1 Libero – Arizona",r:5,x:"I wore subpar knee pads throughout my D1 career and dealt with chronic knee soreness. I make sure my players don't repeat that mistake. HERA is what I wish had existed when I was playing. The side coverage, the foam composition, the fit – everything is done right. My players' long-term knee health matters to me personally.",c:"coach"},
+{n:"Coach Timothy Park",t:"Head Coach, Club 15s/16s – Washington State",r:5,x:"I've put HERA through a full evaluation across two club age groups. Player and parent feedback has been consistently positive. Knee issues that were regular occurrences in prior seasons have been minimal. The product does what it claims and is built to last a full season of club play. It's the standard recommendation for my entire program now.",c:"coach"}
+  ];
+
+  var tabsDef = [
+    {key:'all',label:'All ('+reviews.length+')'},
+    {key:'player',label:'Players ('+reviews.filter(function(r){return r.c==='player'}).length+')'},
+    {key:'parent',label:'Parents ('+reviews.filter(function(r){return r.c==='parent'}).length+')'},
+    {key:'coach',label:'Coaches ('+reviews.filter(function(r){return r.c==='coach'}).length+')'}
+  ];
+
+  var tabsContainer = el.querySelector('[data-hr-tabs]');
+  var track = el.querySelector('[data-hr-track]');
+  var currentTab = 'all';
+
+  function buildTabs(){
+    tabsContainer.innerHTML = '';
+    tabsDef.forEach(function(tab){
+      var btn = document.createElement('button');
+      btn.className = 'hr-wall__tab-'+sid + (tab.key===currentTab?' active':'');
+      btn.textContent = tab.label;
+      btn.setAttribute('data-hr-tab', tab.key);
+      btn.addEventListener('click', function(){
+        currentTab = tab.key;
+        buildTabs();
+        renderCards();
+      });
+      tabsContainer.appendChild(btn);
+    });
+  }
+
+  function renderCards(){
+    track.innerHTML = '';
+    track.scrollLeft = 0;
+    var filtered = currentTab==='all' ? reviews : reviews.filter(function(r){return r.c===currentTab});
+    filtered.forEach(function(rv, idx){
+      var prod = products.length > 0 ? products[idx % products.length] : null;
+      var initial = rv.n.charAt(0).toUpperCase();
+      var bgColor = getColor(rv.n);
+
+      var card = document.createElement('div');
+      card.className = 'hr-wall__card-'+sid;
+
+      var html = '<div class="hr-wall__stars-'+sid+'">'+starsSvg(rv.r)+'</div>';
+      html += '<div class="hr-wall__text-'+sid+'" data-hr-review>'+escapeHtml(rv.x)+'</div>';
+      html += '<button type="button" class="hr-wall__readmore-'+sid+'" data-hr-readmore>Read more</button>';
+      html += '<div class="hr-wall__author-'+sid+'">';
+      html += '<div class="hr-wall__initial-'+sid+'" style="background-color:'+bgColor+'">'+initial+'</div>';
+      html += '<div class="hr-wall__author-info-'+sid+'">';
+      html += '<span class="hr-wall__name-'+sid+'">'+escapeHtml(rv.n)+'</span>';
+      html += '<span class="hr-wall__title-'+sid+'">'+escapeHtml(rv.t)+'</span>';
+      html += '</div></div>';
+      html += '<span class="hr-wall__badge-'+sid+'"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg> Verified Buyer</span>';
+
+      if (prod) {
+        html += '<a href="'+prod.url+'" class="hr-wall__product-'+sid+'">';
+        if (prod.img) html += '<img src="'+prod.img+'" alt="'+escapeHtml(prod.title)+'" loading="lazy" width="48" height="48">';
+        html += '<div class="hr-wall__product-info-'+sid+'">';
+        html += '<span class="hr-wall__product-name-'+sid+'">'+escapeHtml(prod.title)+'</span>';
+        html += '<span class="hr-wall__product-price-'+sid+'">'+formatMoney(prod.price);
+        if (prod.compare) html += ' <span class="hr-wall__product-compare-'+sid+'">'+formatMoney(prod.compare)+'</span>';
+        html += '</span></div></a>';
+      }
+
+      card.innerHTML = html;
+      track.appendChild(card);
+    });
+    initReadMore();
+  }
+
+  function escapeHtml(str){
+    var d=document.createElement('div');
+    d.appendChild(document.createTextNode(str));
+    return d.innerHTML;
+  }
+
+  function initReadMore(){
+    var btns = track.querySelectorAll('[data-hr-readmore]');
+    btns.forEach(function(btn){
+      var txt = btn.previousElementSibling;
+      if (!txt) return;
+      btn.addEventListener('click', function(){
+        if(txt.classList.contains('expanded')){
+          txt.classList.remove('expanded');
+          btn.textContent = 'Read more';
+        } else {
+          txt.classList.add('expanded');
+          btn.textContent = 'Read less';
+        }
+      });
+    });
+  }
+
+  // Arrows
+  var arrows = el.querySelectorAll('[data-hr-arrow]');
+  arrows.forEach(function(arrow){
+    arrow.addEventListener('click', function(){
+      var dir = arrow.getAttribute('data-hr-arrow');
+      var scrollAmt = 340;
+      track.scrollBy({left: dir==='prev' ? -scrollAmt : scrollAmt, behavior:'smooth'});
+    });
+  });
+
+  buildTabs();
+  renderCards();
+})();
+</script>
+
+{% schema %}
+{
+  "name": "HERA Reviews Wall",
+  "tag": "section",
+  "class": "hera-reviews-wall",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Heading"
+    },
+    {
+      "type": "text",
+      "id": "heading_text",
+      "label": "Heading",
+      "default": "120 Real Reviews from the US Volleyball Community"
+    },
+    {
+      "type": "text",
+      "id": "subheading_text",
+      "label": "Subheading",
+      "default": "Players, parents, and coaches share their HERA experience"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "range",
+      "id": "heading_font_size",
+      "label": "Heading font size",
+      "min": 18,
+      "max": 48,
+      "step": 1,
+      "default": 32,
+      "unit": "px"
+    },
+    {
+      "type": "color",
+      "id": "subheading_color",
+      "label": "Subheading color",
+      "default": "#666666"
+    },
+    {
+      "type": "header",
+      "content": "Section Style"
+    },
+    {
+      "type": "color",
+      "id": "section_bg_color",
+      "label": "Background color",
+      "default": "#F9F7F4"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 50,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 50,
+      "unit": "px"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent / star color",
+      "default": "#C8A97E"
+    },
+    {
+      "type": "checkbox",
+      "id": "rtl_direction",
+      "label": "RTL direction",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Tabs"
+    },
+    {
+      "type": "color",
+      "id": "tab_bg_color",
+      "label": "Tab background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "tab_text_color",
+      "label": "Tab text color",
+      "default": "#444444"
+    },
+    {
+      "type": "color",
+      "id": "tab_border_color",
+      "label": "Tab border",
+      "default": "#dddddd"
+    },
+    {
+      "type": "color",
+      "id": "tab_active_bg",
+      "label": "Active tab background",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "tab_active_text",
+      "label": "Active tab text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Cards"
+    },
+    {
+      "type": "color",
+      "id": "card_bg_color",
+      "label": "Card background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "card_border_radius",
+      "label": "Card border radius",
+      "min": 0,
+      "max": 24,
+      "step": 2,
+      "default": 12,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "card_gap",
+      "label": "Card gap",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "card_width",
+      "label": "Card width (desktop)",
+      "min": 260,
+      "max": 420,
+      "step": 10,
+      "default": 320,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "mobile_card_width",
+      "label": "Card width (mobile)",
+      "min": 240,
+      "max": 360,
+      "step": 10,
+      "default": 280,
+      "unit": "px"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_card_shadow",
+      "label": "Show card shadow",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Text"
+    },
+    {
+      "type": "range",
+      "id": "truncate_lines",
+      "label": "Truncate review lines",
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "header",
+      "content": "Arrows"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_arrows",
+      "label": "Show arrows",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "arrow_bg_color",
+      "label": "Arrow background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "arrow_color",
+      "label": "Arrow color",
+      "default": "#1a1a1a"
+    }
+  ],
+  "presets": [
+    {
+      "name": "HERA Reviews Wall"
+    }
+  ]
+}
+{% endschema %}
